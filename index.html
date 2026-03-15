@@ -1,0 +1,2403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
+<title>Felicity's World</title>
+<style>
+/* ───────────────────────────────────────────────────
+   RESET & BASE
+─────────────────────────────────────────────────── */
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{
+  width:100%;height:100%;overflow:hidden;
+  background:#1a0e0a;touch-action:none;
+  user-select:none;-webkit-user-select:none;
+  font-family:'Segoe UI',system-ui,sans-serif
+}
+#c{display:block;width:100%;height:100%;position:absolute;top:0;left:0}
+
+/* ── HUD ──────────────────────────────────────── */
+#hud{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  pointer-events:none;z-index:10
+}
+#title{
+  position:absolute;top:16px;left:50%;
+  transform:translateX(-50%);text-align:center;
+  pointer-events:none
+}
+#title h1{
+  font-size:clamp(12px,2.5vw,17px);font-weight:700;
+  color:rgba(255,220,160,.92);letter-spacing:.22em;
+  text-transform:uppercase;
+  text-shadow:0 0 18px rgba(255,120,0,.4),0 2px 10px rgba(0,0,0,.7)
+}
+#title p{font-size:9px;color:rgba(255,200,120,.42);letter-spacing:.16em;margin-top:2px}
+
+/* ── JOYSTICK ──────────────────────────────────── */
+#jz{
+  position:absolute;bottom:26px;left:26px;
+  width:130px;height:130px;
+  pointer-events:all;touch-action:none
+}
+/* nipplejs custom */
+.nipple .front{background:rgba(255,220,180,.9)!important;box-shadow:0 2px 12px rgba(0,0,0,.3)!important}
+.nipple .back{background:rgba(255,200,140,.18)!important;border:2px solid rgba(255,200,130,.4)!important}
+
+/* ── CORNER INFO ───────────────────────────────── */
+#info{
+  position:absolute;bottom:22px;right:18px;
+  text-align:right;font-size:9px;
+  color:rgba(255,200,140,.3);letter-spacing:.06em;line-height:1.9
+}
+
+/* ── NAME LABELS ──────────────────────────────── */
+.lbl{
+  position:fixed;pointer-events:none;
+  transform:translate(-50%,-100%);
+  font-size:11px;font-weight:700;letter-spacing:.09em;
+  padding:3px 10px;border-radius:12px;
+  white-space:nowrap;text-shadow:0 1px 5px rgba(0,0,0,.9);
+  z-index:7;backdrop-filter:blur(5px)
+}
+.lbl-f{background:rgba(255,90,150,.28);border:1px solid rgba(255,150,200,.55);color:#ffc8e8}
+.lbl-c{background:rgba(60,130,255,.28);border:1px solid rgba(100,170,255,.55);color:#c0d8ff}
+
+/* ── ENTER BUTTON ─────────────────────────────── */
+#enter-btn{
+  position:fixed;left:50%;top:52%;
+  transform:translate(-50%,-50%);
+  z-index:20;pointer-events:none;opacity:0;
+  transition:opacity .25s ease,top .25s ease
+}
+#enter-btn.show{opacity:1;pointer-events:all;top:50%}
+#enter-btn button{
+  background:rgba(20,12,6,.84);backdrop-filter:blur(16px);
+  color:rgba(255,220,160,.95);
+  border:1px solid rgba(255,200,120,.25);
+  border-radius:24px;padding:10px 22px;
+  font-size:12px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;cursor:pointer;
+  font-family:inherit;touch-action:manipulation;
+  transition:background .15s,transform .1s,box-shadow .15s;
+  box-shadow:0 4px 18px rgba(0,0,0,.45);white-space:nowrap
+}
+#enter-btn button:hover{background:rgba(40,22,10,.9);box-shadow:0 6px 24px rgba(0,0,0,.55)}
+#enter-btn button:active{transform:scale(.93)}
+
+/* ── EXIT BUTTON ──────────────────────────────── */
+#exit-btn{
+  position:fixed;top:13px;left:13px;z-index:60;
+  background:rgba(20,12,6,.84);backdrop-filter:blur(14px);
+  color:rgba(255,210,140,.9);
+  border:1px solid rgba(255,190,100,.2);
+  border-radius:22px;padding:8px 16px;
+  font-size:11px;font-weight:600;letter-spacing:.09em;
+  text-transform:uppercase;cursor:pointer;
+  font-family:inherit;display:none;touch-action:manipulation;
+  transition:transform .1s
+}
+#exit-btn:active{transform:scale(.93)}
+
+/* ── ACTION BUTTONS — clean cozy pill, no emojis ── */
+#action-panel{
+  position:fixed;right:14px;bottom:36px;
+  z-index:20;display:flex;flex-direction:column;gap:7px;
+  pointer-events:all
+}
+.act-btn{
+  background:rgba(255,245,235,.13);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  color:rgba(255,230,205,.9);
+  border:1px solid rgba(255,215,180,.28);
+  border-radius:50px;
+  padding:8px 18px;
+  font-size:10.5px;font-weight:700;
+  font-family:inherit;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  cursor:pointer;touch-action:manipulation;
+  white-space:nowrap;
+  box-shadow:0 2px 12px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.07);
+  transition:background .18s,box-shadow .18s,transform .08s,border-color .18s,color .18s;
+  min-width:108px;
+  text-align:center;
+  display:flex;align-items:center;justify-content:center;gap:6px
+}
+.act-btn::before{
+  content:'';display:inline-block;
+  width:5px;height:5px;border-radius:50%;
+  background:rgba(255,200,150,.5);flex-shrink:0;
+  transition:background .18s,box-shadow .18s
+}
+.act-btn:hover{
+  background:rgba(255,235,215,.2);
+  box-shadow:0 3px 16px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.1)
+}
+.act-btn:active{transform:scale(.94);box-shadow:0 1px 5px rgba(0,0,0,.22)}
+.act-btn.active{
+  background:rgba(255,185,110,.22);
+  border-color:rgba(255,200,130,.5);
+  color:rgba(255,248,225,.98);
+  box-shadow:0 2px 14px rgba(210,110,0,.2),inset 0 1px 0 rgba(255,255,255,.1)
+}
+.act-btn.active::before{
+  background:rgba(255,200,80,.9);
+  box-shadow:0 0 6px rgba(255,180,50,.65)
+}
+
+/* ── INTERACTION TOAST (replaces emoji bubble) ─── */
+#emote-bubble{
+  position:fixed;left:50%;top:40%;
+  transform:translate(-50%,-50%) scale(.85) translateY(6px);
+  z-index:25;pointer-events:none;opacity:0;
+  font-size:10px;font-weight:700;letter-spacing:.18em;
+  text-transform:uppercase;
+  color:rgba(255,235,200,.9);
+  background:rgba(20,12,6,.72);
+  border:1px solid rgba(255,200,130,.22);
+  border-radius:50px;
+  padding:6px 16px;
+  backdrop-filter:blur(12px);
+  box-shadow:0 4px 20px rgba(0,0,0,.4);
+  white-space:nowrap;
+  transition:opacity .3s ease,transform .35s cubic-bezier(.34,1.56,.64,1)
+}
+#emote-bubble.show{opacity:1;transform:translate(-50%,-50%) scale(1) translateY(0)}
+
+/* ═══════════════════════════════════════════════════
+   PLAY SCREEN — full-screen landing overlay
+═══════════════════════════════════════════════════ */
+#play-screen{
+  position:fixed;inset:0;z-index:400;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:linear-gradient(168deg,#0e0806 0%,#1c0f08 40%,#120a12 100%);
+  transition:opacity .9s ease,visibility .9s ease
+}
+#play-screen.fade-out{opacity:0;visibility:hidden;pointer-events:none}
+
+/* Decorative grain overlay */
+#play-screen::before{
+  content:'';position:absolute;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity:.35;pointer-events:none
+}
+
+/* Soft radial warm glow behind title */
+#play-screen::after{
+  content:'';position:absolute;
+  width:420px;height:420px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(200,80,20,.12) 0%,transparent 70%);
+  pointer-events:none
+}
+
+#play-title{
+  position:relative;z-index:1;
+  text-align:center;margin-bottom:52px
+}
+#play-title h1{
+  font-size:clamp(22px,6vw,42px);
+  font-weight:300;
+  color:rgba(255,215,155,.92);
+  letter-spacing:.35em;
+  text-transform:uppercase;
+  text-shadow:0 0 40px rgba(220,120,30,.3),0 2px 16px rgba(0,0,0,.8);
+  margin-bottom:10px
+}
+#play-title p{
+  font-size:clamp(9px,2vw,12px);
+  color:rgba(255,190,120,.38);
+  letter-spacing:.25em;
+  text-transform:uppercase
+}
+
+/* Decorative line */
+#play-title .divider{
+  width:48px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,180,80,.45),transparent);
+  margin:14px auto
+}
+
+#play-btn{
+  position:relative;z-index:1;
+  background:rgba(255,240,220,.08);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  color:rgba(255,225,185,.92);
+  border:1px solid rgba(255,200,130,.3);
+  border-radius:50px;
+  padding:14px 44px;
+  font-size:12px;font-weight:700;
+  letter-spacing:.28em;text-transform:uppercase;
+  font-family:inherit;
+  cursor:pointer;touch-action:manipulation;
+  box-shadow:0 0 0 0 rgba(255,160,60,0),0 4px 24px rgba(0,0,0,.45);
+  transition:background .2s,border-color .2s,box-shadow .25s,transform .12s;
+  outline:none
+}
+#play-btn:hover{
+  background:rgba(255,230,195,.15);
+  border-color:rgba(255,200,120,.52);
+  box-shadow:0 0 0 4px rgba(255,160,60,.08),0 6px 28px rgba(0,0,0,.5)
+}
+#play-btn:active{transform:scale(.95)}
+/* subtle breathing pulse on idle */
+@keyframes pulse-border{
+  0%,100%{box-shadow:0 0 0 0 rgba(255,160,60,0),0 4px 24px rgba(0,0,0,.45)}
+  50%{box-shadow:0 0 0 6px rgba(255,160,60,.07),0 4px 24px rgba(0,0,0,.45)}
+}
+#play-btn{animation:pulse-border 3s ease-in-out infinite}
+
+/* Small hint text below button */
+#play-hint{
+  position:relative;z-index:1;
+  margin-top:22px;
+  font-size:9px;letter-spacing:.18em;text-transform:uppercase;
+  color:rgba(255,180,100,.22)
+}
+
+/* ═══════════════════════════════════════════════════
+   SCENE TRANSITION FADE
+═══════════════════════════════════════════════════ */
+#scene-fade{
+  position:fixed;inset:0;z-index:200;
+  background:#0e0806;
+  opacity:0;pointer-events:none;
+  transition:opacity .45s ease
+}
+#scene-fade.visible{opacity:1;pointer-events:all}
+
+/* ── LOADING SCREEN ───────────────────────────── */
+#ld{
+  position:fixed;inset:0;
+  background:linear-gradient(160deg,#0e0806,#1a0e0a,#0a0e16);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:300;transition:opacity .7s ease
+}
+#ld.go{opacity:0;pointer-events:none}
+#ld h2{
+  color:rgba(255,210,140,.9);font-size:20px;font-weight:300;
+  letter-spacing:.38em;text-transform:uppercase;margin-bottom:30px;
+  text-shadow:0 0 30px rgba(255,160,60,.3)
+}
+.lb{width:190px;height:2px;background:rgba(255,180,80,.12);border-radius:2px;overflow:hidden}
+.lf{height:100%;width:0%;background:linear-gradient(90deg,#d4640a,#f5b04a);border-radius:2px;transition:width .08s linear}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ PLAY SCREEN ═══════════════ -->
+<div id="play-screen">
+  <div id="play-title">
+    <h1>Felicity's World</h1>
+    <div class="divider"></div>
+    <p>A peaceful place to wander</p>
+  </div>
+  <button id="play-btn">Play</button>
+  <div id="play-hint">Touch to begin</div>
+</div>
+
+<!-- Scene transition fade overlay -->
+<div id="scene-fade"></div>
+
+<!-- Loading screen -->
+<div id="ld">
+  <h2>Felicity's World</h2>
+  <div class="lb"><div class="lf" id="lbar"></div></div>
+</div>
+
+<!-- Canvas -->
+<canvas id="c"></canvas>
+
+<!-- Name labels -->
+<div id="lbl-f" class="lbl lbl-f">Felicity</div>
+<div id="lbl-c" class="lbl lbl-c">Chris</div>
+
+<!-- Enter / exit house -->
+<div id="enter-btn"><button id="ehb">Enter House</button></div>
+<button id="exit-btn">Outside</button>
+
+<!-- Action buttons — clean text, no emojis -->
+<div id="action-panel">
+  <button class="act-btn" id="hug-btn">Hug</button>
+  <button class="act-btn" id="hold-btn">Hold Hands</button>
+</div>
+
+<!-- Interaction toast -->
+<div id="emote-bubble">Together</div>
+
+<!-- HUD overlay -->
+<div id="hud">
+  <div id="title">
+    <h1>Felicity's World</h1>
+    <p>A peaceful place to wander</p>
+  </div>
+  <div id="jz"></div>
+  <div id="info">WASD · Joystick · Move</div>
+</div>
+
+<!-- THREE.js r128 CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- nipplejs -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/nipplejs/0.10.1/nipplejs.min.js"></script>
+
+<script>
+'use strict';
+
+// ─────────────────────────────────────────────────────────────
+//  LOADING PROGRESS
+// ─────────────────────────────────────────────────────────────
+var lbar=document.getElementById('lbar'),lpct=0;
+var lint=setInterval(function(){lpct=Math.min(lpct+Math.random()*10,88);lbar.style.width=lpct+'%';},100);
+
+// ─────────────────────────────────────────────────────────────
+//  RENDERER
+// ─────────────────────────────────────────────────────────────
+var W=window.innerWidth,H=window.innerHeight;
+var renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true,powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+renderer.setSize(W,H);
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+renderer.outputEncoding=THREE.sRGBEncoding;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure=1.05;
+
+var insideHouse=false;
+var clock=new THREE.Clock();
+
+// ─────────────────────────────────────────────────────────────
+//  HELPERS
+// ─────────────────────────────────────────────────────────────
+function mkBox(w,h,d,color){
+  return new THREE.Mesh(
+    new THREE.BoxGeometry(w,h,d),
+    new THREE.MeshLambertMaterial({color:color})
+  );
+}
+function addBox(scene,w,h,d,color,x,y,z,parent){
+  var m=mkBox(w,h,d,color);
+  m.position.set(x,y,z);
+  m.castShadow=true;m.receiveShadow=true;
+  if(parent){parent.add(m);}else{scene.add(m);}
+  return m;
+}
+function sceneBox(sc,w,h,d,color,x,y,z){return addBox(sc,w,h,d,color,x,y,z,null);}
+
+// ═════════════════════════════════════════════════════════════
+//  OUTDOOR SCENE — SUNSET ATMOSPHERE
+// ═════════════════════════════════════════════════════════════
+var OUT=new THREE.Scene();
+// Warm gradient sky color
+OUT.background=new THREE.Color(0xff8c42); // golden-orange horizon
+OUT.fog=new THREE.FogExp2(0xe07040,.010);  // warm hazy fog
+
+var outCam=new THREE.PerspectiveCamera(46,W/H,0.1,300);
+var CAM_OFF=new THREE.Vector3(0,20,16);
+outCam.position.copy(CAM_OFF);
+outCam.lookAt(0,0,0);
+
+// ── SUNSET LIGHTING ──────────────────────────────────────────
+// Low-angle warm directional sun (golden hour)
+var sun=new THREE.DirectionalLight(0xffb347,1.2);
+sun.position.set(-25,8,30); // low on the horizon, slightly in front
+sun.castShadow=true;
+sun.shadow.mapSize.set(2048,2048);
+sun.shadow.camera.left=-55;sun.shadow.camera.right=55;
+sun.shadow.camera.top=55;sun.shadow.camera.bottom=-55;
+sun.shadow.camera.far=200;sun.shadow.bias=-0.001;
+OUT.add(sun);
+
+// Hemisphere: warm peach sky top, soft purple-mauve ground bounce
+var hemi=new THREE.HemisphereLight(0xffcc88,0x7a5aa8,0.65);
+OUT.add(hemi);
+
+// Soft fill from opposite side (cool blue rim for depth)
+var rimLight=new THREE.DirectionalLight(0x6699cc,0.18);
+rimLight.position.set(20,12,-15);
+OUT.add(rimLight);
+
+// Ambient low so shadows are rich
+OUT.add(new THREE.AmbientLight(0xff9966,0.28));
+
+// ── GROUND (warm green dusk tones) ───────────────────────────
+var gGeo=new THREE.PlaneGeometry(150,150,1,1);
+var ground=new THREE.Mesh(gGeo,new THREE.MeshLambertMaterial({color:0x4a7a30}));
+ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;OUT.add(ground);
+
+// Darker patches
+[[8,10,4.2],[-12,6,3],[5,-14,3.5],[-8,-8,2.8],[15,-6,3],[-14,10,2.5]].forEach(function(p){
+  var pg=new THREE.Mesh(new THREE.CircleGeometry(p[2],12),new THREE.MeshLambertMaterial({color:0x3a6a20}));
+  pg.rotation.x=-Math.PI/2;pg.position.set(p[0],0.01,p[1]);pg.receiveShadow=true;OUT.add(pg);
+});
+
+// Lawn near house
+var lawn=new THREE.Mesh(new THREE.CircleGeometry(10,24),new THREE.MeshLambertMaterial({color:0x3a9018}));
+lawn.rotation.x=-Math.PI/2;lawn.position.set(0,0.008,-14);OUT.add(lawn);
+
+// Stone path
+(function(){
+  for(var s=0;s<14;s++){
+    var ang=(Math.random()-.5)*.4;
+    var st=new THREE.Mesh(new THREE.CylinderGeometry(.4+Math.random()*.18,.45,.07,7),
+      new THREE.MeshLambertMaterial({color:s%2===0?0x9a8c7a:0x8b7a68}));
+    st.position.set(Math.sin(ang)*.65,0.04,-6+s*.85);
+    st.rotation.y=Math.random()*Math.PI;
+    st.receiveShadow=true;OUT.add(st);
+  }
+})();
+
+var dirt=new THREE.Mesh(new THREE.CircleGeometry(7.5,24),new THREE.MeshLambertMaterial({color:0x8b7355}));
+dirt.rotation.x=-Math.PI/2;dirt.position.set(0,0.005,-14);OUT.add(dirt);
+
+// ── MOUNTAINS (warm dusk silhouette tones) ────────────────────
+[[-46,-46,22,13,0x7a5040],[-28,-52,19,12,0x6a4030],[0,-54,25,16,0x8a6050],
+ [30,-51,21,12,0x7a5040],[49,-46,18,12,0x6a4030],[-53,-20,17,11,0x8a6050],
+ [-53,7,15,10,0x7a5040],[53,-20,17,11,0x6a4030],[53,7,15,10,0x8a6050],
+ [-39,-39,13,8,0x9a7060],[39,-39,13,8,0x9a7060],
+ [0,-54,8,4.5,0xffe0c8],[-46,-46,7,3.5,0xffe0c8],[49,-46,6,3,0xffe0c8]
+].forEach(function(m){
+  var geo=new THREE.ConeGeometry(m[3],m[2],7);
+  var pos=geo.attributes.position;
+  for(var i=0;i<pos.count;i++){var py=pos.getY(i);if(py>0&&py<m[2]*.55){pos.setX(i,pos.getX(i)+(Math.random()-.5)*m[3]*.35);pos.setZ(i,pos.getZ(i)+(Math.random()-.5)*m[3]*.35);}}
+  geo.computeVertexNormals();
+  var mesh=new THREE.Mesh(geo,new THREE.MeshPhongMaterial({color:m[4],flatShading:true}));
+  mesh.position.set(m[0],m[2]/2-.5,m[1]);mesh.castShadow=true;mesh.receiveShadow=true;OUT.add(mesh);
+});
+
+// ─────────────────────────────────────────────────────────────
+//  TUDOR HOUSE (Outdoor)
+// ─────────────────────────────────────────────────────────────
+var HOUSE=new THREE.Group();HOUSE.position.set(0,0,-14);OUT.add(HOUSE);
+function HB(w,h,d,col,x,y,z){return addBox(OUT,w,h,d,col,x,y,z,HOUSE);}
+
+HB(9.4,.3,8.2,0xb0a090,0,.15,0);
+HB(8.8,3.8,7.8,0x8b3a2a,0,2.1,0);
+HB(8.85,.88,7.85,0xf0ece4,0,3.55,0);
+HB(8.85,.85,7.85,0xeee8e0,0,.58,0);
+[-3.8,-1.2,1.2,3.8].forEach(function(tx){HB(.22,3.8,.14,0x2c1a08,tx,2.1,3.93);HB(.22,3.8,.14,0x2c1a08,tx,2.1,-3.93);});
+[.55,1.8,3.15].forEach(function(ty){HB(8.8,.16,.14,0x2c1a08,0,ty,3.93);HB(8.8,.16,.14,0x2c1a08,0,ty,-3.93);});
+[-2.6,0,2.6].forEach(function(tz){HB(.14,3.8,.22,0x2c1a08,-4.55,2.1,tz);HB(.14,3.8,.22,0x2c1a08,4.55,2.1,tz);});
+var rFront=mkBox(10.9,.2,5.4,0x2e2825);rFront.rotation.x=0.50;rFront.position.set(0,5.28,2.2);rFront.castShadow=true;rFront.receiveShadow=true;HOUSE.add(rFront);
+var rBack=mkBox(10.9,.2,5.4,0x2e2825);rBack.rotation.x=-0.50;rBack.position.set(0,5.28,-2.2);rBack.castShadow=true;rBack.receiveShadow=true;HOUSE.add(rBack);
+HB(11.0,.28,.28,0x1a1614,0,6.52,0);
+HB(11.0,.18,.28,0x181412,0,3.84,4.08);HB(11.0,.18,.28,0x181412,0,3.84,-4.08);
+[0,.6,1.2,1.8,2.4].forEach(function(gh,gi){var w=9.0-gi*1.5;HB(w,.65,.2,0x8b3a2a,0,3.85+gh*0.53,-4.0);HB(w,.65,.2,0x8b3a2a,0,3.85+gh*0.53,4.0);});
+HB(.95,2.2,.95,0xb09070,2.2,5.55,-1.8);HB(1.15,.18,1.15,0x9a8060,2.2,6.65,-1.8);
+HB(1.9,2.65,.14,0xd0c0a0,0,1.42,3.93);HB(1.48,2.3,.12,0x3a2010,0,1.38,3.95);
+HB(.48,.75,.08,0x4a2e14,-.30,1.78,3.98);HB(.48,.75,.08,0x4a2e14,.30,1.78,3.98);
+HB(.48,.65,.08,0x4a2e14,-.30,1.10,3.98);HB(.48,.65,.08,0x4a2e14,.30,1.10,3.98);
+var archGeo=new THREE.CylinderGeometry(.75,.75,.12,10,1,false,0,Math.PI);
+var archM=new THREE.Mesh(archGeo,new THREE.MeshLambertMaterial({color:0x3a2010}));
+archM.rotation.z=Math.PI/2;archM.rotation.y=Math.PI/2;archM.position.set(0,2.75,3.95);HOUSE.add(archM);
+var knk=new THREE.Mesh(new THREE.TorusGeometry(.09,.028,6,8),new THREE.MeshLambertMaterial({color:0xd4a820}));
+knk.position.set(0,1.55,3.99);HOUSE.add(knk);
+HB(2.2,.18,1.1,0xb09888,0,.09,4.58);HB(2.5,.12,.8,0xc0a898,0,.21,4.45);
+
+// Windows with warm glow
+function outerWin(x,z,ry){
+  var wg=new THREE.Group();wg.position.set(x,2.15,z);wg.rotation.y=ry;HOUSE.add(wg);
+  wg.add(mkBox(2.15,1.78,.18,0x7a6a58));
+  var gm=new THREE.MeshStandardMaterial({color:0xffe8a0,emissive:new THREE.Color(0xffcc55),emissiveIntensity:0.65,transparent:true,opacity:.8,roughness:.2});
+  wg.add(new THREE.Mesh(new THREE.BoxGeometry(1.75,1.42,.07),gm));
+  [mkBox(1.75,.07,.1,0x5a4a30),mkBox(.07,1.42,.1,0x5a4a30),mkBox(.07,1.42,.1,0x5a4a30)].forEach(function(b,i){b.position.x=i===2?.5:i===1?-.5:0;wg.add(b);});
+  var si=mkBox(2.35,.14,.34,0x8a7a62);si.position.y=-.95;wg.add(si);
+  var fb=mkBox(1.9,.24,.32,0x6a3a18);fb.position.y=-1.12;wg.add(fb);
+  var fcs=[0xff6b6b,0xffb3d4,0xffd166,0xffffff,0xff8a4f];
+  for(var fi=0;fi<5;fi++){var fl=new THREE.Mesh(new THREE.SphereGeometry(.12,5,4),new THREE.MeshLambertMaterial({color:fcs[fi%5]}));fl.position.set(-.76+fi*.38,-1.06,.2);wg.add(fl);}
+}
+outerWin(-2.6,3.9,0);outerWin(2.6,3.9,0);outerWin(-4.57,0,Math.PI/2);outerWin(4.57,0,-Math.PI/2);
+
+// Ivy
+var ivyM=new THREE.MeshLambertMaterial({color:0x1e6818});
+[[-3.5,1.1,3.95],[-2.8,2.3,3.95],[3.5,1.1,3.95],[3.2,2.2,3.95],[-4.57,1.3,.5],[4.57,1.3,-1]].forEach(function(p){
+  var iv=new THREE.Mesh(new THREE.SphereGeometry(.3+Math.random()*.2,6,5),ivyM);iv.position.set(p[0],p[1],p[2]);HOUSE.add(iv);
+});
+
+// Warm interior light visible outside
+var intLight=new THREE.PointLight(0xffcc88,.9,14);
+intLight.position.set(0,2.5,-14);OUT.add(intLight);
+
+// ─────────────────────────────────────────────────────────────
+//  GARDEN: TULIPS (around house) — Feature #4
+// ─────────────────────────────────────────────────────────────
+var tulipColors=[0xff3366,0xff6699,0xff9900,0xffcc00,0xff66cc,0xcc44ff,0xff4444,0xffaacc];
+var tulipStemMat=new THREE.MeshLambertMaterial({color:0x3a8a2a});
+var TULIPS=[];
+
+function makeTulip(x,z,colorHex,scl){
+  scl=scl||1;
+  var g=new THREE.Group();
+  // Stem
+  var stem=new THREE.Mesh(
+    new THREE.CylinderGeometry(.028*scl,.036*scl,.55*scl,6),
+    tulipStemMat
+  );
+  stem.position.y=.28*scl;g.add(stem);
+  // Leaf
+  var leaf=new THREE.Mesh(
+    new THREE.CylinderGeometry(.01,.06,.38*scl,4),
+    tulipStemMat
+  );
+  leaf.position.set(.06*scl,.22*scl,0);leaf.rotation.z=0.5;g.add(leaf);
+  // Petal cone (tulip cup)
+  var petMat=new THREE.MeshLambertMaterial({color:colorHex});
+  var petGeo=new THREE.ConeGeometry(.14*scl,.28*scl,6,1,true);
+  var pet=new THREE.Mesh(petGeo,petMat);
+  pet.position.y=.62*scl;g.add(pet);
+  // Inner yellow center
+  var ctr=new THREE.Mesh(
+    new THREE.SphereGeometry(.07*scl,6,5),
+    new THREE.MeshLambertMaterial({color:0xffee88})
+  );
+  ctr.position.y=.72*scl;g.add(ctr);
+
+  g.position.set(x,0,z);
+  g.rotation.y=Math.random()*Math.PI*2;
+  OUT.add(g);
+  TULIPS.push({g:g,origY:0,idx:Math.random()*100});
+  return g;
+}
+
+// Garden beds around house
+(function(){
+  // Front bed (flanking path)
+  var gardenSpots=[
+    // front sides
+    {x:-3,z:-6},{x:-3.8,z:-7.5},{x:-4.5,z:-9},{x:-5,z:-11},{x:-5.5,z:-13},
+    {x:3,z:-6},{x:3.8,z:-7.5},{x:4.5,z:-9},{x:5,z:-11},{x:5.5,z:-13},
+    // house sides
+    {x:-7,z:-12},{x:-7,z:-15},{x:-7,z:-18},{x:-5,z:-20},{x:-3,z:-20},
+    {x:7,z:-12},{x:7,z:-15},{x:7,z:-18},{x:5,z:-20},{x:3,z:-20},
+    // back
+    {x:-1,z:-21},{x:0,z:-21},{x:1,z:-21},
+    // scattered meadow tulips
+    {x:-9,z:0},{x:-11,z:3},{x:9,z:1},{x:11,z:-2},{x:8,z:5},
+    {x:-14,z:7},{x:14,z:5},{x:0,z:12},{x:-6,z:10},{x:6,z:9}
+  ];
+  gardenSpots.forEach(function(p,i){
+    var col=tulipColors[i%tulipColors.length];
+    var scl=0.8+Math.random()*.5;
+    // slight scatter
+    makeTulip(p.x+(Math.random()-.5)*.5,p.z+(Math.random()-.5)*.5,col,scl);
+  });
+})();
+
+// Garden flower bushes (around house exterior)
+var bfCols=[0xff4466,0xff88bb,0xffdd44,0xffffff,0xff7744];
+[[-5.5,2,1],[5.5,2,1],[-5.5,2,-2],[5.5,2,-2],[-3,2,5.5],[3,2,5.5]].forEach(function(p,idx){
+  var bsh=new THREE.Mesh(new THREE.SphereGeometry(.75,7,6),new THREE.MeshLambertMaterial({color:0x226618}));
+  bsh.position.set(p[0]+HOUSE.position.x,.7,p[2]+HOUSE.position.z);bsh.castShadow=true;OUT.add(bsh);
+  for(var fi=0;fi<6;fi++){
+    var fl=new THREE.Mesh(new THREE.SphereGeometry(.14,5,4),new THREE.MeshLambertMaterial({color:bfCols[(idx+fi)%5]}));
+    fl.position.set(p[0]+HOUSE.position.x+(Math.random()-.5)*.9,1.3+Math.random()*.3,p[2]+HOUSE.position.z+(Math.random()-.5)*.9);
+    OUT.add(fl);
+  }
+});
+
+// ─────────────────────────────────────────────────────────────
+//  FENCE
+// ─────────────────────────────────────────────────────────────
+(function(){
+  var pm=new THREE.MeshLambertMaterial({color:0xd0c8b8});
+  [[-7,7],[-5,7],[-3,7],[-1,7],[1,7],[3,7],[5,7],[7,7],
+   [-7,5],[-7,3],[-7,1],[-7,-1],[-7,-3],[7,5],[7,3],[7,1],[7,-1],[7,-3]].forEach(function(p){
+    var post=new THREE.Mesh(new THREE.BoxGeometry(.16,.9,.16),pm);
+    post.position.set(p[0],.45,p[1]-14);post.castShadow=true;OUT.add(post);
+  });
+  var rm=new THREE.MeshLambertMaterial({color:0xddd5c5});
+  [[14.3,.09,.09,0,.62,-7],[14.3,.09,.09,0,.28,-7],
+   [.09,.09,12,-7,.62,-14],[.09,.09,12,-7,.28,-14],
+   [.09,.09,12,7,.62,-14],[.09,.09,12,7,.28,-14]].forEach(function(r){
+    var rail=new THREE.Mesh(new THREE.BoxGeometry(r[0],r[1],r[2]),rm);
+    rail.position.set(r[3],r[4],r[5]);OUT.add(rail);
+  });
+})();
+
+// ─────────────────────────────────────────────────────────────
+//  POND
+// ─────────────────────────────────────────────────────────────
+var pondM=new THREE.MeshStandardMaterial({color:0x3a78b8,roughness:0.05,metalness:0.3,transparent:true,opacity:.88});
+var pond=new THREE.Mesh(new THREE.CircleGeometry(4.5,20),pondM);
+pond.rotation.x=-Math.PI/2;pond.position.set(14,-.01,8);OUT.add(pond);
+for(var li=0;li<7;li++){
+  var la=Math.random()*Math.PI*2,lr=.5+Math.random()*3.2;
+  var lp=new THREE.Mesh(new THREE.CircleGeometry(.42+Math.random()*.2,8),new THREE.MeshLambertMaterial({color:0x228833}));
+  lp.rotation.x=-Math.PI/2;lp.position.set(14+Math.cos(la)*lr,.02,8+Math.sin(la)*lr);OUT.add(lp);
+}
+
+// ─────────────────────────────────────────────────────────────
+//  TREES
+// ─────────────────────────────────────────────────────────────
+var TREE_POS=[[-14,-8],[-12,11],[-16,-4],[-10,18],[12,-7],[14,10],[16,-16],[10,16],
+  [-20,-18],[20,-16],[-22,6],[22,8],[-8,-20],[8,-18],[-18,22],[18,20],
+  [-27,-7],[27,-10],[-24,16],[26,14],[1,20],[6,-24],[-6,-26],[-32,-4],[32,3]];
+var TREE_R=1.2;
+TREE_POS.forEach(function(p){
+  var sc=.75+Math.random()*.65;
+  var tk=new THREE.Mesh(new THREE.CylinderGeometry(.18*sc,.30*sc,2*sc,7),new THREE.MeshLambertMaterial({color:0x7a5230}));
+  tk.position.set(p[0],sc,p[1]);tk.castShadow=true;OUT.add(tk);
+  // Dusk-tinted foliage
+  var cols=[0x2d6a2d,0x3a7a3a,0x226622];
+  [[1.2*sc,2.0*sc,1.8*sc],[.92*sc,1.65*sc,3.0*sc],[.60*sc,1.3*sc,3.95*sc]].forEach(function(c,i){
+    var cone=new THREE.Mesh(new THREE.ConeGeometry(c[0],c[1],8),new THREE.MeshLambertMaterial({color:cols[i]}));
+    cone.position.set(p[0],c[2],p[1]);cone.castShadow=true;cone.receiveShadow=true;OUT.add(cone);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────
+//  ROCKS / GRASS TUFTS
+// ─────────────────────────────────────────────────────────────
+[[-10,4,1.2],[10,3,.9],[-5,12,1],[7,-8,.8],[-12,-5,1.1],[3,14,.7],[-7,7,.6],[12,-3,.85],[-3,-12,.95],[8,9,.7]].forEach(function(p){
+  var rk=new THREE.Mesh(new THREE.DodecahedronGeometry(.44*p[2],0),new THREE.MeshPhongMaterial({color:0x8a8070,flatShading:true}));
+  rk.position.set(p[0],.18*p[2],p[1]);rk.rotation.y=Math.random()*Math.PI;rk.scale.y=.5+Math.random()*.35;rk.castShadow=true;rk.receiveShadow=true;OUT.add(rk);
+});
+var gm1=new THREE.MeshLambertMaterial({color:0x4aaa3a}),gm2=new THREE.MeshLambertMaterial({color:0x3a9a2a});
+for(var gi=0;gi<120;gi++){
+  var ga=Math.random()*Math.PI*2,gd=4+Math.random()*38;
+  var gx2=Math.cos(ga)*gd,gz2=Math.sin(ga)*gd;
+  if(Math.abs(gx2)<8&&gz2>-22&&gz2<2)continue;
+  for(var bi=0;bi<4;bi++){
+    var blade=new THREE.Mesh(new THREE.ConeGeometry(.055,.36+Math.random()*.26,3),bi%2===0?gm1:gm2);
+    blade.position.set(gx2+(Math.random()-.5)*.38,0,gz2+(Math.random()-.5)*.38);
+    blade.rotation.z=(Math.random()-.5)*.45;OUT.add(blade);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+//  LANTERNS
+// ─────────────────────────────────────────────────────────────
+var lanternGlows=[];
+[[-1.2,-6],[1.2,-6],[-1.2,-2],[1.2,-2]].forEach(function(p){
+  var st=new THREE.Mesh(new THREE.CylinderGeometry(.055,.07,.85,6),new THREE.MeshLambertMaterial({color:0x888878}));
+  st.position.set(p[0],.425,p[1]);OUT.add(st);
+  var cap=new THREE.Mesh(new THREE.ConeGeometry(.15,.18,6),new THREE.MeshLambertMaterial({color:0x888878}));
+  cap.position.set(p[0],1.32,p[1]);OUT.add(cap);
+  var glsM=new THREE.MeshStandardMaterial({color:0xffeeaa,emissive:new THREE.Color(0xffcc44),emissiveIntensity:.9,transparent:true,opacity:.85});
+  var gls=new THREE.Mesh(new THREE.BoxGeometry(.22,.3,.22),glsM);gls.position.set(p[0],1.02,p[1]);OUT.add(gls);
+  var gl=new THREE.PointLight(0xffee88,.65,5);gl.position.set(p[0],1.1,p[1]);OUT.add(gl);
+  lanternGlows.push(gl);
+});
+
+// ─────────────────────────────────────────────────────────────
+//  BUTTERFLIES — Feature #4
+// ─────────────────────────────────────────────────────────────
+var butterflies=[];
+var bflyColors=[
+  {body:0xff66aa,wing:0xffaacc},{body:0xffaa00,wing:0xffdd44},
+  {body:0x66aaff,wing:0xaaddff},{body:0xaa66ff,wing:0xddaaff},
+  {body:0xff6644,wing:0xffaa88}
+];
+for(var bfi=0;bfi<5;bfi++){
+  var bfc=bflyColors[bfi];
+  var bfg=new THREE.Group();
+  // Body
+  var bfBody=new THREE.Mesh(
+    new THREE.CylinderGeometry(.03,.04,.18,5),
+    new THREE.MeshLambertMaterial({color:bfc.body})
+  );
+  bfBody.rotation.x=Math.PI/2;bfg.add(bfBody);
+  // Left wing pivot
+  var bfWLp=new THREE.Group();bfWLp.position.set(0,0,0);
+  var bfWL=new THREE.Mesh(
+    new THREE.PlaneGeometry(.22,.16),
+    new THREE.MeshLambertMaterial({color:bfc.wing,side:THREE.DoubleSide,transparent:true,opacity:.85})
+  );
+  bfWL.position.set(-.12,0,0);bfWLp.add(bfWL);bfg.add(bfWLp);
+  // Right wing pivot
+  var bfWRp=new THREE.Group();bfWRp.position.set(0,0,0);
+  var bfWR=new THREE.Mesh(
+    new THREE.PlaneGeometry(.22,.16),
+    new THREE.MeshLambertMaterial({color:bfc.wing,side:THREE.DoubleSide,transparent:true,opacity:.85})
+  );
+  bfWR.position.set(.12,0,0);bfWRp.add(bfWR);bfg.add(bfWRp);
+
+  // Place near the garden area
+  var bfAngle=bfi/5*Math.PI*2;
+  var bfR=4+bfi*1.5;
+  bfg.position.set(Math.cos(bfAngle)*bfR,2.2+bfi*.3,Math.sin(bfAngle)*bfR-10);
+
+  OUT.add(bfg);
+  butterflies.push({
+    g:bfg,wLp:bfWLp,wRp:bfWRp,
+    t:bfi*1.3,
+    cx:Math.cos(bfAngle)*bfR,cy:2.2+bfi*.3,cz:Math.sin(bfAngle)*bfR-10,
+    r:3+bfi,speed:.5+bfi*.1
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
+//  BIRDS (unchanged, animated in loop)
+// ─────────────────────────────────────────────────────────────
+var birds=[];
+for(var bii=0;bii<3;bii++){
+  var bg=new THREE.Group();
+  var bBody=new THREE.Mesh(new THREE.BoxGeometry(.28,.18,.38),new THREE.MeshLambertMaterial({color:bii===0?0x2255aa:bii===1?0xcc3322:0x228833}));
+  bg.add(bBody);
+  var bWL=new THREE.Group();bWL.position.set(-.14,.02,0);
+  var bWLm=new THREE.Mesh(new THREE.BoxGeometry(.32,.06,.22),new THREE.MeshLambertMaterial({color:bii===0?0x3366cc:bii===1?0xee4433:0x339944}));
+  bWLm.position.x=-.16;bWL.add(bWLm);bg.add(bWL);
+  var bWR=new THREE.Group();bWR.position.set(.14,.02,0);
+  var bWRm=new THREE.Mesh(new THREE.BoxGeometry(.32,.06,.22),new THREE.MeshLambertMaterial({color:bii===0?0x3366cc:bii===1?0xee4433:0x339944}));
+  bWRm.position.x=.16;bWR.add(bWRm);bg.add(bWR);
+  var beak=new THREE.Mesh(new THREE.BoxGeometry(.08,.06,.12),new THREE.MeshLambertMaterial({color:0xffcc44}));
+  beak.position.set(0,0,.22);bg.add(beak);
+  bg.position.set(-10+bii*8,12+bii*2,-15+bii*5);
+  bg._wL=bWL;bg._wR=bWR;bg._t=bii*2.1;bg._rx=Math.random()*Math.PI*2;bg._rz=Math.random()*Math.PI*2;
+  bg._cx=-10+bii*8;bg._cz=-15+bii*5;bg._cr=8+bii*4;
+  OUT.add(bg);birds.push(bg);
+}
+
+// Frogs
+var frogs=[];
+[[-4,3],[6,8],[-8,-4]].forEach(function(p,fi){
+  var fg=new THREE.Group();fg.position.set(p[0],.08,p[1]);
+  fg.add(new THREE.Mesh(new THREE.BoxGeometry(.4,.22,.44),new THREE.MeshLambertMaterial({color:0x228822})));
+  var fHead=new THREE.Mesh(new THREE.BoxGeometry(.36,.2,.28),new THREE.MeshLambertMaterial({color:0x2a9a2a}));
+  fHead.position.set(0,.12,.22);fg.add(fHead);
+  [[-.12,.22,.08],[.12,.22,.08]].forEach(function(ep){
+    var ey=new THREE.Mesh(new THREE.SphereGeometry(.07,5,4),new THREE.MeshLambertMaterial({color:0xffdd44}));
+    ey.position.set(ep[0],.14,.24);fg.add(ey);
+    var ep2=new THREE.Mesh(new THREE.SphereGeometry(.04,5,4),new THREE.MeshLambertMaterial({color:0x111111}));
+    ep2.position.set(ep[0],.14,.27);fg.add(ep2);
+  });
+  [[-.22,-.06,.1],[.22,-.06,.1],[-.2,-.06,-.12],[.2,-.06,-.12]].forEach(function(lp){
+    var leg=new THREE.Mesh(new THREE.BoxGeometry(.12,.1,.18),new THREE.MeshLambertMaterial({color:0x1a7a1a}));leg.position.set(lp[0],lp[1],lp[2]);fg.add(leg);
+  });
+  fg._baseX=p[0];fg._baseZ=p[1];fg._t=fi*1.8;fg._hopT=0;fg._nextHop=2+Math.random()*3;
+  OUT.add(fg);frogs.push(fg);
+});
+
+// ═════════════════════════════════════════════════════════════
+//  INDOOR SCENE
+// ═════════════════════════════════════════════════════════════
+var IN=new THREE.Scene();
+IN.background=new THREE.Color(0x1e140e);
+IN.fog=new THREE.Fog(0x1a1008,30,58);
+
+// ── Indoor camera — behind & above Felicity looking INTO the room ──────────
+// Room runs z: -8 (back) to +8 (front door). Spawn is z=2.5 (near front).
+// Camera sits BEHIND Felicity (higher Z = toward front door / camera side).
+// Y=5.2 keeps us inside room (ceiling=6.5). DZ=+4 = 4 units toward front.
+var inCam=new THREE.PerspectiveCamera(58,W/H,0.1,60);
+var IN_CAM_Y=5.2;
+var IN_CAM_DZ=4.5;  // positive = camera is between Felicity and front door
+inCam.position.set(0, IN_CAM_Y, 2.5 + IN_CAM_DZ);
+inCam.lookAt(0, 1.0, 2.5);
+
+// ── Indoor lighting: layered warm system ─────────────────────
+// 1. Global ambient — warm enough that characters are never fully dark
+IN.add(new THREE.AmbientLight(0xffc090,0.72));
+
+// 2. Ceiling pendant / chandelier warm point (feature #4 — sunset-indoor glow)
+var ceilLight=new THREE.PointLight(0xffcc88,2.4,28);
+ceilLight.position.set(0,5.2,0);
+ceilLight.castShadow=true;
+ceilLight.shadow.mapSize.set(512,512);
+IN.add(ceilLight);
+
+// 3. Fireplace flicker light
+var fireL=new THREE.PointLight(0xff7722,1.6,11);
+fireL.position.set(-4.5,1.8,-6.5);
+IN.add(fireL);
+
+// 4. Kitchen warm lamp
+var kitchenL=new THREE.PointLight(0xffeeaa,0.9,9);
+kitchenL.position.set(5.5,3.8,-4.0);
+IN.add(kitchenL);
+
+// 5. Dedicated CHARACTER fill light — follows Felicity every frame
+//    so she never looks dark regardless of room position
+var glbCharLight=new THREE.PointLight(0xffddb0,1.1,7);
+glbCharLight.position.set(0,3.6,3.5);
+IN.add(glbCharLight);
+
+// 6. Soft directional from above for shadow detail
+var inShadow=new THREE.DirectionalLight(0xffddaa,0.35);
+inShadow.position.set(3,10,5);inShadow.castShadow=true;
+inShadow.shadow.mapSize.set(512,512);
+inShadow.shadow.camera.left=-12;inShadow.shadow.camera.right=12;
+inShadow.shadow.camera.top=12;inShadow.shadow.camera.bottom=-12;
+inShadow.shadow.camera.far=28;inShadow.shadow.bias=-0.002;
+IN.add(inShadow);
+
+// ── Fire meshes (animated in game loop)
+var fireMeshes=[];
+
+// ── Helper: add a box mesh to the indoor scene
+function IB(w,h,d,col,x,y,z){
+  var m=new THREE.Mesh(
+    new THREE.BoxGeometry(w,h,d),
+    new THREE.MeshLambertMaterial({color:col})
+  );
+  m.position.set(x,y,z);
+  m.castShadow=true;m.receiveShadow=true;
+  IN.add(m);return m;
+}
+
+// ─────────────────────────────────────────────────────────────
+//  buildCozyInterior() — 3-room open-plan procedural interior
+//  Rooms:  Living Room (centre, z 0→4)
+//          Bedroom     (left,   x -4→-8)
+//          Kitchen     (right,  x  3→8)
+//
+//  SPAWN POINT: x=0, y=0, z=2.5  ← clear centre aisle, verified
+//  safe from all furniture collision boxes below.
+// ─────────────────────────────────────────────────────────────
+var FLOOR_Y=0.14;                                    // top surface of floor mesh
+var IN_SPAWN=new THREE.Vector3(0,FLOOR_Y,2.5);       // characters stand ON the floor
+
+function buildCozyInterior(){
+
+  // ── 1. FLOORS — warm honey-oak planks ─────────────────────
+  var floorMat=new THREE.MeshLambertMaterial({color:0xc8955a});
+  var floorMain=new THREE.Mesh(new THREE.BoxGeometry(18,0.14,16),floorMat);
+  floorMain.position.set(0,0.07,0);
+  floorMain.receiveShadow=true;
+  IN.add(floorMain);
+  // Plank lines — subtle darker grain
+  var plankMat=new THREE.MeshLambertMaterial({color:0xb07e45});
+  for(var pi=0;pi<13;pi++){
+    var plk=new THREE.Mesh(new THREE.PlaneGeometry(18,0.025),plankMat);
+    plk.rotation.x=-Math.PI/2; plk.position.set(0,0.15,-6.5+pi*1.1);
+    IN.add(plk);
+  }
+
+  // ── 2. WALLS — warm linen/cream with soft pink tint ────────
+  var wallMat    =new THREE.MeshLambertMaterial({color:0xf5ede0}); // warm white
+  var wallAccent =new THREE.MeshLambertMaterial({color:0xead5c0}); // blush accent
+
+  // Back wall
+  var wBack=new THREE.Mesh(new THREE.BoxGeometry(18,6.5,0.22),wallMat);
+  wBack.position.set(0,3.25,-8.1); wBack.receiveShadow=true; IN.add(wBack);
+  // Front wall with doorway
+  var wFL=new THREE.Mesh(new THREE.BoxGeometry(6.5,6.5,0.22),wallMat);
+  wFL.position.set(-5.75,3.25,7.9); wFL.receiveShadow=true; IN.add(wFL);
+  var wFR=new THREE.Mesh(new THREE.BoxGeometry(6.5,6.5,0.22),wallMat);
+  wFR.position.set(5.75,3.25,7.9); wFR.receiveShadow=true; IN.add(wFR);
+  var wFTop=new THREE.Mesh(new THREE.BoxGeometry(5,1.8,0.22),wallMat);
+  wFTop.position.set(0,5.85,7.9); wFTop.receiveShadow=true; IN.add(wFTop);
+  // Side walls
+  var wLeft=new THREE.Mesh(new THREE.BoxGeometry(0.22,6.5,16),wallAccent);
+  wLeft.position.set(-9.1,3.25,0); wLeft.receiveShadow=true; IN.add(wLeft);
+  var wRight=new THREE.Mesh(new THREE.BoxGeometry(0.22,6.5,16),wallMat);
+  wRight.position.set(9.1,3.25,0); wRight.receiveShadow=true; IN.add(wRight);
+  // Dividers (half-height)
+  var divL=new THREE.Mesh(new THREE.BoxGeometry(0.22,3.2,8),wallAccent);
+  divL.position.set(-3.0,1.75,-4.0); divL.receiveShadow=true; IN.add(divL);
+  var divR=new THREE.Mesh(new THREE.BoxGeometry(0.22,3.2,6),wallMat);
+  divR.position.set(3.0,1.75,-5.0);  divR.receiveShadow=true; IN.add(divR);
+
+  // ── 3. CEILING — invisible from above ──────────────────────
+  var ceilMat=new THREE.MeshLambertMaterial({color:0xf0e8d8,transparent:true,opacity:0.0,depthWrite:false});
+  var ceil=new THREE.Mesh(new THREE.BoxGeometry(18.4,0.2,16.4),ceilMat);
+  ceil.position.set(0,6.5,0); ceil.castShadow=false; ceil.receiveShadow=false; IN.add(ceil);
+  // Beams also invisible
+  var beamMat=new THREE.MeshLambertMaterial({color:0x7a5230,transparent:true,opacity:0.0,depthWrite:false});
+  [-5,0,5].forEach(function(bz){
+    var bm=new THREE.Mesh(new THREE.BoxGeometry(18,0.28,0.22),beamMat);
+    bm.position.set(0,6.2,bz); IN.add(bm);
+  });
+
+  // ── 4. WAINSCOTING & SKIRTING ──────────────────────────────
+  var skirtMat=new THREE.MeshLambertMaterial({color:0xd4b896});
+  IB(18.1,0.55,16.1,0xd4b896, 0,0.41,0);  // baseboard
+  var skirtTop=new THREE.Mesh(new THREE.BoxGeometry(18.15,0.06,16.15),skirtMat);
+  skirtTop.position.set(0,0.69,0); IN.add(skirtTop);
+
+  // Pendant light visual
+  var bulbMat=new THREE.MeshStandardMaterial({color:0xffee88,emissive:new THREE.Color(0xffcc44),emissiveIntensity:2.5});
+  var bulb=new THREE.Mesh(new THREE.SphereGeometry(0.18,8,6),bulbMat);
+  bulb.position.set(0,5.4,0); IN.add(bulb);
+  var shadeMat2=new THREE.MeshLambertMaterial({color:0xe8d5b0});
+  var shade2=new THREE.Mesh(new THREE.CylinderGeometry(0.55,0.38,0.45,10,1,true),shadeMat2);
+  shade2.position.set(0,5.55,0); IN.add(shade2);
+  var cord2=new THREE.Mesh(new THREE.CylinderGeometry(0.022,0.022,0.9,6),new THREE.MeshLambertMaterial({color:0x5a3a18}));
+  cord2.position.set(0,6.1,0); IN.add(cord2);
+
+  // ════════════════════════════════════════════════════════
+  //  LIVING ROOM  (centre x:-3→3, z:-1→7)
+  // ════════════════════════════════════════════════════════
+
+  // Rug — layered with border pattern
+  IB(6.0,0.04,4.4,0x8b3030,  0,0.16,1.2);  // outer border
+  IB(5.4,0.05,3.8,0xf0e8d8,  0,0.17,1.2);  // cream band
+  IB(4.8,0.06,3.2,0x7a2828,  0,0.18,1.2);  // main deep red
+  IB(4.2,0.07,2.6,0xc04040,  0,0.185,1.2); // inner
+  IB(3.2,0.08,2.0,0xd4695a,  0,0.19,1.2);  // centre blush
+
+  // Sofa — warm terracotta/caramel
+  var sofaSeat=0xc47850, sofaBack2=0xa05e38, sofaArm2=0x8a4e2a;
+  IB(4.8,0.60,1.55,sofaSeat,  0,0.44,3.7);   // seat
+  IB(4.8,0.92,0.28,sofaBack2, 0,1.02,4.40);  // back
+  IB(0.32,0.88,1.55,sofaArm2,-2.22,0.88,3.7);// left arm
+  IB(0.32,0.88,1.55,sofaArm2, 2.22,0.88,3.7);// right arm
+  // Cushions
+  var cushCols=[0xf0d5c0,0xe8c8b0,0xd4b098,0xc8a888];
+  [-1.6,-0.52,0.56,1.64].forEach(function(cx,i){
+    IB(0.9,0.22,1.3,cushCols[i],cx,0.87,3.7);
+  });
+  // Throw pillows
+  IB(0.6,0.45,0.6,0xd4907a,-1.9,1.08,3.65);
+  IB(0.5,0.40,0.5,0xe8c8a8, 1.75,1.08,3.65);
+  IB(0.45,0.38,0.45,0xf0e0d0,0.1,1.08,3.65);
+
+  // Coffee table — dark walnut with gold legs
+  IB(2.5,0.1,1.2,0x5a3820, 0,0.84,1.6);     // top
+  IB(2.38,0.06,1.08,0x6a4828,0,0.90,1.6);   // inset top surface
+  [[-0.95,0.45],[-0.95,-0.45],[0.95,0.45],[0.95,-0.45]].forEach(function(l){
+    IB(0.08,0.7,0.08,0xb8962a, l[0],0.45,1.6+l[1]); // gold legs
+  });
+  // Objects on table
+  IB(0.48,0.075,0.34,0x3a6090, 0.4,0.94,1.55); // book
+  IB(0.28,0.06,0.24,0x7a9060,-0.45,0.95,1.6);   // plant saucer
+  var smPlant=new THREE.Mesh(new THREE.SphereGeometry(0.22,7,5),new THREE.MeshLambertMaterial({color:0x3a7a3a}));
+  smPlant.position.set(-0.45,1.12,1.6); IN.add(smPlant);
+  IB(0.18,0.26,0.18,0xe8c0a0,0.82,0.97,1.6);    // candle
+
+  // Armchair
+  IB(1.42,0.52,1.3, 0xb07050,-2.45,0.40,0.4);
+  IB(1.42,0.82,0.26,0x8a5030,-2.45,1.0,1.0);
+  IB(0.28,0.78,1.3, 0x8a5030,-3.05,0.78,0.4);
+  IB(0.28,0.78,1.3, 0x8a5030,-1.85,0.78,0.4);
+  IB(1.1,0.22,1.0,  0xc0886a,-2.45,0.80,0.4);
+
+  // Side table + lamp
+  IB(0.85,0.52,0.85,0x8a6038,-1.55,0.40,4.6);
+  IB(0.85,0.06,0.85,0x9a7048,-1.55,0.67,4.6);
+  var lstem=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.65,7),new THREE.MeshLambertMaterial({color:0xc8a030}));
+  lstem.position.set(-1.55,1.04,4.6); IN.add(lstem);
+  var lshadeMat=new THREE.MeshStandardMaterial({color:0xf5e8d0,emissive:new THREE.Color(0xffcc66),emissiveIntensity:0.7,transparent:true,opacity:0.9});
+  var lshade=new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.28,0.44,10,1,true),lshadeMat);
+  lshade.position.set(-1.55,1.5,4.6); IN.add(lshade);
+  var lampGlow2=new THREE.PointLight(0xffeeaa,1.0,7); lampGlow2.position.set(-1.55,1.3,4.6); IN.add(lampGlow2);
+
+  // Large floor plant in corner
+  IB(0.55,0.65,0.55,0x7a5040, 2.4,0.47,4.85);  // pot
+  IB(0.48,0.08,0.48,0x5a3828, 2.4,0.80,4.85);   // soil
+  var palM=new THREE.MeshLambertMaterial({color:0x2a7a30});
+  [[0,1.05,0],[0.38,1.1,0.2],[-0.35,1.08,0.18],[0.22,1.35,-0.2],[-0.28,1.3,-.15],[0,1.58,0.08]].forEach(function(lf){
+    var leaf=new THREE.Mesh(new THREE.SphereGeometry(0.32,6,5),palM);
+    leaf.scale.set(1,0.35,1.4); leaf.position.set(2.4+lf[0],lf[1],4.85+lf[2]); IN.add(leaf);
+  });
+
+  // Wall art above sofa
+  IB(0.06,1.8,3.2, 0xd4b896,   -9.08,4.2,0.5); // frame on left wall
+  IB(0.04,1.5,2.85,0x6a7890,   -9.05,4.2,0.5); // painting
+  IB(0.04,0.9,1.6, 0x8a9aaa,   -9.04,4.2,0.5); // lighter inner
+
+  // ════════════════════════════════════════════════════════
+  //  BEDROOM  (left x:-9→-3, z:-8→0)
+  // ════════════════════════════════════════════════════════
+
+  // Bed platform
+  IB(3.4,0.22,5.4, 0x7a5030,-6.2,0.25,-3.0);   // platform warm oak
+  IB(3.4,1.15,0.2, 0x5a3018,-6.2,0.85,-5.6);   // headboard
+  IB(3.4,0.52,0.18,0x5a3018,-6.2,0.58,-0.4);   // footboard
+  IB(3.18,0.28,5.0,0xf0e8e0,-6.2,0.50,-3.0);   // mattress white
+  IB(3.0,0.20,3.5, 0xf5c8c0,-6.2,0.66,-2.1);   // blush duvet
+  IB(2.85,0.14,3.2,0xf8d8d0,-6.2,0.76,-2.0);   // duvet lighter folds
+  // Pillows (warm white)
+  IB(1.12,0.22,0.9,0xfff8f4,-6.7,0.75,-5.1);
+  IB(1.12,0.22,0.9,0xfff8f4,-5.7,0.75,-5.1);
+  // Tiny accent pillow
+  IB(0.7,0.24,0.7, 0xf0c8b8,-6.2,0.85,-4.6);
+
+  // Nightstand
+  IB(0.8,0.5,0.8, 0x7a5230,-4.5,0.40,-4.8);
+  IB(0.78,0.06,0.78,0x8a6240,-4.5,0.65,-4.8);
+  // Nightstand lamp
+  var nlstem=new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.025,0.28,6),new THREE.MeshLambertMaterial({color:0xc8a030}));
+  nlstem.position.set(-4.5,0.80,-4.8); IN.add(nlstem);
+  var nlshd=new THREE.Mesh(new THREE.CylinderGeometry(0.22,0.16,0.2,8,1,true),lshadeMat.clone());
+  nlshd.position.set(-4.5,0.98,-4.8); IN.add(nlshd);
+  var bedGlow2=new THREE.PointLight(0xffcc88,0.9,5); bedGlow2.position.set(-4.5,1.2,-4.8); IN.add(bedGlow2);
+
+  // Wardrobe — tall double
+  IB(2.2,4.0,0.72,0x7a5030,-7.7,2.0,-6.9);
+  IB(2.08,3.75,0.08,0x8a6040,-7.7,2.0,-6.55);
+  IB(0.06,0.06,0.05,0xd4a820,-7.15,2.0,-6.5); // handle
+  IB(0.06,0.06,0.05,0xd4a820,-8.25,2.0,-6.5);
+
+  // Bedroom rug — soft lavender
+  IB(3.8,0.04,5.6,0x9080a8,-6.2,0.17,-3.0);
+  IB(3.4,0.05,5.1,0xa899c8,-6.2,0.18,-3.0);
+
+  // Bedroom window (warm sunset glow from back wall)
+  var winGlM=new THREE.MeshStandardMaterial({color:0xffc878,emissive:new THREE.Color(0xff9922),emissiveIntensity:0.6,transparent:true,opacity:0.72});
+  IB(0.14,2.2,2.0,0x8a7060,-6.2,2.6,-8.0);
+  var wGl=new THREE.Mesh(new THREE.BoxGeometry(0.08,1.8,1.6),winGlM);
+  wGl.position.set(-6.2,2.6,-8.0); IN.add(wGl);
+  // Window light
+  var winLight=new THREE.PointLight(0xff9944,0.8,8); winLight.position.set(-6.2,2.8,-7.5); IN.add(winLight);
+
+  // ════════════════════════════════════════════════════════
+  //  KITCHEN  (right x:3→9, z:-8→0)
+  // ════════════════════════════════════════════════════════
+
+  // Counter — sage green cabinets, cream tops
+  IB(5.4,0.14,1.0,0xe8e0d4,6.0,1.06,-6.5);  // back counter top
+  IB(1.0,0.14,4.6,0xe8e0d4,8.5,1.06,-4.2);  // side counter top
+  IB(5.4,1.0,0.92,0x6a7a6a,6.0,0.56,-6.5);  // sage cabinet back
+  IB(0.92,1.0,4.6,0x6a7a6a,8.56,0.56,-4.2); // sage cabinet side
+  // Backsplash — white subway tile feel
+  IB(5.4,1.3,0.07,0xf0eee8,6.0,1.76,-7.04);
+  IB(0.07,1.3,4.6,0xf0eee8,9.08,1.76,-4.2);
+
+  // Cabinet handles
+  [4.0,5.0,6.0,7.2,8.1].forEach(function(cxv){
+    IB(0.18,0.06,0.05,0xc8b06a,cxv,0.7,-6.52);
+  });
+
+  // Sink
+  IB(1.05,0.06,0.72,0xb8c8cc,5.5,1.1,-6.5);
+  IB(0.92,0.2,0.60, 0xa0b0b4,5.5,0.96,-6.5);
+  IB(0.06,0.42,0.06,0x909090,5.5,1.3,-6.92);
+  IB(0.06,0.06,0.28,0x909090,5.5,1.7,-6.78);
+
+  // Overhead cabinets — sage
+  IB(5.4,1.4,0.68,0x5a6a5a,6.0,4.6,-6.7);
+  IB(0.68,1.4,4.6,0x5a6a5a,8.7,4.6,-4.2);
+
+  // Stove/oven — matte black
+  IB(1.45,1.0,0.92,0x2a2a2a,7.5,0.56,-6.5);
+  IB(1.33,0.08,0.80,0x1a1a1a,7.5,1.08,-6.5);
+  [-0.28,0.28].forEach(function(bx){
+    [-0.22,0.22].forEach(function(bz){
+      var burner=new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.13,0.04,10),new THREE.MeshLambertMaterial({color:0x111111}));
+      burner.position.set(7.5+bx,1.13,-6.5+bz); IN.add(burner);
+    });
+  });
+
+  // Dining table — round feel, warm wood
+  IB(2.3,0.1,1.65,0x9a7040,5.8,0.9,-2.8);
+  IB(2.18,0.06,1.53,0xb08050,5.8,0.96,-2.8);
+  [[-0.8,0.5],[-0.8,-0.5],[0.8,0.5],[0.8,-0.5]].forEach(function(l){
+    IB(0.08,0.8,0.08,0xb8962a,5.8+l[0],0.5,-2.8+l[1]); // gold legs
+  });
+  // Dining chairs — sage cushion
+  [[4.5,-2.8,0],[7.1,-2.8,Math.PI],[5.8,-1.85,Math.PI/2],[5.8,-3.75,-Math.PI/2]].forEach(function(c){
+    IB(0.92,0.48,0.92,0x8a7060,c[0],0.34,c[1]);   // seat
+    IB(0.92,0.70,0.2,0x6a5040,c[0]+Math.sin(c[2])*0.44, 0.94, c[1]+Math.cos(c[2])*0.44); // back
+    IB(0.82,0.18,0.80,0xa8b898,c[0],0.80,c[1]);    // sage cushion
+  });
+
+  // Kitchen window — sunset glow
+  IB(0.14,1.8,1.8,0x8a7060,9.0,2.4,-2.6);
+  var wGR=new THREE.Mesh(new THREE.BoxGeometry(0.08,1.4,1.4),winGlM.clone());
+  wGR.position.set(9.0,2.4,-2.6); IN.add(wGR);
+
+  // ── FIREPLACE (bedroom corner) ─────────────────────────────
+  IB(3.2,5.0,0.36,0x8a7868,-6.0,2.5,-8.0);   // surround warm stone
+  IB(2.0,2.1,0.28,0x180e08,-6.0,1.1,-7.98);  // opening
+  IB(3.6,0.22,1.1, 0x9a7848,-6.0,3.18,-7.72);// mantel
+  IB(1.4,0.14,0.18,0x6a3a18,-6.0,0.22,-7.94);// log 1
+  IB(1.2,0.12,0.16,0x5a2c0e,-6.0,0.34,-7.94);// log 2
+  // Fire
+  [[0.45,0.9,0xff5500,0xff2200,1.6],[0.28,0.65,0xffaa00,0xff7700,2.1],[0.16,0.45,0xffee44,0xffcc00,2.6]].forEach(function(f,i){
+    var fm=new THREE.Mesh(
+      new THREE.ConeGeometry(f[0],f[1],6),
+      new THREE.MeshStandardMaterial({color:f[2],emissive:new THREE.Color(f[3]),emissiveIntensity:f[4],transparent:true,opacity:0.9-i*0.08})
+    );
+    fm.position.set(-6.0,0.70,-7.92); IN.add(fm); fireMeshes.push(fm);
+  });
+  // Mantel objects
+  [-6.9,-6.0,-5.1].forEach(function(cx){
+    IB(0.09,0.38,0.09,0xf5f0e8,cx,3.42,-7.72);
+    var cfl=new THREE.Mesh(new THREE.SphereGeometry(0.06,5,4),new THREE.MeshStandardMaterial({color:0xffee44,emissive:new THREE.Color(0xffcc00),emissiveIntensity:2.2}));
+    cfl.position.set(cx,3.79,-7.72); IN.add(cfl);
+  });
+  // Mantel art
+  IB(0.06,1.1,0.78,0x7a6050,-6.0,3.88,-7.78);
+  IB(0.04,0.88,0.60,0x4a6078,-6.0,3.86,-7.77);
+
+  // Update fire light position
+  fireL.position.set(-6.0,1.8,-7.5);
+
+}// end buildCozyInterior()
+
+// ─────────────────────────────────────────────────────────────
+//  INDOOR COLLISION — matches the new room layout
+//  Spawn (0,0,2.5) is explicitly verified clear below.
+// ─────────────────────────────────────────────────────────────
+function blockedIn(nx,nz){
+  // Outer walls
+  if(nx<-8.9||nx>8.9||nz>7.7||nz<-7.9)return true;
+  // Left divider wall (x≈−3, z<−0.5): passthrough gap at z>−0.5
+  if(nx>-3.22&&nx<-2.78&&nz<-0.5)return true;
+  // Right divider wall (x≈3, z<−2): passthrough gap at z>−2
+  if(nx>2.78&&nx<3.22&&nz<-2.0)return true;
+  // Sofa block
+  if(nx>-2.5&&nx<2.5&&nz>3.1&&nz<4.6)return true;
+  // Bed block
+  if(nx<-4.5&&nx>-8.0&&nz>-5.8&&nz<-0.2)return true;
+  // Wardrobe
+  if(nx<-6.8&&nz<-6.2)return true;
+  // Fireplace
+  if(nx<-4.5&&nz<-7.5)return true;
+  // Kitchen counters (back)
+  if(nx>3.5&&nz<-5.8)return true;
+  // Kitchen counter (right wall)
+  if(nx>7.9&&nz<-1.8)return true;
+  // Dining table
+  if(nx>4.5&&nx<7.2&&nz>-3.5&&nz<-2.1)return true;
+  // Bookshelf
+  if(nx>8.3&&nz>0.8&&nz<4.2)return true;
+  // Armchair
+  if(nx<-1.6&&nx>-3.2&&nz>-0.2&&nz<1.4)return true;
+  return false;
+}
+
+// Build the interior immediately
+buildCozyInterior();
+
+// ── interiorWarmLight alias for game loop flicker ──────────
+var interiorWarmLight=ceilLight;
+
+// ═════════════════════════════════════════════════════════════
+//  CHARACTER BUILDER
+// ═════════════════════════════════════════════════════════════
+function buildChar(scene,isFel){
+  var G=new THREE.Group();
+  function b(w,h,d,c){return new THREE.Mesh(new THREE.BoxGeometry(w,h,d),new THREE.MeshLambertMaterial({color:c}));}
+  function a(m,x,y,z){m.position.set(x,y,z);m.castShadow=true;G.add(m);return m;}
+
+  // ── TORSO / BODY (added to G — never animated, correct) ────
+  if(isFel){
+    // Skirt layers
+    a(b(.82,.14,.60,0xff4499),0,.76,0);
+    a(b(.78,.20,.58,0xff66aa),0,.92,0);
+    a(b(.72,.12,.54,0xff88cc),0,1.06,0);
+    // Body
+    a(b(.66,.68,.52,0xffeef6),0,1.38,0);
+    // Shoulder panels
+    a(b(.18,.72,.52,0xff6eb4),-.32,1.42,0);
+    a(b(.18,.72,.52,0xff6eb4),.32,1.42,0);
+  } else {
+    // Belt
+    a(b(.78,.12,.48,0x1a1208),0,1.08,0);
+    // Torso/shirt
+    a(b(.80,.74,.56,0x1e3a6e),0,1.47,0);
+    // Shoulders
+    a(b(.18,.18,.56,0x223f76),-.46,1.78,0);
+    a(b(.18,.18,.56,0x223f76),.46,1.78,0);
+  }
+
+  // ── ARMS (pivot groups — animated) ────────────────────────
+  var lArm=new THREE.Group();lArm.position.set(isFel?-.50:-.58,isFel?1.72:1.78,0);
+  var rArm=new THREE.Group();rArm.position.set(isFel?.50:.58,isFel?1.72:1.78,0);
+  var aCols=isFel?[0xff6eb4,0xff6eb4,0xff8cc4,0xffd6b0,0xffc8a0,0xffd6b0]
+                 :[0x1e3a6e,0x1e3a6e,0x223f76,0x2a4e8e,0xffc9a0,0xffc9a0];
+  [0,-.22,-.44,-.66,-.86,-1.06].forEach(function(y,i){
+    var aw=i<3?(isFel?.24:.28):(isFel?.20:.24);
+    [lArm,rArm].forEach(function(arm){
+      var am=new THREE.Mesh(new THREE.BoxGeometry(aw,.22,aw),new THREE.MeshLambertMaterial({color:aCols[i]}));
+      am.position.y=y; arm.add(am);
+    });
+  });
+  G.add(lArm); G.add(rArm);
+
+  // ── LEGS (pivot groups — animated) ────────────────────────
+  // Pivot origin is at hip height (y=0.72 in G space).
+  // All leg/shoe segments are children of the pivot group with
+  // LOCAL y offsets so they swing correctly. NO static copies in G.
+  var lLeg=new THREE.Group(); lLeg.position.set(-.18,.72,0);
+  var rLeg=new THREE.Group(); rLeg.position.set( .18,.72,0);
+
+  if(isFel){
+    // Upper leg (thigh) — dark indigo
+    [lLeg,rLeg].forEach(function(lg){
+      var thigh=new THREE.Mesh(new THREE.BoxGeometry(.26,.30,.26),new THREE.MeshLambertMaterial({color:0x2a1a3a}));
+      thigh.position.set(0,-.14,0); lg.add(thigh);
+      // Lower leg — darker indigo
+      var shin=new THREE.Mesh(new THREE.BoxGeometry(.26,.28,.26),new THREE.MeshLambertMaterial({color:0x1e1230}));
+      shin.position.set(0,-.41,0); lg.add(shin);
+      // Shoe — white
+      var shoe=new THREE.Mesh(new THREE.BoxGeometry(.30,.15,.38),new THREE.MeshLambertMaterial({color:0xf5f5f5}));
+      shoe.position.set(0,-.62,.02); lg.add(shoe);
+      // Shoe accent (pink trim)
+      var trim=new THREE.Mesh(new THREE.BoxGeometry(.30,.05,.40),new THREE.MeshLambertMaterial({color:0xff88bb}));
+      trim.position.set(0,-.56,.02); lg.add(trim);
+    });
+  } else {
+    // Chris legs
+    [lLeg,rLeg].forEach(function(lg,li){
+      // Upper leg — dark jeans
+      var thigh=new THREE.Mesh(new THREE.BoxGeometry(.28,.32,.28),new THREE.MeshLambertMaterial({color:0x1a3a6b}));
+      thigh.position.set(li===0?-.02:.02,-.16,.03); lg.add(thigh);
+      // Lower leg
+      var shin=new THREE.Mesh(new THREE.BoxGeometry(.28,.28,.28),new THREE.MeshLambertMaterial({color:0x162f58}));
+      shin.position.set(0,-.44,.01); lg.add(shin);
+      // Boot — dark brown
+      var boot=new THREE.Mesh(new THREE.BoxGeometry(.32,.16,.40),new THREE.MeshLambertMaterial({color:0x2a1f14}));
+      boot.position.set(0,-.64,.02); lg.add(boot);
+    });
+  }
+  G.add(lLeg); G.add(rLeg);
+
+  // ── HEAD & FACE ────────────────────────────────────────────
+  a(b(.25,.22,.23,0xffd6b0),0,1.88,0); // neck
+  a(b(isFel?.72:.74,isFel?.72:.75,isFel?.66:.68,0xffd6b0),0,2.4,0); // head
+
+  if(isFel){
+    // Eyes
+    a(b(.22,.16,.06,0xffffff),-.20,2.56,.30);a(b(.10,.16,.06,0x6633ff),-.16,2.56,.31);
+    a(b(.08,.10,.06,0x110033),-.18,2.54,.32);a(b(.06,.06,.06,0xffffff),-.12,2.60,.32);
+    a(b(.22,.16,.06,0xffffff),.20,2.56,.30);a(b(.10,.16,.06,0x6633ff),.16,2.56,.31);
+    a(b(.08,.10,.06,0x110033),.18,2.54,.32);a(b(.06,.06,.06,0xffffff),.24,2.60,.32);
+    // Blush
+    a(b(.18,.12,.06,0xffb5c8),-.26,2.32,.29);a(b(.18,.12,.06,0xffb5c8),.26,2.32,.29);
+    // Mouth
+    a(b(.08,.08,.06,0xff4d7e),-.10,2.20,.30);a(b(.08,.08,.06,0xff4d7e),.10,2.20,.30);
+    a(b(.12,.06,.06,0xff2255),0,2.16,.31);
+    // Hair
+    a(b(.76,.18,.68,0x3d1c0a),0,2.96,0);
+    a(b(.60,.82,.16,0x3d1c0a),0,2.28,-.30);
+    a(b(.68,.14,.10,0x3d1c0a),0,2.91,.30);
+    a(b(.18,.56,.60,0x3d1c0a),-.34,2.58,-.04);
+    a(b(.18,.56,.60,0x3d1c0a),.34,2.58,-.04);
+    a(b(.18,.10,.10,0xff2277),-.26,3.04,.04);
+    a(b(.10,.18,.10,0xff2277),-.26,3.04,.04);
+  } else {
+    // Eyes
+    a(b(.22,.18,.06,0xffffff),-.20,2.48,.32);a(b(.12,.18,.06,0x2277ff),-.18,2.48,.33);
+    a(b(.08,.12,.06,0x0a1a44),-.20,2.46,.34);a(b(.06,.06,.06,0xffffff),-.13,2.52,.34);
+    a(b(.22,.18,.06,0xffffff),.20,2.48,.32);a(b(.12,.18,.06,0x2277ff),.18,2.48,.33);
+    a(b(.08,.12,.06,0x0a1a44),.20,2.46,.34);a(b(.06,.06,.06,0xffffff),.27,2.52,.34);
+    // Eyebrows
+    a(b(.26,.08,.06,0x1a1008),-.20,2.62,.30);a(b(.26,.08,.06,0x1a1008),.20,2.62,.30);
+    // Ears
+    a(b(.12,.22,.14,0xffd6b0),-.40,2.36,0);a(b(.12,.22,.14,0xffd6b0),.40,2.36,0);
+    // Hair
+    a(b(.78,.16,.70,0x0a0a0a),0,2.72,0);a(b(.66,.28,.16,0x0a0a0a),0,2.44,-.30);
+    a(b(.14,.38,.64,0x0a0a0a),-.40,2.50,0);a(b(.14,.38,.64,0x0a0a0a),.40,2.50,0);
+    a(b(.14,.26,.10,0x0a0a0a),-.26,2.78,.24);
+    a(b(.14,.30,.10,0x0a0a0a),0,2.82,.24);
+    a(b(.14,.26,.10,0x0a0a0a),.26,2.78,.24);
+  }
+
+  G._lArm=lArm; G._rArm=rArm; G._lLeg=lLeg; G._rLeg=rLeg;
+  scene.add(G);
+  return G;
+}
+
+// Outdoor characters
+var outFel=buildChar(OUT,true);outFel.position.set(0,0,5);
+var outChris=buildChar(OUT,false);outChris.position.set(2,0,6.5);
+
+// Indoor characters — spawned at IN_SPAWN (guaranteed clear of all furniture)
+var inFel=buildChar(IN,true);
+inFel.position.copy(IN_SPAWN);
+inFel.rotation.y=Math.PI;
+
+var inChris=buildChar(IN,false);
+inChris.position.set(IN_SPAWN.x+1.0,IN_SPAWN.y,IN_SPAWN.z);
+inChris.rotation.y=Math.PI;
+
+// ─────────────────────────────────────────────────────────────
+//  CAT COMPANION — follows the group at a slight distance
+//  Built from a few boxes/spheres: body, head, ears, tail
+// ─────────────────────────────────────────────────────────────
+function buildCat(scene){
+  var G=new THREE.Group();
+  var bodyMat =new THREE.MeshLambertMaterial({color:0xb07848}); // warm tabby orange
+  var darkMat =new THREE.MeshLambertMaterial({color:0x7a4a28});
+  var whiteMat=new THREE.MeshLambertMaterial({color:0xfff4e8});
+  var eyeMat  =new THREE.MeshLambertMaterial({color:0x22aa44});
+  var noseMat =new THREE.MeshLambertMaterial({color:0xffaaaa});
+
+  function b(w,h,d,mat,x,y,z){
+    var m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);
+    m.position.set(x,y,z);m.castShadow=true;G.add(m);return m;
+  }
+  function s(r,mat,x,y,z){
+    var m=new THREE.Mesh(new THREE.SphereGeometry(r,8,6),mat);
+    m.position.set(x,y,z);m.castShadow=true;G.add(m);return m;
+  }
+
+  // Body
+  b(0.52,0.38,0.7,bodyMat, 0,0.28,0);
+  // Belly patch
+  b(0.28,0.24,0.56,whiteMat,0,0.24,0.04);
+  // Stripe markings
+  b(0.54,0.06,0.12,darkMat,0,0.42,-0.22);
+  b(0.54,0.06,0.12,darkMat,0,0.42,-0.02);
+
+  // Neck
+  b(0.24,0.22,0.22,bodyMat,0,0.52,0.26);
+
+  // Head (sphere)
+  var head=s(0.24,bodyMat,0,0.78,0.24);
+  // Forehead stripe
+  b(0.1,0.06,0.08,darkMat,0,0.88,0.42);
+  // Eyes
+  s(0.055,eyeMat,  -0.1,0.82,0.42);
+  s(0.055,eyeMat,   0.1,0.82,0.42);
+  s(0.025,new THREE.MeshLambertMaterial({color:0x000000}),-0.1,0.82,0.46);
+  s(0.025,new THREE.MeshLambertMaterial({color:0x000000}), 0.1,0.82,0.46);
+  // Eye shine
+  s(0.014,whiteMat,-0.085,0.835,0.47);
+  s(0.014,whiteMat, 0.115,0.835,0.47);
+  // Nose
+  b(0.07,0.05,0.04,noseMat,0,0.72,0.45);
+  // Mouth lines
+  b(0.04,0.04,0.04,darkMat,-0.06,0.67,0.44);
+  b(0.04,0.04,0.04,darkMat, 0.06,0.67,0.44);
+  // Whisker lines (flat planes)
+  b(0.22,0.014,0.02,whiteMat,-0.22,0.73,0.42);
+  b(0.22,0.014,0.02,whiteMat, 0.22,0.73,0.42);
+  b(0.18,0.014,0.02,whiteMat,-0.2, 0.69,0.43);
+  b(0.18,0.014,0.02,whiteMat, 0.2, 0.69,0.43);
+
+  // Ears (pointy boxes)
+  var earL=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.16,0.06),bodyMat);
+  earL.position.set(-0.14,0.98,0.22);earL.rotation.z= 0.28;G.add(earL);
+  var earR=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.16,0.06),bodyMat);
+  earR.position.set( 0.14,0.98,0.22);earR.rotation.z=-0.28;G.add(earR);
+  // Inner ear
+  var eiL=new THREE.Mesh(new THREE.BoxGeometry(0.07,0.1,0.04),noseMat);
+  eiL.position.set(-0.14,0.96,0.24);eiL.rotation.z= 0.28;G.add(eiL);
+  var eiR=new THREE.Mesh(new THREE.BoxGeometry(0.07,0.1,0.04),noseMat);
+  eiR.position.set( 0.14,0.96,0.24);eiR.rotation.z=-0.28;G.add(eiR);
+
+  // Legs (4 small boxes)
+  [[-0.14,0.1, 0.2],[ 0.14,0.1, 0.2],[-0.14,0.1,-0.2],[ 0.14,0.1,-0.2]].forEach(function(l){
+    b(0.14,0.24,0.16,bodyMat,l[0],l[1],l[2]);
+    b(0.12,0.06,0.18,whiteMat,l[0],0,l[2]+0.02);
+  });
+
+  // Tail — group so we can wag it
+  var tailGroup=new THREE.Group();
+  tailGroup.position.set(0,0.32,-0.34);
+  // Tail segment 1
+  var t1=new THREE.Mesh(new THREE.BoxGeometry(0.1,0.14,0.32),bodyMat);
+  t1.position.set(0,0.08,-0.14);tailGroup.add(t1);
+  // Tail segment 2 (tip, curling up)
+  var t2=new THREE.Mesh(new THREE.BoxGeometry(0.08,0.28,0.1),bodyMat);
+  t2.position.set(0,0.28,-0.28);tailGroup.add(t2);
+  // Tail tip white
+  var t3=new THREE.Mesh(new THREE.SphereGeometry(0.08,6,5),whiteMat);
+  t3.position.set(0,0.44,-0.28);tailGroup.add(t3);
+  G.add(tailGroup);
+
+  G._tail=tailGroup;
+  G._walkTime=0;
+  scene.add(G);
+  return G;
+}
+
+// One indoor cat, one outdoor cat
+var outCat=buildCat(OUT);
+outCat.position.set(3,0,7.5);
+outCat.scale.setScalar(0.9);
+
+var inCat=buildCat(IN);
+inCat.position.set(IN_SPAWN.x+1.2,IN_SPAWN.y,IN_SPAWN.z+1.5);
+inCat.scale.setScalar(0.82);
+
+// ─────────────────────────────────────────────────────────────
+//  BUNNY — pink cotton-candy rabbit
+// ─────────────────────────────────────────────────────────────
+function buildBunny(scene){
+  var G=new THREE.Group();
+  var bodyM =new THREE.MeshLambertMaterial({color:0xffaabf}); // soft pink
+  var innerM=new THREE.MeshLambertMaterial({color:0xffd6e0}); // lighter pink
+  var eyeM  =new THREE.MeshLambertMaterial({color:0xff4488}); // hot pink eyes
+  var noseM =new THREE.MeshLambertMaterial({color:0xff6699});
+  function p(geo,mat,x,y,z){var m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);m.castShadow=true;G.add(m);return m;}
+
+  // Body — chubby sphere
+  p(new THREE.SphereGeometry(0.28,9,7),bodyM,0,0.30,0);
+  // Belly lighter patch
+  p(new THREE.SphereGeometry(0.18,8,6),innerM,0,0.28,0.12);
+  // Head
+  p(new THREE.SphereGeometry(0.22,9,7),bodyM,0,0.66,0.04);
+  // Cheeks
+  p(new THREE.SphereGeometry(0.09,7,5),innerM,-0.14,0.63,0.16);
+  p(new THREE.SphereGeometry(0.09,7,5),innerM, 0.14,0.63,0.16);
+  // Eyes
+  p(new THREE.SphereGeometry(0.04,6,5),eyeM,-0.09,0.70,0.20);
+  p(new THREE.SphereGeometry(0.04,6,5),eyeM, 0.09,0.70,0.20);
+  // Eye shines
+  p(new THREE.SphereGeometry(0.018,5,4),new THREE.MeshLambertMaterial({color:0xffffff}),-0.075,0.715,0.228);
+  p(new THREE.SphereGeometry(0.018,5,4),new THREE.MeshLambertMaterial({color:0xffffff}), 0.105,0.715,0.228);
+  // Nose
+  p(new THREE.Mesh? new THREE.SphereGeometry(0.03,6,5):new THREE.SphereGeometry(0.03,6,5),noseM,0,0.64,0.22);
+  // Ears (tall boxes, slightly angled)
+  var earL=new THREE.Mesh(new THREE.BoxGeometry(0.1,0.40,0.06),bodyM);
+  earL.position.set(-0.1,1.02,0.02); earL.rotation.z=0.18; G.add(earL);
+  var earR=new THREE.Mesh(new THREE.BoxGeometry(0.1,0.40,0.06),bodyM);
+  earR.position.set( 0.1,1.02,0.02); earR.rotation.z=-0.18; G.add(earR);
+  // Inner ears
+  var ielL=new THREE.Mesh(new THREE.BoxGeometry(0.055,0.26,0.04),innerM);
+  ielL.position.set(-0.1,1.02,0.04); ielL.rotation.z=0.18; G.add(ielL);
+  var ielR=new THREE.Mesh(new THREE.BoxGeometry(0.055,0.26,0.04),innerM);
+  ielR.position.set( 0.1,1.02,0.04); ielR.rotation.z=-0.18; G.add(ielR);
+  // Tiny front paws
+  p(new THREE.SphereGeometry(0.075,7,5),bodyM,-0.14,0.12,0.18);
+  p(new THREE.SphereGeometry(0.075,7,5),bodyM, 0.14,0.12,0.18);
+  // Back feet
+  p(new THREE.Mesh(new THREE.BoxGeometry(0.12,0.08,0.22),bodyM).geometry,bodyM,-0.14,0.06,-0.1);
+  p(new THREE.Mesh(new THREE.BoxGeometry(0.12,0.08,0.22),bodyM).geometry,bodyM, 0.14,0.06,-0.1);
+  // Fluffy tail
+  p(new THREE.SphereGeometry(0.1,7,6),innerM,0,0.28,-0.28);
+
+  // Store ear refs for hop animation
+  G._earL=earL; G._earR=earR;
+  G._hopPhase=Math.random()*Math.PI*2;
+  scene.add(G);
+  return G;
+}
+
+var outBunny=buildBunny(OUT);
+outBunny.position.set(-3,0,7.0);
+outBunny.scale.setScalar(0.95);
+
+var inBunny=buildBunny(IN);
+inBunny.position.set(IN_SPAWN.x-1.0,IN_SPAWN.y,IN_SPAWN.z+2.0);
+inBunny.scale.setScalar(0.78);
+
+// ─────────────────────────────────────────────────────────────
+//  MINI DINO — stubby green baby dinosaur
+// ─────────────────────────────────────────────────────────────
+function buildDino(scene){
+  var G=new THREE.Group();
+  var bodyM =new THREE.MeshLambertMaterial({color:0x5aaa44}); // leafy green
+  var darkM =new THREE.MeshLambertMaterial({color:0x3a7a2a}); // darker green
+  var bellyM=new THREE.MeshLambertMaterial({color:0xa8d888}); // light belly
+  var eyeM  =new THREE.MeshLambertMaterial({color:0xffee22}); // yellow eyes
+  var pupilM=new THREE.MeshLambertMaterial({color:0x111111});
+  var toothM=new THREE.MeshLambertMaterial({color:0xffffff});
+  function p(geo,mat,x,y,z){var m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);m.castShadow=true;G.add(m);return m;}
+
+  // Body — fat box with rounded feel
+  p(new THREE.SphereGeometry(0.26,9,7),bodyM,0,0.30,0);
+  // Belly
+  p(new THREE.SphereGeometry(0.18,8,6),bellyM,0,0.26,0.10);
+  // Neck
+  p(new THREE.Mesh(new THREE.BoxGeometry(0.18,0.22,0.18),bodyM).geometry,bodyM,0,0.55,0.08);
+  // Head — slightly boxy
+  p(new THREE.BoxGeometry? new THREE.Mesh(new THREE.BoxGeometry(0.36,0.28,0.30),bodyM).geometry : new THREE.BoxGeometry(0.36,0.28,0.30),bodyM,0,0.74,0.06);
+  // Snout
+  p(new THREE.BoxGeometry? new THREE.Mesh(new THREE.BoxGeometry(0.22,0.14,0.20),bodyM).geometry : new THREE.BoxGeometry(0.22,0.14,0.20),bellyM,0,0.68,0.22);
+  // Nostrils
+  p(new THREE.SphereGeometry(0.025,5,4),darkM,-0.06,0.72,0.33);
+  p(new THREE.SphereGeometry(0.025,5,4),darkM, 0.06,0.72,0.33);
+  // Eyes (big cute)
+  p(new THREE.SphereGeometry(0.072,8,6),eyeM,-0.13,0.80,0.22);
+  p(new THREE.SphereGeometry(0.072,8,6),eyeM, 0.13,0.80,0.22);
+  p(new THREE.SphereGeometry(0.04,6,5), pupilM,-0.13,0.80,0.27);
+  p(new THREE.SphereGeometry(0.04,6,5), pupilM, 0.13,0.80,0.27);
+  p(new THREE.SphereGeometry(0.02,5,4), new THREE.MeshLambertMaterial({color:0xffffff}),-0.105,0.825,0.29);
+  p(new THREE.SphereGeometry(0.02,5,4), new THREE.MeshLambertMaterial({color:0xffffff}), 0.155,0.825,0.29);
+  // Tiny teeth
+  p(new THREE.BoxGeometry(0.04,0.06,0.04),toothM,-0.05,0.63,0.33);
+  p(new THREE.BoxGeometry(0.04,0.06,0.04),toothM, 0.05,0.63,0.33);
+  // Spines along back
+  [0.1,0.0,-0.08,-0.16].forEach(function(zOff,i){
+    var h=0.12-i*0.02;
+    p(new THREE.ConeGeometry(0.04,h,5),darkM,0,0.55+h/2,zOff);
+  });
+  // Arms (tiny)
+  var armGeo=new THREE.BoxGeometry(0.12,0.18,0.10);
+  p(armGeo,bodyM,-0.26,0.34,0.06);
+  p(armGeo,bodyM, 0.26,0.34,0.06);
+  // Legs
+  var legGeo=new THREE.BoxGeometry(0.14,0.24,0.14);
+  p(legGeo,bodyM,-0.14,0.12,0);
+  p(legGeo,bodyM, 0.14,0.12,0);
+  // Feet
+  p(new THREE.BoxGeometry(0.18,0.08,0.22),bodyM,-0.14,0.02,0.04);
+  p(new THREE.BoxGeometry(0.18,0.08,0.22),bodyM, 0.14,0.02,0.04);
+  // Tail — segmented
+  var tailG=new THREE.Group(); tailG.position.set(0,0.28,-0.26);
+  var t1=new THREE.Mesh(new THREE.BoxGeometry(0.16,0.14,0.30),bodyM); t1.position.set(0,0,-0.14); tailG.add(t1);
+  var t2=new THREE.Mesh(new THREE.BoxGeometry(0.11,0.10,0.24),bodyM); t2.position.set(0,-0.04,-0.36); tailG.add(t2);
+  var t3=new THREE.Mesh(new THREE.SphereGeometry(0.07,6,5),darkM);   t3.position.set(0,-0.08,-0.50); tailG.add(t3);
+  G.add(tailG);
+
+  G._tail=tailG;
+  G._walkPhase=Math.random()*Math.PI*2;
+  scene.add(G);
+  return G;
+}
+
+var outDino=buildDino(OUT);
+outDino.position.set(-2,0,8.5);
+outDino.scale.setScalar(0.85);
+
+var inDino=buildDino(IN);
+inDino.position.set(IN_SPAWN.x+0.5,IN_SPAWN.y,IN_SPAWN.z+2.5);
+inDino.scale.setScalar(0.70);
+
+// ── Pet follow parameters ──────────────────────────────────
+var CAT_FOLLOW_DIST=2.4;
+var CAT_SPEED=4.8;
+var catWt=0, catWtIn=0;
+var bunnyWt=0, bunnyWtIn=0;
+var dinoWt=0,  dinoWtIn=0;
+
+
+// ─────────────────────────────────────────────────────────────
+//  LABELS
+// ─────────────────────────────────────────────────────────────
+var lblF=document.getElementById('lbl-f');
+var lblC=document.getElementById('lbl-c');
+var _lv=new THREE.Vector3();
+function updateLabel(lbl,obj,yOff,cam){
+  _lv.set(0,yOff,0);obj.localToWorld(_lv);_lv.project(cam);
+  if(_lv.z>1){lbl.style.display='none';return;}
+  lbl.style.display='block';
+  lbl.style.left=(_lv.x*.5+.5)*W+'px';
+  lbl.style.top=(-.5*_lv.y+.5)*H+'px';
+}
+
+// ─────────────────────────────────────────────────────────────
+//  JOYSTICK + KEYBOARD
+// ─────────────────────────────────────────────────────────────
+var jIn={x:0,y:0,on:false};
+var joy=nipplejs.create({zone:document.getElementById('jz'),mode:'static',position:{left:'65px',bottom:'65px'},color:'rgba(255,200,140,0.9)',size:110,restOpacity:.72,fadeTime:150});
+joy.on('move',function(e,d){if(d.vector){jIn.x=d.vector.x;jIn.y=-d.vector.y;jIn.on=true;}});
+joy.on('end',function(){jIn.x=0;jIn.y=0;jIn.on=false;});
+var keys={};
+window.addEventListener('keydown',function(e){keys[e.code]=true;});
+window.addEventListener('keyup',function(e){keys[e.code]=false;});
+function kbIn(){
+  var x=0,y=0;
+  if(keys.ArrowLeft||keys.KeyA)x--;if(keys.ArrowRight||keys.KeyD)x++;
+  if(keys.ArrowUp||keys.KeyW)y--;if(keys.ArrowDown||keys.KeyS)y++;
+  var l=Math.sqrt(x*x+y*y);if(l){x/=l;y/=l;}return{x:x,y:y};
+}
+
+// ─────────────────────────────────────────────────────────────
+//  COLLISION
+// ─────────────────────────────────────────────────────────────
+var MTN_C=[[-46,-46,10],[-28,-52,9],[0,-55,12],[30,-51,10],[49,-46,10],[-53,-20,9],[-53,7,8],[53,-20,9],[53,7,8],[-39,-39,7],[39,-39,7]];
+var BOUND=42;
+
+function blockedOut(nx,nz){
+  if(nx>HOUSE.position.x-5.0&&nx<HOUSE.position.x+5.0&&nz>HOUSE.position.z-4.5&&nz<HOUSE.position.z+6.2)return true;
+  for(var t=0;t<TREE_POS.length;t++){var dx=nx-TREE_POS[t][0],dz=nz-TREE_POS[t][1];if(dx*dx+dz*dz<TREE_R*TREE_R)return true;}
+  for(var m=0;m<MTN_C.length;m++){var mx=nx-MTN_C[m][0],mz=nz-MTN_C[m][1],mr=MTN_C[m][2];if(mx*mx+mz*mz<mr*mr)return true;}
+  return false;
+}
+function tryMove(pos,mx,mz,speed,dt,blockFn){
+  var nx=pos.x+mx*speed*dt,nz=pos.z+mz*speed*dt;
+  nx=Math.max(-BOUND,Math.min(BOUND,nx));nz=Math.max(-BOUND,Math.min(BOUND,nz));
+  if(!blockFn(nx,nz)){pos.x=nx;pos.z=nz;return;}
+  var nx2=Math.max(-BOUND,Math.min(BOUND,pos.x+mx*speed*dt));
+  if(!blockFn(nx2,pos.z)){pos.x=nx2;return;}
+  var nz2=Math.max(-BOUND,Math.min(BOUND,pos.z+mz*speed*dt));
+  if(!blockFn(pos.x,nz2))pos.z=nz2;
+}
+
+// ─────────────────────────────────────────────────────────────
+//  LIMB ANIMATION — separated so hug arms never clobber walk legs
+// ─────────────────────────────────────────────────────────────
+var SWING=0.55;
+// Walk legs only (arms driven separately)
+function walkLegs(ch,ph){
+  var sw=Math.sin(ph)*SWING;
+  ch._lLeg.rotation.x=sw;
+  ch._rLeg.rotation.x=-sw;
+}
+// Walk arms only
+function walkArms(ch,ph){
+  var sw=Math.sin(ph)*SWING;
+  ch._lArm.rotation.x=-sw*0.65;
+  ch._rArm.rotation.x= sw*0.65;
+}
+// Full walk (both)
+function animLimbs(ch,ph){
+  walkLegs(ch,ph);
+  walkArms(ch,ph);
+}
+// Decay all rotations toward 0
+function idleLimbs(ch){
+  ch._lLeg.rotation.x*=.85; ch._rLeg.rotation.x*=.85;
+  ch._lLeg.rotation.z*=.85; ch._rLeg.rotation.z*=.85;
+  ch._lArm.rotation.x*=.85; ch._rArm.rotation.x*=.85;
+  ch._lArm.rotation.z*=.85; ch._rArm.rotation.z*=.85;
+}
+// Snap all rotations instantly to 0
+function resetLimbs(ch){
+  ch._lLeg.rotation.set(0,0,0);
+  ch._rLeg.rotation.set(0,0,0);
+  ch._lArm.rotation.set(0,0,0);
+  ch._rArm.rotation.set(0,0,0);
+}
+
+// ─────────────────────────────────────────────────────────────
+//  ENTER / EXIT
+// ─────────────────────────────────────────────────────────────
+var enterBtn=document.getElementById('enter-btn');
+var exitBtn=document.getElementById('exit-btn');
+var doorNear=false;
+var DOOR_POS=new THREE.Vector3(0,0,-9.5);
+var _dpv=new THREE.Vector3();
+
+// ─────────────────────────────────────────────────────────────
+//  ACTION STATES — HUG / HOLD HAND
+// ─────────────────────────────────────────────────────────────
+var hugBtn=document.getElementById('hug-btn');
+var holdBtn=document.getElementById('hold-btn');
+var emoteBubble=document.getElementById('emote-bubble');
+var hugActive=false,holdHandActive=false;
+var hugTimer=0;
+
+// Heart particles
+var hearts=[];
+function spawnHeart(scene,x,y,z){
+  var types=[{col:0xff4488,emiss:0xff1155,sz:.13},{col:0xff88bb,emiss:0xff4488,sz:.10},{col:0xffdd55,emiss:0xffaa00,sz:.10},{col:0xff99cc,emiss:0xff5599,sz:.12},{col:0xffffff,emiss:0xffccdd,sz:.08}];
+  var t=types[Math.floor(Math.random()*types.length)];
+  var geo=Math.random()>.4?new THREE.SphereGeometry(t.sz,5,4):new THREE.OctahedronGeometry(t.sz*.9,0);
+  var h=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:t.col,emissive:new THREE.Color(t.emiss),emissiveIntensity:2.2,transparent:true,opacity:1.0}));
+  h.position.set(x+(Math.random()-.5)*.3,y,z+(Math.random()-.5)*.3);
+  scene.add(h);
+  var spin=(Math.random()-.5)*4;
+  hearts.push({m:h,vy:.9+Math.random()*.5,vx:(Math.random()-.5)*.4,vz:(Math.random()-.5)*.3,spin:spin,t:0,scene:scene});
+}
+function updateHearts(dt){
+  for(var hi=hearts.length-1;hi>=0;hi--){
+    var h=hearts[hi];h.t+=dt;h.vy-=dt*0.4;
+    h.m.position.y+=h.vy*dt;h.m.position.x+=h.vx*dt;h.m.position.z+=h.vz*dt;
+    h.m.rotation.y+=h.spin*dt;h.m.rotation.z+=h.spin*.5*dt;
+    var life=h.t/1.5;h.m.material.opacity=Math.max(0,1.0-life*life);
+    var sc=h.t<.18?(h.t/.18*1.4):(1.4-life*.8);h.m.scale.setScalar(Math.max(0,sc));
+    if(h.t>1.5){h.scene.remove(h.m);hearts.splice(hi,1);}
+  }
+}
+
+var toastTimeout=null; // shared timeout handle for auto-dismiss
+
+hugBtn.addEventListener('click',function(){
+  if(holdHandActive)return;
+  hugActive=!hugActive;hugTimer=0;
+  hugBtn.classList.toggle('active',hugActive);
+  if(hugActive){
+    // Use the correct character pair depending on which scene we're in
+    var fel=insideHouse?inFel:outFel;
+    var chr=insideHouse?inChris:outChris;
+    var snapDx=fel.position.x-chr.position.x;
+    var snapDz=fel.position.z-chr.position.z;
+    if(Math.sqrt(snapDx*snapDx+snapDz*snapDz)>0.05){
+      fel.rotation.y=Math.atan2(-snapDx,-snapDz);
+      chr.rotation.y=Math.atan2(snapDx,snapDz);
+    }
+    // Show toast, auto-dismiss after 3 seconds
+    emoteBubble.textContent='Hugging';
+    emoteBubble.classList.add('show');
+    clearTimeout(toastTimeout);
+    toastTimeout=setTimeout(function(){emoteBubble.classList.remove('show');},3000);
+  } else {
+    clearTimeout(toastTimeout);
+    emoteBubble.classList.remove('show');
+    var chars=insideHouse?[inFel,inChris]:[outFel,outChris];
+    chars.forEach(function(ch){ch._lArm.rotation.z=0;ch._rArm.rotation.z=0;ch._lArm.rotation.x=0;ch._rArm.rotation.x=0;});
+  }
+});
+
+holdBtn.addEventListener('click',function(){
+  if(hugActive)return;
+  holdHandActive=!holdHandActive;
+  holdBtn.classList.toggle('active',holdHandActive);
+  if(holdHandActive){
+    emoteBubble.textContent='Holding Hands';
+    emoteBubble.classList.add('show');
+    clearTimeout(toastTimeout);
+    toastTimeout=setTimeout(function(){emoteBubble.classList.remove('show');},3000);
+  } else {
+    clearTimeout(toastTimeout);
+    emoteBubble.classList.remove('show');
+    var chars=insideHouse?[inFel,inChris]:[outFel,outChris];
+    chars.forEach(function(ch){ch._lArm.rotation.z=0;ch._rArm.rotation.z=0;});
+  }
+});
+
+
+// ─────────────────────────────────────────────────────────────
+//  PLAY SCREEN GATE
+//  The render loop does NOT start until the user clicks Play.
+// ─────────────────────────────────────────────────────────────
+var gameStarted=false;
+var playScreen=document.getElementById('play-screen');
+var sceneFade=document.getElementById('scene-fade');
+
+document.getElementById('play-btn').addEventListener('click',function(){
+  if(gameStarted)return;
+  gameStarted=true;
+  playScreen.classList.add('fade-out');
+  // Remove from DOM after transition so it doesn't block touches
+  setTimeout(function(){
+    if(playScreen.parentNode)playScreen.parentNode.removeChild(playScreen);
+  },950);
+  // Kick off game
+  startGame();
+});
+
+// ─────────────────────────────────────────────────────────────
+//  SCENE TRANSITION HELPER
+// ─────────────────────────────────────────────────────────────
+function fadeToScene(callback){
+  sceneFade.classList.add('visible');
+  setTimeout(function(){
+    callback();
+    setTimeout(function(){sceneFade.classList.remove('visible');},80);
+  },460);
+}
+
+// ─────────────────────────────────────────────────────────────
+//  IMPROVED ENTER / EXIT — with fade, teleport, camera adjust
+// ─────────────────────────────────────────────────────────────
+
+// Indoor camera offset — matches declaration above
+// Indoor camera constants already declared above (IN_CAM_Y, IN_CAM_DZ)
+
+function enterHouse(){
+  fadeToScene(function(){
+    insideHouse=true;
+    // Teleport all three characters to the clear spawn point
+    inFel.position.copy(IN_SPAWN);
+    inFel.rotation.y=Math.PI;
+    inChris.position.set(IN_SPAWN.x+1.0,IN_SPAWN.y,IN_SPAWN.z);
+    inChris.rotation.y=Math.PI;
+    // Cat spawns slightly behind
+    inCat.position.set(IN_SPAWN.x-0.5,IN_SPAWN.y,IN_SPAWN.z+1.6);
+    inCat.rotation.y=Math.PI;
+    inBunny.position.set(IN_SPAWN.x-1.0,IN_SPAWN.y,IN_SPAWN.z+2.2);
+    inBunny.rotation.y=Math.PI;
+    inDino.position.set(IN_SPAWN.x+0.8,IN_SPAWN.y,IN_SPAWN.z+2.4);
+    inDino.rotation.y=Math.PI;
+    // Reset walk timers so characters don't inherit stale phase
+    iwt=0;icwt=0;catWtIn=0;
+
+    // Snap indoor camera directly above characters — no lerp stutter on entry
+    inCam.position.set(inFel.position.x, IN_CAM_Y, inFel.position.z + IN_CAM_DZ);
+    inCam.lookAt(inFel.position.x, 1.0, inFel.position.z);
+
+    // Character fill light — snap to spawn
+    glbCharLight.position.set(inFel.position.x,3.5,inFel.position.z);
+
+    enterBtn.classList.remove('show');
+    exitBtn.style.display='block';
+    lblF.style.display='none';
+    lblC.style.display='none';
+  });
+}
+
+function exitHouse(){
+  fadeToScene(function(){
+    insideHouse=false;
+    hugActive=false;holdHandActive=false;
+    hugBtn.classList.remove('active');holdBtn.classList.remove('active');
+    exitBtn.style.display='none';
+    lblF.style.display='block';
+    lblC.style.display='block';
+    // Snap outdoor camera back instantly
+    camP.copy(outFel.position).add(CAM_OFF);
+    outCam.position.copy(camP);
+  });
+}
+
+// Wire up Enter / Exit buttons
+document.getElementById('ehb').addEventListener('click',enterHouse);
+exitBtn.addEventListener('click',exitHouse);
+
+// ─────────────────────────────────────────────────────────────
+//  HUG LERP TARGETS
+// ─────────────────────────────────────────────────────────────
+var _hugFelTarget=new THREE.Vector3();
+var _hugChrisTarget=new THREE.Vector3();
+
+// ─────────────────────────────────────────────────────────────
+//  GAME LOOP
+// ─────────────────────────────────────────────────────────────
+var wt=0,cwt=0,iwt=0,icwt=0,elapsed=0,fireFlicker=0;
+var OSPEED=5.5,CSPD=5.2,ISPEED=4.2;
+var camP=new THREE.Vector3(),camL=new THREE.Vector3();
+var inCamP=new THREE.Vector3(),inCamL=new THREE.Vector3();
+
+function animate(){
+  requestAnimationFrame(animate);
+  var dt=Math.min(clock.getDelta(),.05);
+  elapsed+=dt;
+
+  // ── BIRDS ────────────────────────────────────────────────────
+  birds.forEach(function(bg){
+    bg._t+=dt*.6;
+    bg.position.x=bg._cx+Math.cos(bg._t)*bg._cr;
+    bg.position.z=bg._cz+Math.sin(bg._t)*bg._cr;
+    bg.position.y=11+Math.sin(bg._t*2.2)*1.5+bg._rx;
+    bg.rotation.y=-bg._t+Math.PI/2;
+    bg.rotation.z=Math.sin(bg._t*3)*.12;
+    bg._wL.rotation.z=Math.sin(elapsed*8)*0.45+0.1;
+    bg._wR.rotation.z=-Math.sin(elapsed*8)*0.45-0.1;
+  });
+
+  // ── FROGS ────────────────────────────────────────────────────
+  frogs.forEach(function(fg){
+    fg._t+=dt;
+    if(fg._t>fg._nextHop){fg._hopT=0;fg._t=0;fg._nextHop=2+Math.random()*3;fg._hx=(Math.random()-.5)*1.2;fg._hz=(Math.random()-.5)*1.2;}
+    if(fg._hopT<.5){fg._hopT+=dt*3;var ht=Math.sin(fg._hopT*Math.PI);fg.position.y=.08+ht*.35;fg.position.x=fg._baseX+(fg._hx||0)*(fg._hopT/1.5||0);fg.position.z=fg._baseZ+(fg._hz||0)*(fg._hopT/1.5||0);}
+    else{fg.position.y=.08;}
+  });
+
+  // ── BUTTERFLIES — Feature #4 ─────────────────────────────────
+  butterflies.forEach(function(bf){
+    bf.t+=dt*bf.speed;
+    // Orbital flight path with gentle bobbing
+    bf.g.position.x=bf.cx+Math.cos(bf.t)*bf.r+Math.sin(bf.t*0.7)*0.8;
+    bf.g.position.y=bf.cy+Math.sin(bf.t*1.3)*0.5+Math.cos(bf.t*0.5)*0.3;
+    bf.g.position.z=bf.cz+Math.sin(bf.t)*bf.r*0.6+Math.cos(bf.t*0.9)*0.6;
+    // Face direction of travel
+    bf.g.rotation.y=bf.t+Math.PI/2;
+    // Wing flap — realistic butterfly flutter (fast up, slow down)
+    var flapAngle=Math.abs(Math.sin(elapsed*6+bf.t*2))*1.1-0.15;
+    bf.wLp.rotation.y= flapAngle;
+    bf.wRp.rotation.y=-flapAngle;
+    // Gentle tilt
+    bf.g.rotation.z=Math.sin(bf.t*1.2)*.18;
+  });
+
+  // ── TULIPS gentle sway — Feature #4 ─────────────────────────
+  TULIPS.forEach(function(tl){
+    tl.g.rotation.z=Math.sin(elapsed*0.9+tl.idx)*0.04;
+    tl.g.rotation.x=Math.sin(elapsed*0.7+tl.idx*1.3)*0.02;
+  });
+
+  // ── Hearts ───────────────────────────────────────────────────
+  updateHearts(dt);
+
+  // ── Fire flicker ─────────────────────────────────────────────
+  fireFlicker+=dt*8;
+  fireL.intensity=1.4+Math.sin(fireFlicker)*.55+Math.sin(fireFlicker*1.7)*.22;
+  fireMeshes.forEach(function(fm,i){fm.scale.y=.85+Math.sin(fireFlicker*(1.1+i*.25))*.22;fm.rotation.y=elapsed*(2+i);});
+  lanternGlows.forEach(function(ll){ll.intensity=.58+Math.sin(elapsed*2.1+ll.position.x)*.1;});
+  intLight.intensity=.65+Math.sin(elapsed*1.7)*.12;
+  kitchenL.intensity=.85+Math.sin(elapsed*1.9)*.1;
+  interiorWarmLight.intensity=2.0+Math.sin(elapsed*1.3)*.28;
+
+  // Input
+  var kb=kbIn();
+  var mx=jIn.on?jIn.x:kb.x,mz=jIn.on?jIn.y:kb.y;
+  var moving=Math.abs(mx)>.015||Math.abs(mz)>.015;
+
+  if(insideHouse){
+    // ══════════════════════════════════════════════════════════
+    //  INDOOR — single authoritative animation dispatcher
+    //  Rule: each character's limbs are set EXACTLY ONCE per frame
+    // ══════════════════════════════════════════════════════════
+
+    // ── Felicity movement & rotation ─────────────────────────
+    if(moving && !hugActive){
+      iwt+=dt;
+      tryMove(inFel.position,mx,mz,ISPEED,dt,blockedIn);
+      var ta=Math.atan2(mx,mz),da=ta-inFel.rotation.y;
+      while(da>Math.PI)da-=Math.PI*2; while(da<-Math.PI)da+=Math.PI*2;
+      inFel.rotation.y+=da*Math.min(1,dt*12);
+    } else if(moving && hugActive){
+      iwt+=dt;
+      tryMove(inFel.position,mx,mz,ISPEED*0.55,dt,blockedIn);
+      var ta2=Math.atan2(mx,mz),da2=ta2-inFel.rotation.y;
+      while(da2>Math.PI)da2-=Math.PI*2; while(da2<-Math.PI)da2+=Math.PI*2;
+      inFel.rotation.y+=da2*Math.min(1,dt*8);
+    } else {
+      if(!hugActive) iwt=0;
+    }
+
+    // ── Felicity Y (floor-clamped bob) ───────────────────────
+    inFel.position.y = FLOOR_Y + (moving ? Math.abs(Math.sin(iwt*9))*0.04 : Math.abs(Math.sin(elapsed*1.4))*0.018);
+
+    // ── HUG ─────────────────────────────────────────────────
+    if(hugActive){
+      hugTimer+=dt;
+      var hDx=inFel.position.x-inChris.position.x;
+      var hDz=inFel.position.z-inChris.position.z;
+      var hDist=Math.sqrt(hDx*hDx+hDz*hDz);
+      if(hDist>0.01){
+        _hugChrisTarget.set(
+          inFel.position.x-(hDx/hDist)*0.92,
+          FLOOR_Y,
+          inFel.position.z-(hDz/hDist)*0.92
+        );
+      }
+      inChris.position.lerp(_hugChrisTarget, Math.min(1,dt*6));
+      inChris.rotation.y=Math.atan2(hDx,hDz);
+      inFel.rotation.y  =Math.atan2(-hDx,-hDz);
+
+      // ── Chris Y during hug
+      inChris.position.y = FLOOR_Y + (moving ? Math.abs(Math.sin(iwt*9))*0.04 : Math.abs(Math.sin(elapsed*1.8))*0.018);
+
+      // ── LIMBS: one call each, no doubles ─────────────────
+      if(moving){
+        walkLegs(inFel,  iwt*9);
+        walkLegs(inChris,iwt*9);
+      } else {
+        idleLimbs(inFel);
+        idleLimbs(inChris);
+      }
+      // Arms in hug pose (overrides arm X from walkArms — intentional)
+      var sway=Math.sin(elapsed*1.9)*0.055;
+      inFel._lArm.rotation.x  =-1.05+sway; inFel._rArm.rotation.x  =-1.05+sway;
+      inFel._lArm.rotation.z  =-0.80;       inFel._rArm.rotation.z  = 0.80;
+      inChris._lArm.rotation.x=-1.05-sway;  inChris._rArm.rotation.x=-1.05-sway;
+      inChris._lArm.rotation.z=-0.80;        inChris._rArm.rotation.z= 0.80;
+
+      // Hearts
+      if(Math.floor(hugTimer*7)>Math.floor((hugTimer-dt)*7)){
+        for(var _hi2=0;_hi2<3;_hi2++){
+          spawnHeart(IN,
+            (inFel.position.x+inChris.position.x)/2+(Math.random()-.5)*0.7,
+            2.8+Math.random()*0.5,
+            (inFel.position.z+inChris.position.z)/2+(Math.random()-.5)*0.7
+          );
+        }
+      }
+
+    // ── HOLD HANDS ─────────────────────────────────────────
+    } else if(holdHandActive){
+      if(Math.random()<dt*1.5){
+        spawnHeart(IN, inFel.position.x+(Math.random()-.5)*0.4, 2.5+Math.random()*0.8, inFel.position.z+(Math.random()-.5)*0.4);
+      }
+      var sY=Math.sin(inFel.rotation.y), cY=Math.cos(inFel.rotation.y);
+      inChris.position.x=inFel.position.x+cY*0.88;
+      inChris.position.z=inFel.position.z-sY*0.88;
+      inChris.rotation.y=inFel.rotation.y;
+
+      if(moving){
+        inChris.position.y = FLOOR_Y + Math.abs(Math.sin(iwt*9))*0.04;
+        // Full walk for Chris, full walk for Felicity
+        walkLegs(inFel,  iwt*9);
+        walkArms(inFel,  iwt*9);
+        walkLegs(inChris,iwt*9);
+        walkArms(inChris,iwt*9);
+        // Override joined-hand arm Z on top of walk swing
+        inFel._rArm.rotation.z  = 0.52+Math.sin(elapsed*1.5)*0.05;
+        inChris._lArm.rotation.z=-0.52+Math.sin(elapsed*1.5)*0.05;
+      } else {
+        inChris.position.y = FLOOR_Y + Math.abs(Math.sin(elapsed*1.2))*0.018;
+        idleLimbs(inFel);
+        idleLimbs(inChris);
+        inFel._rArm.rotation.z  = 0.52+Math.sin(elapsed*1.5)*0.05;
+        inChris._lArm.rotation.z=-0.52+Math.sin(elapsed*1.5)*0.05;
+      }
+
+    // ── FREE FOLLOW (no special state) ─────────────────────
+    } else {
+      // Felicity limbs
+      if(moving){ animLimbs(inFel, iwt*9); } else { idleLimbs(inFel); }
+
+      // Chris follow
+      icwt=icwt||0;
+      var icDx=inFel.position.x+1.5-inChris.position.x;
+      var icDz=inFel.position.z+1.2-inChris.position.z;
+      var icDist=Math.sqrt(icDx*icDx+icDz*icDz);
+      if(icDist>0.5){
+        icwt+=dt;
+        var ics=Math.min(CSPD*0.85*dt, icDist-0.5);
+        var icNx=inChris.position.x+(icDx/icDist)*ics;
+        var icNz=inChris.position.z+(icDz/icDist)*ics;
+        if(!blockedIn(icNx,icNz)){inChris.position.x=icNx; inChris.position.z=icNz;}
+        else{
+          var pa=Math.atan2(icDx,icDz)+Math.PI/2*(Math.random()>.5?1:-1);
+          var px2=inChris.position.x+Math.sin(pa)*ics*1.5;
+          var pz2=inChris.position.z+Math.cos(pa)*ics*1.5;
+          if(!blockedIn(px2,inChris.position.z)) inChris.position.x=px2;
+          else if(!blockedIn(inChris.position.x,pz2)) inChris.position.z=pz2;
+        }
+        var cAngle=Math.atan2(icDx,icDz), cDa=cAngle-inChris.rotation.y;
+        while(cDa>Math.PI)cDa-=Math.PI*2; while(cDa<-Math.PI)cDa+=Math.PI*2;
+        inChris.rotation.y+=cDa*Math.min(1,dt*9);
+        inChris.position.y = FLOOR_Y + Math.abs(Math.sin(icwt*8))*0.04;
+        animLimbs(inChris, icwt*8);
+      } else {
+        icwt=0;
+        inChris.position.y = FLOOR_Y + Math.abs(Math.sin(elapsed*1.2))*0.018;
+        idleLimbs(inChris);
+        var lix=inFel.position.x-inChris.position.x, liz=inFel.position.z-inChris.position.z;
+        if(Math.abs(lix)+Math.abs(liz)>0.1){
+          var lda=Math.atan2(lix,liz)-inChris.rotation.y;
+          while(lda>Math.PI)lda-=Math.PI*2; while(lda<-Math.PI)lda+=Math.PI*2;
+          inChris.rotation.y+=lda*dt*2.5;
+        }
+      }
+    }
+
+    // ── INDOOR CAT FOLLOW ────────────────────────────────────────
+    // Cat targets a point behind the group centroid (Felicity + Chris midpoint)
+    // Uses lerp-based smooth follow with collision avoidance
+    (function(){
+      // Group centroid
+      var gcx=(inFel.position.x+inChris.position.x)*0.5;
+      var gcz=(inFel.position.z+inChris.position.z)*0.5;
+      // Direction FROM centroid TO cat (so cat stays behind)
+      var avgRY=(inFel.rotation.y+inChris.rotation.y)*0.5;
+      // Target: CAT_FOLLOW_DIST behind the centroid along facing direction
+      var catTX=gcx+Math.sin(avgRY)*CAT_FOLLOW_DIST;
+      var catTZ=gcz+Math.cos(avgRY)*CAT_FOLLOW_DIST;
+      var cdx=catTX-inCat.position.x;
+      var cdz=catTZ-inCat.position.z;
+      var cdist=Math.sqrt(cdx*cdx+cdz*cdz);
+
+      if(cdist>0.15){
+        catWtIn+=dt;
+        var cspd=Math.min(CAT_SPEED*dt,cdist);
+        var cnx=inCat.position.x+(cdx/cdist)*cspd;
+        var cnz=inCat.position.z+(cdz/cdist)*cspd;
+        // Simple collision — if blocked try perpendicular slide
+        if(!blockedIn(cnx,cnz)){
+          inCat.position.x=cnx;inCat.position.z=cnz;
+        } else if(!blockedIn(cnx,inCat.position.z)){
+          inCat.position.x=cnx;
+        } else if(!blockedIn(inCat.position.x,cnz)){
+          inCat.position.z=cnz;
+        }
+        // Face direction of travel
+        var catA=Math.atan2(cdx,cdz),catDA=catA-inCat.rotation.y;
+        while(catDA>Math.PI)catDA-=Math.PI*2;while(catDA<-Math.PI)catDA+=Math.PI*2;
+        inCat.rotation.y+=catDA*Math.min(1,dt*9);
+        // Walk bob + tail wag
+        inCat.position.y=Math.abs(Math.sin(catWtIn*10))*0.04;
+        inCat._tail.rotation.z=Math.sin(catWtIn*8)*0.35;
+        inCat._tail.rotation.y=Math.sin(catWtIn*6)*0.2;
+      } else {
+        // Idle — gentle sit bob + slow tail flick
+        catWtIn=0;
+        inCat.position.y=Math.abs(Math.sin(elapsed*1.1))*0.015;
+        inCat._tail.rotation.z=Math.sin(elapsed*1.4)*0.2;
+        inCat._tail.rotation.y=Math.sin(elapsed*0.8)*0.15;
+      }
+    })();
+
+    // ── INDOOR BUNNY FOLLOW ──────────────────────────────────
+    (function(){
+      var gcx=(inFel.position.x+inChris.position.x)*0.5;
+      var gcz=(inFel.position.z+inChris.position.z)*0.5;
+      var avgRY=(inFel.rotation.y+inChris.rotation.y)*0.5;
+      // Bunny follows slightly to the left of the cat trail
+      var bTX=gcx+Math.sin(avgRY+0.5)*(CAT_FOLLOW_DIST+0.8);
+      var bTZ=gcz+Math.cos(avgRY+0.5)*(CAT_FOLLOW_DIST+0.8);
+      var bdx=bTX-inBunny.position.x, bdz=bTZ-inBunny.position.z;
+      var bdist=Math.sqrt(bdx*bdx+bdz*bdz);
+      if(bdist>0.2){
+        bunnyWtIn+=dt;
+        var bspd=Math.min(CAT_SPEED*0.8*dt,bdist);
+        inBunny.position.x+=bdx/bdist*bspd;
+        inBunny.position.z+=bdz/bdist*bspd;
+        var bA=Math.atan2(bdx,bdz),bDA=bA-inBunny.rotation.y;
+        while(bDA>Math.PI)bDA-=Math.PI*2; while(bDA<-Math.PI)bDA+=Math.PI*2;
+        inBunny.rotation.y+=bDA*Math.min(1,dt*8);
+        // Bunny hop bob
+        inBunny.position.y=FLOOR_Y+Math.abs(Math.sin(bunnyWtIn*7))*0.10;
+        // Ear flop
+        inBunny._earL.rotation.x=Math.sin(bunnyWtIn*7)*0.2;
+        inBunny._earR.rotation.x=-Math.sin(bunnyWtIn*7)*0.2;
+      } else {
+        bunnyWtIn=0;
+        inBunny.position.y=FLOOR_Y+Math.abs(Math.sin(elapsed*1.2+1.0))*0.02;
+        inBunny._earL.rotation.x=Math.sin(elapsed*0.9)*0.12;
+        inBunny._earR.rotation.x=-Math.sin(elapsed*0.9)*0.12;
+      }
+    })();
+
+    // ── INDOOR DINO FOLLOW ───────────────────────────────────
+    (function(){
+      var gcx=(inFel.position.x+inChris.position.x)*0.5;
+      var gcz=(inFel.position.z+inChris.position.z)*0.5;
+      var avgRY=(inFel.rotation.y+inChris.rotation.y)*0.5;
+      // Dino follows to the right
+      var dTX=gcx+Math.sin(avgRY-0.5)*(CAT_FOLLOW_DIST+1.2);
+      var dTZ=gcz+Math.cos(avgRY-0.5)*(CAT_FOLLOW_DIST+1.2);
+      var ddx=dTX-inDino.position.x, ddz=dTZ-inDino.position.z;
+      var ddist=Math.sqrt(ddx*ddx+ddz*ddz);
+      if(ddist>0.2){
+        dinoWtIn+=dt;
+        var dspd=Math.min(CAT_SPEED*0.85*dt,ddist);
+        inDino.position.x+=ddx/ddist*dspd;
+        inDino.position.z+=ddz/ddist*dspd;
+        var dA=Math.atan2(ddx,ddz),dDA=dA-inDino.rotation.y;
+        while(dDA>Math.PI)dDA-=Math.PI*2; while(dDA<-Math.PI)dDA+=Math.PI*2;
+        inDino.rotation.y+=dDA*Math.min(1,dt*8);
+        inDino.position.y=FLOOR_Y+Math.abs(Math.sin(dinoWtIn*8))*0.06;
+        inDino._tail.rotation.z=Math.sin(dinoWtIn*7)*0.3;
+      } else {
+        dinoWtIn=0;
+        inDino.position.y=FLOOR_Y+Math.abs(Math.sin(elapsed*1.0+2.0))*0.02;
+        inDino._tail.rotation.z=Math.sin(elapsed*1.2)*0.18;
+      }
+    })();
+
+
+    inCamP.set(inFel.position.x, IN_CAM_Y, inFel.position.z + IN_CAM_DZ);
+    inCam.position.lerp(inCamP, Math.min(1, dt * 9));
+    inCamL.set(inFel.position.x, 1.0, inFel.position.z);
+    inCam.lookAt(inCamL);
+    // Move character fill light with Felicity so she's always well-lit
+    if(glbCharLight){
+      glbCharLight.position.x=inFel.position.x;
+      glbCharLight.position.z=inFel.position.z;
+    }
+    renderer.render(IN,inCam);
+
+  } else {
+    // ── OUTDOOR ──────────────────────────────────────────────────
+
+    // ── OUTDOOR FELICITY MOVEMENT ────────────────────────────────
+    if(moving && !hugActive){
+      wt+=dt;
+      tryMove(outFel.position,mx,mz,OSPEED,dt,blockedOut);
+      var ota=Math.atan2(mx,mz),oda=ota-outFel.rotation.y;
+      while(oda>Math.PI)oda-=Math.PI*2; while(oda<-Math.PI)oda+=Math.PI*2;
+      outFel.rotation.y+=oda*Math.min(1,dt*13);
+      outFel.position.y=Math.abs(Math.sin(wt*9))*0.05;
+      animLimbs(outFel,wt*9);
+    } else if(moving && hugActive){
+      wt+=dt;
+      tryMove(outFel.position,mx,mz,OSPEED*0.55,dt,blockedOut);
+      var ota2=Math.atan2(mx,mz),oda2=ota2-outFel.rotation.y;
+      while(oda2>Math.PI)oda2-=Math.PI*2; while(oda2<-Math.PI)oda2+=Math.PI*2;
+      outFel.rotation.y+=oda2*Math.min(1,dt*8);
+      outFel.position.y=Math.abs(Math.sin(wt*9))*0.05;
+      walkLegs(outFel,wt*9);   // legs only — arms in hug block
+      walkLegs(outChris,wt*9);
+    } else {
+      wt=0;
+      outFel.position.y=Math.abs(Math.sin(elapsed*1.4))*0.022;
+      if(!hugActive) idleLimbs(outFel);
+    }
+
+    // ── OUTDOOR HUG ──────────────────────────────────────────────
+    if(hugActive){
+      hugTimer+=dt;
+      var oHDx=outFel.position.x-outChris.position.x;
+      var oHDz=outFel.position.z-outChris.position.z;
+      var oHDist=Math.sqrt(oHDx*oHDx+oHDz*oHDz);
+      if(oHDist>0.01){
+        _hugChrisTarget.set(
+          outFel.position.x-(oHDx/oHDist)*0.92, 0,
+          outFel.position.z-(oHDz/oHDist)*0.92
+        );
+      }
+      outChris.position.lerp(_hugChrisTarget,Math.min(1,dt*6));
+      outChris.rotation.y=Math.atan2(oHDx,oHDz);
+      outFel.rotation.y=Math.atan2(-oHDx,-oHDz);
+      if(!moving){
+        idleLimbs(outFel); idleLimbs(outChris);
+        outFel.position.y  =Math.abs(Math.sin(elapsed*1.8))*0.016;
+        outChris.position.y=Math.abs(Math.sin(elapsed*1.8+0.5))*0.016;
+      } else {
+        outChris.position.y=outFel.position.y;
+      }
+      var oSway=Math.sin(elapsed*1.9)*0.055;
+      outFel._lArm.rotation.x  =-1.0+oSway; outFel._rArm.rotation.x  =-1.0+oSway;
+      outFel._lArm.rotation.z  =-0.75;       outFel._rArm.rotation.z  = 0.75;
+      outChris._lArm.rotation.x=-1.0-oSway; outChris._rArm.rotation.x=-1.0-oSway;
+      outChris._lArm.rotation.z=-0.75;       outChris._rArm.rotation.z= 0.75;
+      if(Math.floor(hugTimer*6)>Math.floor((hugTimer-dt)*6)){
+        for(var _hi=0;_hi<3;_hi++){
+          spawnHeart(OUT,
+            (outFel.position.x+outChris.position.x)/2+(Math.random()-.5)*0.8,
+            3.8+Math.random()*0.6,
+            (outFel.position.z+outChris.position.z)/2+(Math.random()-.5)*0.8
+          );
+        }
+      }
+    } else if(!holdHandActive){
+      idleLimbs(outFel);
+      if(!holdHandActive) idleLimbs(outChris);
+    }
+
+    // ── OUTDOOR HOLD HANDS ───────────────────────────────────────
+    if(holdHandActive && !hugActive){
+      if(Math.random()<dt*1.5){
+        spawnHeart(OUT,outFel.position.x+(Math.random()-.5)*0.5,2.5+Math.random(),outFel.position.z+(Math.random()-.5)*0.5);
+      }
+      var oSY=Math.sin(outFel.rotation.y), oCY=Math.cos(outFel.rotation.y);
+      outChris.position.x=outFel.position.x+oCY*0.9;
+      outChris.position.z=outFel.position.z-oSY*0.9;
+      outChris.position.y=outFel.position.y;
+      outChris.rotation.y=outFel.rotation.y;
+      if(moving){
+        walkLegs(outChris,wt*9);
+        walkArms(outChris,wt*9);
+        walkArms(outFel,  wt*9);
+        outChris.position.y=Math.abs(Math.sin(wt*9))*0.05;
+        // Override joined arm Z after walk swing
+        outFel._rArm.rotation.z  = 0.52+Math.sin(elapsed*1.4)*0.05;
+        outChris._lArm.rotation.z=-0.52+Math.sin(elapsed*1.4)*0.05;
+      } else {
+        idleLimbs(outChris);
+        outChris.position.y=Math.abs(Math.sin(elapsed*1.2+1))*0.022;
+        outFel._rArm.rotation.z  = 0.52+Math.sin(elapsed*1.4)*0.05;
+        outChris._lArm.rotation.z=-0.52+Math.sin(elapsed*1.4)*0.05;
+      }
+    } // end if(holdHandActive && !hugActive)
+
+    // Outdoor Chris follow (only when NOT in special states)
+    if(!hugActive&&!holdHandActive){
+      var cDx=outFel.position.x+1.7-outChris.position.x;
+      var cDz=outFel.position.z+1.5-outChris.position.z;
+      var cDist=Math.sqrt(cDx*cDx+cDz*cDz);
+      if(cDist>0.4){
+        cwt+=dt;
+        var cs=Math.min(CSPD*dt,cDist-0.4);
+        var cnx=outChris.position.x+(cDx/cDist)*cs;
+        var cnz=outChris.position.z+(cDz/cDist)*cs;
+        if(!blockedOut(cnx,cnz)){outChris.position.x=cnx;outChris.position.z=cnz;}
+        else{var ang2=Math.atan2(cDx,cDz)+Math.PI/2*(Math.random()>.5?1:-1);var px2=outChris.position.x+Math.sin(ang2)*cs*1.5;var pz2=outChris.position.z+Math.cos(ang2)*cs*1.5;if(!blockedOut(px2,outChris.position.z))outChris.position.x=px2;else if(!blockedOut(outChris.position.x,pz2))outChris.position.z=pz2;}
+        var cta2=Math.atan2(cDx,cDz),cda2=cta2-outChris.rotation.y;
+        while(cda2>Math.PI)cda2-=Math.PI*2;while(cda2<-Math.PI)cda2+=Math.PI*2;
+        outChris.rotation.y+=cda2*Math.min(1,dt*9);
+        outChris.position.y=Math.abs(Math.sin(cwt*8))*.06;
+        animLimbs(outChris,cwt*8);
+      } else {
+        cwt=0;outChris.position.y=Math.abs(Math.sin(elapsed*1.2+1))*0.022;idleLimbs(outChris);
+        var olx=outFel.position.x-outChris.position.x,olz=outFel.position.z-outChris.position.z;
+        if(Math.abs(olx)+Math.abs(olz)>.1){var olda=Math.atan2(olx,olz)-outChris.rotation.y;while(olda>Math.PI)olda-=Math.PI*2;while(olda<-Math.PI)olda+=Math.PI*2;outChris.rotation.y+=olda*dt*2.5;}
+      }
+    }
+
+    // ── OUTDOOR CAT FOLLOW ───────────────────────────────────────
+    (function(){
+      var gcx=(outFel.position.x+outChris.position.x)*0.5;
+      var gcz=(outFel.position.z+outChris.position.z)*0.5;
+      var avgRY=(outFel.rotation.y+outChris.rotation.y)*0.5;
+      var catTX=gcx+Math.sin(avgRY)*CAT_FOLLOW_DIST;
+      var catTZ=gcz+Math.cos(avgRY)*CAT_FOLLOW_DIST;
+      var cdx=catTX-outCat.position.x;
+      var cdz=catTZ-outCat.position.z;
+      var cdist=Math.sqrt(cdx*cdx+cdz*cdz);
+
+      if(cdist>0.2){
+        catWt+=dt;
+        var cspd=Math.min(CAT_SPEED*dt,cdist);
+        var cnx=outCat.position.x+(cdx/cdist)*cspd;
+        var cnz=outCat.position.z+(cdz/cdist)*cspd;
+        if(!blockedOut(cnx,cnz)){
+          outCat.position.x=cnx;outCat.position.z=cnz;
+        } else if(!blockedOut(cnx,outCat.position.z)){
+          outCat.position.x=cnx;
+        } else if(!blockedOut(outCat.position.x,cnz)){
+          outCat.position.z=cnz;
+        }
+        var catA=Math.atan2(cdx,cdz),catDA=catA-outCat.rotation.y;
+        while(catDA>Math.PI)catDA-=Math.PI*2;while(catDA<-Math.PI)catDA+=Math.PI*2;
+        outCat.rotation.y+=catDA*Math.min(1,dt*9);
+        outCat.position.y=Math.abs(Math.sin(catWt*10))*0.05;
+        outCat._tail.rotation.z=Math.sin(catWt*8)*0.35;
+        outCat._tail.rotation.y=Math.sin(catWt*6)*0.2;
+      } else {
+        catWt=0;
+        outCat.position.y=Math.abs(Math.sin(elapsed*1.1))*0.015;
+        outCat._tail.rotation.z=Math.sin(elapsed*1.4)*0.2;
+        outCat._tail.rotation.y=Math.sin(elapsed*0.8)*0.15;
+      }
+    })();
+
+    // ── OUTDOOR BUNNY FOLLOW ─────────────────────────────────
+    (function(){
+      var gcx=(outFel.position.x+outChris.position.x)*0.5;
+      var gcz=(outFel.position.z+outChris.position.z)*0.5;
+      var avgRY=(outFel.rotation.y+outChris.rotation.y)*0.5;
+      var bTX=gcx+Math.sin(avgRY+0.6)*(CAT_FOLLOW_DIST+1.0);
+      var bTZ=gcz+Math.cos(avgRY+0.6)*(CAT_FOLLOW_DIST+1.0);
+      var bdx=bTX-outBunny.position.x, bdz=bTZ-outBunny.position.z;
+      var bdist=Math.sqrt(bdx*bdx+bdz*bdz);
+      if(bdist>0.25){
+        bunnyWt+=dt;
+        var bspd=Math.min(CAT_SPEED*0.8*dt,bdist);
+        outBunny.position.x+=bdx/bdist*bspd;
+        outBunny.position.z+=bdz/bdist*bspd;
+        var bA=Math.atan2(bdx,bdz),bDA=bA-outBunny.rotation.y;
+        while(bDA>Math.PI)bDA-=Math.PI*2; while(bDA<-Math.PI)bDA+=Math.PI*2;
+        outBunny.rotation.y+=bDA*Math.min(1,dt*8);
+        outBunny.position.y=Math.abs(Math.sin(bunnyWt*7))*0.12;
+        outBunny._earL.rotation.x=Math.sin(bunnyWt*7)*0.2;
+        outBunny._earR.rotation.x=-Math.sin(bunnyWt*7)*0.2;
+      } else {
+        bunnyWt=0;
+        outBunny.position.y=Math.abs(Math.sin(elapsed*1.2))*0.02;
+        outBunny._earL.rotation.x=Math.sin(elapsed*0.8)*0.12;
+        outBunny._earR.rotation.x=-Math.sin(elapsed*0.8)*0.12;
+      }
+    })();
+
+    // ── OUTDOOR DINO FOLLOW ──────────────────────────────────
+    (function(){
+      var gcx=(outFel.position.x+outChris.position.x)*0.5;
+      var gcz=(outFel.position.z+outChris.position.z)*0.5;
+      var avgRY=(outFel.rotation.y+outChris.rotation.y)*0.5;
+      var dTX=gcx+Math.sin(avgRY-0.6)*(CAT_FOLLOW_DIST+1.4);
+      var dTZ=gcz+Math.cos(avgRY-0.6)*(CAT_FOLLOW_DIST+1.4);
+      var ddx=dTX-outDino.position.x, ddz=dTZ-outDino.position.z;
+      var ddist=Math.sqrt(ddx*ddx+ddz*ddz);
+      if(ddist>0.25){
+        dinoWt+=dt;
+        var dspd=Math.min(CAT_SPEED*0.85*dt,ddist);
+        outDino.position.x+=ddx/ddist*dspd;
+        outDino.position.z+=ddz/ddist*dspd;
+        var dA=Math.atan2(ddx,ddz),dDA=dA-outDino.rotation.y;
+        while(dDA>Math.PI)dDA-=Math.PI*2; while(dDA<-Math.PI)dDA+=Math.PI*2;
+        outDino.rotation.y+=dDA*Math.min(1,dt*8);
+        outDino.position.y=Math.abs(Math.sin(dinoWt*8))*0.07;
+        outDino._tail.rotation.z=Math.sin(dinoWt*7)*0.3;
+      } else {
+        dinoWt=0;
+        outDino.position.y=Math.abs(Math.sin(elapsed*1.0))*0.02;
+        outDino._tail.rotation.z=Math.sin(elapsed*1.2)*0.18;
+      }
+    })();
+
+    // Outdoor camera
+    camP.copy(outFel.position).add(CAM_OFF);
+    outCam.position.lerp(camP,dt*7);
+    camL.copy(outFel.position);camL.y+=1.3;
+    outCam.lookAt(camL);
+
+    // Door proximity
+    _dpv.set(outFel.position.x,0,outFel.position.z);
+    var wasNear=doorNear;
+    doorNear=_dpv.distanceTo(DOOR_POS)<4.5;
+    if(doorNear!==wasNear){if(doorNear)enterBtn.classList.add('show');else enterBtn.classList.remove('show');}
+
+    renderer.render(OUT,outCam);
+    updateLabel(lblF,outFel,3.5,outCam);
+    updateLabel(lblC,outChris,3.9,outCam);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+//  RESIZE
+// ─────────────────────────────────────────────────────────────
+window.addEventListener('resize',function(){
+  W=window.innerWidth;H=window.innerHeight;
+  outCam.aspect=W/H;outCam.updateProjectionMatrix();
+  inCam.aspect=W/H;inCam.updateProjectionMatrix();
+  renderer.setSize(W,H);
+});
+
+// ─────────────────────────────────────────────────────────────
+//  START — called only after Play button is clicked
+// ─────────────────────────────────────────────────────────────
+function startGame(){
+  lbar.style.width='100%';
+  // Interior is 100% procedural — buildCozyInterior() already ran at startup.
+  // No GLB loading needed; avoids all ProgressEvent / 404 errors.
+  setTimeout(function(){
+    clearInterval(lint);
+    var ld=document.getElementById('ld');
+    if(ld){ld.classList.add('go');setTimeout(function(){if(ld.parentNode)ld.parentNode.removeChild(ld);},800);}
+    animate();
+  },400);
+}
+
+// ─────────────────────────────────────────────────────────────
+//  Pre-load progress bar starts immediately on page open
+//  but game only renders after Play is clicked
+// ─────────────────────────────────────────────────────────────
+// (lint interval already started at top of script)
+
+</script>
+</body>
+</html>
