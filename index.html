@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
-<title>Felicity's World</title>
+<title>Cozy</title>
 <style>
 /* ───────────────────────────────────────────────────
    RESET & BASE
@@ -37,7 +37,7 @@ html,body{
 
 /* ── JOYSTICK ──────────────────────────────────── */
 #jz{
-  position:absolute;bottom:26px;left:26px;
+  position:absolute;bottom:100px;left:26px;
   width:130px;height:130px;
   pointer-events:all;touch-action:none
 }
@@ -102,7 +102,7 @@ html,body{
 
 /* ── ACTION BUTTONS — clean cozy pill, no emojis ── */
 #action-panel{
-  position:fixed;right:14px;bottom:36px;
+  position:fixed;right:14px;bottom:180px;
   z-index:20;display:flex;flex-direction:column;gap:7px;
   pointer-events:all
 }
@@ -146,6 +146,192 @@ html,body{
   background:rgba(255,200,80,.9);
   box-shadow:0 0 6px rgba(255,180,50,.65)
 }
+
+/* ── CAMERA VIEW TOGGLE ───────────────────────────── */
+#cam-btn{
+  position:fixed;top:14px;left:50%;transform:translateX(-50%);
+  z-index:30;
+  background:rgba(10,8,6,.72);backdrop-filter:blur(14px);
+  border:1px solid rgba(255,200,120,.18);
+  border-radius:20px;padding:5px 14px;
+  font-size:10px;font-weight:700;letter-spacing:.14em;
+  color:rgba(255,220,160,.88);
+  cursor:pointer;touch-action:manipulation;
+  font-family:inherit;text-transform:uppercase;
+  transition:background .15s,transform .08s;
+  display:none
+}
+#cam-btn:active{transform:translateX(-50%) scale(.93)}
+#cam-btn.show{display:block}
+
+/* ── DAY / NIGHT TOGGLE ───────────────────────────── */
+#tod-btn{
+  position:fixed;top:50px;left:50%;transform:translateX(-50%);
+  z-index:30;
+  background:rgba(10,8,6,.72);backdrop-filter:blur(14px);
+  border:1px solid rgba(255,200,120,.18);
+  border-radius:20px;padding:5px 14px;
+  font-size:10px;font-weight:700;letter-spacing:.14em;
+  color:rgba(255,220,160,.88);
+  cursor:pointer;touch-action:manipulation;
+  font-family:inherit;text-transform:uppercase;
+  transition:background .15s,border-color .18s,transform .08s;
+  display:none;white-space:nowrap
+}
+#tod-btn:active{transform:translateX(-50%) scale(.93)}
+#tod-btn.show{display:block}
+#tod-btn.is-day{
+  border-color:rgba(255,200,80,.5);
+  color:rgba(255,230,150,.95)
+}
+#tod-btn.is-night{
+  border-color:rgba(140,160,255,.5);
+  color:rgba(180,200,255,.95)
+}
+#time-display{
+  position:fixed;top:14px;right:14px;z-index:30;
+  background:rgba(10,8,6,.72);backdrop-filter:blur(14px);
+  border:1px solid rgba(255,200,120,.18);
+  border-radius:20px;padding:5px 13px;
+  font-size:11px;font-weight:700;letter-spacing:.12em;
+  color:rgba(255,220,160,.88);
+  pointer-events:none
+}
+
+/* ── STAR CANVAS (night sky — behind 3D canvas) ─────── */
+#star-canvas{
+  position:fixed;inset:0;z-index:0;
+  pointer-events:none;opacity:0;
+  transition:opacity 2s ease
+}
+#star-canvas.visible{opacity:1}
+
+/* ── INVENTORY BAR — Minecraft cozy wooden chest style ── */
+#inv-bar{
+  position:fixed;bottom:0;left:50%;
+  transform:translateX(-50%);
+  z-index:30;
+  display:flex;align-items:center;gap:6px;
+  padding:10px 14px 14px;
+  background:
+    linear-gradient(180deg, #2a1a0a 0%, #1e1208 40%, #160e06 100%);
+  border-top:3px solid #8b6020;
+  border-left:3px solid #8b6020;
+  border-right:3px solid #8b6020;
+  border-radius:12px 12px 0 0;
+  box-shadow:
+    0 -4px 0 0 #5a3a10 inset,
+    0 4px 24px rgba(0,0,0,.7),
+    0 0 0 1px #3a2408;
+  pointer-events:all;
+  max-width:100vw;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  /* Wood grain texture */
+  background-image:
+    repeating-linear-gradient(
+      180deg,
+      transparent 0px, transparent 3px,
+      rgba(0,0,0,.06) 3px, rgba(0,0,0,.06) 4px
+    ),
+    linear-gradient(180deg, #3a2010 0%, #2a1608 100%);
+}
+/* Chest label strip at top */
+#inv-bar::before{
+  content:'🎒 Inventory';
+  position:absolute;top:-22px;left:50%;transform:translateX(-50%);
+  font-size:9px;font-weight:800;letter-spacing:.18em;
+  text-transform:uppercase;
+  color:rgba(255,210,140,.85);
+  background:linear-gradient(180deg,#3a2010,#2a1608);
+  border:2px solid #8b6020;
+  border-bottom:none;
+  border-radius:8px 8px 0 0;
+  padding:3px 12px 1px;
+  white-space:nowrap;
+  box-shadow:0 -2px 8px rgba(0,0,0,.4)
+}
+.inv-slot{
+  width:54px;height:54px;
+  /* Minecraft-style slot: dark square with inset shadow */
+  background:linear-gradient(135deg,#0e0a06 0%,#1a1008 60%,#221408 100%);
+  border:2px solid #5a3a10;
+  border-radius:4px;
+  box-shadow:
+    2px 2px 0 0 rgba(0,0,0,.6) inset,
+    -1px -1px 0 0 rgba(255,200,100,.08) inset,
+    0 0 0 1px #3a2208;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  gap:1px;
+  cursor:pointer;touch-action:manipulation;
+  flex-shrink:0;
+  transition:border-color .1s,box-shadow .1s,transform .08s;
+  position:relative;
+  image-rendering:pixelated
+}
+.inv-slot:hover{
+  border-color:#c8882a;
+  box-shadow:
+    2px 2px 0 0 rgba(0,0,0,.6) inset,
+    -1px -1px 0 0 rgba(255,200,100,.15) inset,
+    0 0 8px rgba(200,140,40,.3),
+    0 0 0 1px #3a2208
+}
+.inv-slot:active{transform:scale(.93)}
+.inv-slot.selected{
+  border-color:#f0c040;
+  background:linear-gradient(135deg,#1a1206 0%,#261a08 60%,#301e0a 100%);
+  box-shadow:
+    2px 2px 0 0 rgba(0,0,0,.5) inset,
+    -1px -1px 0 0 rgba(255,220,120,.2) inset,
+    0 0 12px rgba(240,190,60,.4),
+    0 0 0 1px #806010
+}
+/* Golden shimmer on selected */
+.inv-slot.selected::after{
+  content:'';position:absolute;inset:0;border-radius:3px;
+  background:linear-gradient(135deg,rgba(255,220,80,.08) 0%,transparent 60%);
+  pointer-events:none
+}
+.inv-slot .slot-icon{
+  font-size:24px;line-height:1;
+  filter:drop-shadow(1px 1px 0 rgba(0,0,0,.8))
+}
+.inv-slot .slot-label{
+  font-size:6.5px;font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;
+  color:rgba(255,205,140,.65);
+  white-space:nowrap;
+  text-shadow:0 1px 2px rgba(0,0,0,.9)
+}
+.inv-slot .slot-count{
+  position:absolute;bottom:3px;right:4px;
+  font-size:8px;font-weight:900;
+  color:rgba(255,255,255,.9);
+  text-shadow:1px 1px 0 rgba(0,0,0,.9),-1px -1px 0 rgba(0,0,0,.9),
+              1px -1px 0 rgba(0,0,0,.9),-1px 1px 0 rgba(0,0,0,.9);
+  letter-spacing:0;
+  font-family:monospace
+}
+
+/* Place button — Minecraft style */
+#place-btn{
+  background:linear-gradient(180deg,#5a8a20 0%,#3a6010 50%,#2a4a08 100%) !important;
+  border:2px solid #8ab030 !important;
+  border-radius:4px !important;
+  box-shadow:2px 2px 0 #1a3008,0 0 0 1px #2a5010 !important;
+  color:#d4ff80 !important;
+  font-size:9px !important;
+  font-weight:900 !important;
+  letter-spacing:.12em !important;
+  padding:8px 14px !important;
+  text-shadow:0 1px 2px rgba(0,0,0,.8) !important;
+  transition:transform .08s,filter .1s !important
+}
+#place-btn:active{transform:scale(.93) translateY(1px) !important;filter:brightness(.85) !important}
+
+
 
 /* ── INTERACTION TOAST (replaces emoji bubble) ─── */
 #emote-bubble{
@@ -307,8 +493,18 @@ html,body{
   <div class="lb"><div class="lf" id="lbar"></div></div>
 </div>
 
-<!-- Canvas -->
+<!-- Star canvas BEHIND 3D scene — rendered first -->
+<canvas id="star-canvas"></canvas>
+<!-- Time of day display -->
+<div id="time-display">🌸 Day</div>
+
+<!-- Canvas — has transparent background set by renderer when needed -->
 <canvas id="c"></canvas>
+
+<!-- Camera view toggle (Minecraft-style) -->
+<button id="cam-btn">View</button>
+<!-- Day / Night manual toggle -->
+<button id="tod-btn">☀️ Day</button>
 
 <!-- Name labels -->
 <div id="lbl-f" class="lbl lbl-f">Felicity</div>
@@ -327,6 +523,40 @@ html,body{
 <!-- Interaction toast -->
 <div id="emote-bubble">Together</div>
 
+<!-- Inventory bar -->
+<div id="inv-bar">
+  <div class="inv-slot selected" data-item="flower" id="slot-flower">
+    <span class="slot-icon">🌸</span>
+    <span class="slot-label">Flower</span>
+    <span class="slot-count" id="cnt-flower">∞</span>
+  </div>
+  <div class="inv-slot" data-item="tulip" id="slot-tulip">
+    <span class="slot-icon">🌷</span>
+    <span class="slot-label">Tulip</span>
+    <span class="slot-count" id="cnt-tulip">∞</span>
+  </div>
+  <div class="inv-slot" data-item="mushroom" id="slot-mushroom">
+    <span class="slot-icon">🍄</span>
+    <span class="slot-label">Mushroom</span>
+    <span class="slot-count" id="cnt-mushroom">∞</span>
+  </div>
+  <div class="inv-slot" data-item="stone" id="slot-stone">
+    <span class="slot-icon">🪨</span>
+    <span class="slot-label">Stone</span>
+    <span class="slot-count" id="cnt-stone">∞</span>
+  </div>
+  <div class="inv-slot" data-item="lantern" id="slot-lantern">
+    <span class="slot-icon">🏮</span>
+    <span class="slot-label">Lantern</span>
+    <span class="slot-count" id="cnt-lantern">∞</span>
+  </div>
+  <div class="inv-slot" data-item="tree" id="slot-tree">
+    <span class="slot-icon">🌳</span>
+    <span class="slot-label">Tree</span>
+    <span class="slot-count" id="cnt-tree">∞</span>
+  </div>
+</div>
+
 <!-- HUD overlay -->
 <div id="hud">
   <div id="title">
@@ -344,6 +574,13 @@ html,body{
 
 <script>
 'use strict';
+
+// ── Reference image textures (cropped from inspiration images) ──
+var RT_FLOOR="data:image/jpeg;base64,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";
+var RT_LIVING="data:image/jpeg;base64,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";
+var RT_BED="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCABLAIADASIAAhEBAxEB/8QAGgABAAMBAQEAAAAAAAAAAAAAAAEEBwIFBv/EADUQAAIABAEICAUFAQAAAAAAAAABAgMEEQUHFSExUVWU0QYSF0FTcYGSEyI2dLIjM0JhkaL/xAAYAQEBAQEBAAAAAAAAAAAAAAAAAQMEBf/EABsRAQEBAQADAQAAAAAAAAAAAAABERICAzIh/9oADAMBAAIRAxEAPwD1wAea9YAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABxNmQSpcUybHDBLgV4oonZQra33FPPOF7zoOJg5jEXwUM84XvOg4mDmM84XvOg4mDmMpq+ChnnC950HEwcxnnC950HEwcxlNXwUM84XvOg4mDmM84XvOg4mDmMpq+ChnnC950HEwcxnnC950HEwcxlNXwAFAAAAAHxuVltdDo0m0oqmTC7PWm3deRk+AdHKjHquKRRQRRRfO24XD1YEomrvR/y7X137jWMrX0e/u5H5M8rI5BG1OcuJSoF8SKYoV+9+o0r+Rv67niw9s2vGiybVl/lk1ltril6SOzat8Cr90s2slIvdTmMT7Nq3wKv3Sx2bVvgVfulm3JWTVvQWWjrX9FrL3U5jE3k0rUm/g1T8opfI57Nq3wKv3Szb7p3ve3kQ1q0XXfoHdOYxHs2rfBq/dLHZtW+BV+6WbbEtO30OR3TmKoAOZ0gAAAAD43K19Hv7uR+TLOSSnlS+h8qdBLhU2bPn9eLvdpkSRWytfR0X3Uj8mVMiNVPnYPi9PNmOKTT1dpUL/h1tL/1s38Phl5/UaOSm1qYBEdJ3T022snZe/o9RxYbQjvqpaX1rbUw3otey79OoiLVF/TRyCfqYm/JnJNgFf/Z";
+var RT_SOFA="data:image/jpeg;base64,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";
+
 
 // ─────────────────────────────────────────────────────────────
 //  LOADING PROGRESS
@@ -776,15 +1013,19 @@ var IN=new THREE.Scene();
 IN.background=new THREE.Color(0x1e140e);
 IN.fog=new THREE.Fog(0x1a1008,30,58);
 
-// ── Indoor camera — behind & above Felicity looking INTO the room ──────────
-// Room runs z: -8 (back) to +8 (front door). Spawn is z=2.5 (near front).
-// Camera sits BEHIND Felicity (higher Z = toward front door / camera side).
-// Y=5.2 keeps us inside room (ceiling=6.5). DZ=+4 = 4 units toward front.
-var inCam=new THREE.PerspectiveCamera(58,W/H,0.1,60);
-var IN_CAM_Y=5.2;
-var IN_CAM_DZ=4.5;  // positive = camera is between Felicity and front door
+// ── Indoor camera — True RPG Maker / Stardew Valley style ───────────────
+// OrthographicCamera: no perspective distortion, flat top-down view.
+// Camera is directly above, looking down at slight angle to see faces.
+var IN_ORTHO_H=8.0;  // half-height of ortho view (tune to show full room)
+var inCam=new THREE.OrthographicCamera(
+  -IN_ORTHO_H*(W/H), IN_ORTHO_H*(W/H),
+   IN_ORTHO_H,      -IN_ORTHO_H,
+  0.1, 100
+);
+var IN_CAM_Y=20;    // high above
+var IN_CAM_DZ=6;    // slight tilt back so we see character faces
 inCam.position.set(0, IN_CAM_Y, 2.5 + IN_CAM_DZ);
-inCam.lookAt(0, 1.0, 2.5);
+inCam.lookAt(0, 0, 2.5);
 
 // ── Indoor lighting: layered warm system ─────────────────────
 // 1. Global ambient — warm enough that characters are never fully dark
@@ -806,6 +1047,11 @@ IN.add(fireL);
 var kitchenL=new THREE.PointLight(0xffeeaa,0.9,9);
 kitchenL.position.set(5.5,3.8,-4.0);
 IN.add(kitchenL);
+
+// lampGlow: declared here so buildCozyInterior() can assign it
+var lampGlow=null;
+// interiorWarmLight: alias for ceilLight, set after buildCozyInterior()
+var interiorWarmLight=null;
 
 // 5. Dedicated CHARACTER fill light — follows Felicity every frame
 //    so she never looks dark regardless of room position
@@ -849,311 +1095,414 @@ var FLOOR_Y=0.14;                                    // top surface of floor mes
 var IN_SPAWN=new THREE.Vector3(0,FLOOR_Y,2.5);       // characters stand ON the floor
 
 function buildCozyInterior(){
+  // ═══════════════════════════════════════════════════════════════
+  //  STARDEW VALLEY INSPIRED INTERIOR
+  //  Top-down RPG camera. Pure canvas sprites — NO real images.
+  //  Z-fighting eliminated: every mesh has a unique Y and renderOrder.
+  //  renderOrder is the ONLY reliable way to avoid depth-sort flicker.
+  // ═══════════════════════════════════════════════════════════════
 
-  // ── 1. FLOORS — warm honey-oak planks ─────────────────────
-  var floorMat=new THREE.MeshLambertMaterial({color:0xc8955a});
-  var floorMain=new THREE.Mesh(new THREE.BoxGeometry(18,0.14,16),floorMat);
-  floorMain.position.set(0,0.07,0);
-  floorMain.receiveShadow=true;
-  IN.add(floorMain);
-  // Plank lines — subtle darker grain
-  var plankMat=new THREE.MeshLambertMaterial({color:0xb07e45});
-  for(var pi=0;pi<13;pi++){
-    var plk=new THREE.Mesh(new THREE.PlaneGeometry(18,0.025),plankMat);
-    plk.rotation.x=-Math.PI/2; plk.position.set(0,0.15,-6.5+pi*1.1);
-    IN.add(plk);
+  var FLOOR_Y = 0.14;
+  var _ro = 0; // global renderOrder counter
+
+  // ── Canvas texture helper ─────────────────────────────────────
+  function ctex(w,h,fn){
+    var cv=document.createElement('canvas'); cv.width=w; cv.height=h;
+    var cx=cv.getContext('2d'); cx.imageSmoothingEnabled=false; fn(cx,w,h);
+    var t=new THREE.CanvasTexture(cv);
+    t.magFilter=THREE.NearestFilter; t.minFilter=THREE.NearestFilter;
+    return t;
   }
 
-  // ── 2. WALLS — warm linen/cream with soft pink tint ────────
-  var wallMat    =new THREE.MeshLambertMaterial({color:0xf5ede0}); // warm white
-  var wallAccent =new THREE.MeshLambertMaterial({color:0xead5c0}); // blush accent
+  // ── Flat horizontal plane — z-fight safe ─────────────────────
+  // Each call gets a unique renderOrder AND unique Y nudge
+  var _yStep = 0;
+  function flat(tex,x,z,w,d,col){
+    _yStep += 0.0005;
+    var mat = col
+      ? new THREE.MeshLambertMaterial({color:col})
+      : new THREE.MeshBasicMaterial({map:tex,transparent:true,alphaTest:0.08,depthWrite:false});
+    var m = new THREE.Mesh(new THREE.PlaneGeometry(w,d),mat);
+    m.rotation.x = -Math.PI/2;
+    m.position.set(x, FLOOR_Y+_yStep, z);
+    m.renderOrder = ++_ro;
+    IN.add(m); return m;
+  }
 
-  // Back wall
-  var wBack=new THREE.Mesh(new THREE.BoxGeometry(18,6.5,0.22),wallMat);
-  wBack.position.set(0,3.25,-8.1); wBack.receiveShadow=true; IN.add(wBack);
-  // Front wall with doorway
-  var wFL=new THREE.Mesh(new THREE.BoxGeometry(6.5,6.5,0.22),wallMat);
-  wFL.position.set(-5.75,3.25,7.9); wFL.receiveShadow=true; IN.add(wFL);
-  var wFR=new THREE.Mesh(new THREE.BoxGeometry(6.5,6.5,0.22),wallMat);
-  wFR.position.set(5.75,3.25,7.9); wFR.receiveShadow=true; IN.add(wFR);
-  var wFTop=new THREE.Mesh(new THREE.BoxGeometry(5,1.8,0.22),wallMat);
-  wFTop.position.set(0,5.85,7.9); wFTop.receiveShadow=true; IN.add(wFTop);
-  // Side walls
-  var wLeft=new THREE.Mesh(new THREE.BoxGeometry(0.22,6.5,16),wallAccent);
-  wLeft.position.set(-9.1,3.25,0); wLeft.receiveShadow=true; IN.add(wLeft);
-  var wRight=new THREE.Mesh(new THREE.BoxGeometry(0.22,6.5,16),wallMat);
-  wRight.position.set(9.1,3.25,0); wRight.receiveShadow=true; IN.add(wRight);
-  // Dividers (half-height)
-  var divL=new THREE.Mesh(new THREE.BoxGeometry(0.22,3.2,8),wallAccent);
-  divL.position.set(-3.0,1.75,-4.0); divL.receiveShadow=true; IN.add(divL);
-  var divR=new THREE.Mesh(new THREE.BoxGeometry(0.22,3.2,6),wallMat);
-  divR.position.set(3.0,1.75,-5.0);  divR.receiveShadow=true; IN.add(divR);
+  // ── Box helper for walls/furniture with height ────────────────
+  function box(w,h,d,col,x,y,z){
+    var m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),
+      new THREE.MeshLambertMaterial({color:col}));
+    m.position.set(x,y,z); m.castShadow=true; m.receiveShadow=true;
+    IN.add(m); return m;
+  }
 
-  // ── 3. CEILING — invisible from above ──────────────────────
-  var ceilMat=new THREE.MeshLambertMaterial({color:0xf0e8d8,transparent:true,opacity:0.0,depthWrite:false});
-  var ceil=new THREE.Mesh(new THREE.BoxGeometry(18.4,0.2,16.4),ceilMat);
-  ceil.position.set(0,6.5,0); ceil.castShadow=false; ceil.receiveShadow=false; IN.add(ceil);
-  // Beams also invisible
-  var beamMat=new THREE.MeshLambertMaterial({color:0x7a5230,transparent:true,opacity:0.0,depthWrite:false});
-  [-5,0,5].forEach(function(bz){
-    var bm=new THREE.Mesh(new THREE.BoxGeometry(18,0.28,0.22),beamMat);
-    bm.position.set(0,6.2,bz); IN.add(bm);
-  });
+  // ══════════════════════════════════════════════════════════════
+  //  FLOOR — warm honey planks
+  // ══════════════════════════════════════════════════════════════
+  (function(){
+    var m=new THREE.Mesh(new THREE.PlaneGeometry(18,16),
+      new THREE.MeshLambertMaterial({map:ctex(256,256,function(cx,W,H){
+        cx.fillStyle='#c8955a'; cx.fillRect(0,0,W,H);
+        // Plank rows
+        for(var y2=0;y2<H;y2+=20){
+          cx.fillStyle='rgba(0,0,0,0.13)'; cx.fillRect(0,y2,W,1.5);
+        }
+        // Plank seams with offset
+        var off=0;
+        for(var y3=0;y3<H;y3+=20){
+          cx.fillStyle='rgba(0,0,0,0.08)';
+          for(var x2=off%80;x2<W;x2+=80){cx.fillRect(x2,y3,1.5,20);}
+          off+=40;
+        }
+        // Warm sheen
+        cx.fillStyle='rgba(255,230,180,0.07)';
+        for(var y4=0;y4<H;y4+=20){cx.fillRect(0,y4,W,5);}
+      })}));
+    m.rotation.x=-Math.PI/2; m.position.set(0,FLOOR_Y,0);
+    m.renderOrder=0; m.receiveShadow=true; IN.add(m);
+  })();
 
-  // ── 4. WAINSCOTING & SKIRTING ──────────────────────────────
-  var skirtMat=new THREE.MeshLambertMaterial({color:0xd4b896});
-  IB(18.1,0.55,16.1,0xd4b896, 0,0.41,0);  // baseboard
-  var skirtTop=new THREE.Mesh(new THREE.BoxGeometry(18.15,0.06,16.15),skirtMat);
-  skirtTop.position.set(0,0.69,0); IN.add(skirtTop);
+  // ══════════════════════════════════════════════════════════════
+  //  WALLS
+  // ══════════════════════════════════════════════════════════════
+  var wallCol  = 0xdcb895; // warm linen
+  var wallDark = 0xc8a070; // blush accent
+  var wainCol  = 0xa07848; // wainscoting
 
-  // Pendant light visual
-  var bulbMat=new THREE.MeshStandardMaterial({color:0xffee88,emissive:new THREE.Color(0xffcc44),emissiveIntensity:2.5});
-  var bulb=new THREE.Mesh(new THREE.SphereGeometry(0.18,8,6),bulbMat);
-  bulb.position.set(0,5.4,0); IN.add(bulb);
-  var shadeMat2=new THREE.MeshLambertMaterial({color:0xe8d5b0});
-  var shade2=new THREE.Mesh(new THREE.CylinderGeometry(0.55,0.38,0.45,10,1,true),shadeMat2);
-  shade2.position.set(0,5.55,0); IN.add(shade2);
-  var cord2=new THREE.Mesh(new THREE.CylinderGeometry(0.022,0.022,0.9,6),new THREE.MeshLambertMaterial({color:0x5a3a18}));
-  cord2.position.set(0,6.1,0); IN.add(cord2);
+  // Solid wall meshes
+  box(18.4,3.2,0.22,wallCol,   0, 1.6,-8.0);   // back
+  box(0.22,3.2,16.4,wallDark,-9.1,1.6,  0);   // left
+  box(0.22,3.2,16.4,wallCol,  9.1,1.6,  0);   // right
+  box(6.5, 3.2,0.22,wallCol,-5.75,1.6, 7.9);  // front-left
+  box(6.5, 3.2,0.22,wallCol, 5.75,1.6, 7.9);  // front-right
+  box(5.0, 1.0,0.22,wallCol,    0,3.1, 7.9);  // door lintel
+  // Wainscoting strip
+  box(18.4,0.38,0.1,wainCol,   0,0.33,-8.0);
+  box(0.1, 0.38,16.4,wainCol,-9.05,0.33,0);
+  box(0.1, 0.38,16.4,wainCol, 9.05,0.33,0);
+  // Room dividers
+  box(0.2,3.0,8.0,0xc8a070,-3.0,1.5,-4.0);
+  box(0.2,3.0,6.0,0xb89060, 3.0,1.5,-5.0);
 
-  // ════════════════════════════════════════════════════════
-  //  LIVING ROOM  (centre x:-3→3, z:-1→7)
-  // ════════════════════════════════════════════════════════
+  // Skirting boards
+  var sk=0xa07848;
+  box(18.2,0.22,0.14,sk, 0,0.25,  0);
+  box(18.2,0.22,0.14,sk, 0,0.25,-8.0);
+  box(0.14,0.22,16.2,sk,-9.08,0.25,0);
+  box(0.14,0.22,16.2,sk, 9.08,0.25,0);
 
-  // Rug — layered with border pattern
-  IB(6.0,0.04,4.4,0x8b3030,  0,0.16,1.2);  // outer border
-  IB(5.4,0.05,3.8,0xf0e8d8,  0,0.17,1.2);  // cream band
-  IB(4.8,0.06,3.2,0x7a2828,  0,0.18,1.2);  // main deep red
-  IB(4.2,0.07,2.6,0xc04040,  0,0.185,1.2); // inner
-  IB(3.2,0.08,2.0,0xd4695a,  0,0.19,1.2);  // centre blush
-
-  // Sofa — warm terracotta/caramel
-  var sofaSeat=0xc47850, sofaBack2=0xa05e38, sofaArm2=0x8a4e2a;
-  IB(4.8,0.60,1.55,sofaSeat,  0,0.44,3.7);   // seat
-  IB(4.8,0.92,0.28,sofaBack2, 0,1.02,4.40);  // back
-  IB(0.32,0.88,1.55,sofaArm2,-2.22,0.88,3.7);// left arm
-  IB(0.32,0.88,1.55,sofaArm2, 2.22,0.88,3.7);// right arm
-  // Cushions
-  var cushCols=[0xf0d5c0,0xe8c8b0,0xd4b098,0xc8a888];
-  [-1.6,-0.52,0.56,1.64].forEach(function(cx,i){
-    IB(0.9,0.22,1.3,cushCols[i],cx,0.87,3.7);
-  });
-  // Throw pillows
-  IB(0.6,0.45,0.6,0xd4907a,-1.9,1.08,3.65);
-  IB(0.5,0.40,0.5,0xe8c8a8, 1.75,1.08,3.65);
-  IB(0.45,0.38,0.45,0xf0e0d0,0.1,1.08,3.65);
-
-  // Coffee table — dark walnut with gold legs
-  IB(2.5,0.1,1.2,0x5a3820, 0,0.84,1.6);     // top
-  IB(2.38,0.06,1.08,0x6a4828,0,0.90,1.6);   // inset top surface
-  [[-0.95,0.45],[-0.95,-0.45],[0.95,0.45],[0.95,-0.45]].forEach(function(l){
-    IB(0.08,0.7,0.08,0xb8962a, l[0],0.45,1.6+l[1]); // gold legs
-  });
-  // Objects on table
-  IB(0.48,0.075,0.34,0x3a6090, 0.4,0.94,1.55); // book
-  IB(0.28,0.06,0.24,0x7a9060,-0.45,0.95,1.6);   // plant saucer
-  var smPlant=new THREE.Mesh(new THREE.SphereGeometry(0.22,7,5),new THREE.MeshLambertMaterial({color:0x3a7a3a}));
-  smPlant.position.set(-0.45,1.12,1.6); IN.add(smPlant);
-  IB(0.18,0.26,0.18,0xe8c0a0,0.82,0.97,1.6);    // candle
-
-  // Armchair
-  IB(1.42,0.52,1.3, 0xb07050,-2.45,0.40,0.4);
-  IB(1.42,0.82,0.26,0x8a5030,-2.45,1.0,1.0);
-  IB(0.28,0.78,1.3, 0x8a5030,-3.05,0.78,0.4);
-  IB(0.28,0.78,1.3, 0x8a5030,-1.85,0.78,0.4);
-  IB(1.1,0.22,1.0,  0xc0886a,-2.45,0.80,0.4);
-
-  // Side table + lamp
-  IB(0.85,0.52,0.85,0x8a6038,-1.55,0.40,4.6);
-  IB(0.85,0.06,0.85,0x9a7048,-1.55,0.67,4.6);
-  var lstem=new THREE.Mesh(new THREE.CylinderGeometry(0.03,0.03,0.65,7),new THREE.MeshLambertMaterial({color:0xc8a030}));
-  lstem.position.set(-1.55,1.04,4.6); IN.add(lstem);
-  var lshadeMat=new THREE.MeshStandardMaterial({color:0xf5e8d0,emissive:new THREE.Color(0xffcc66),emissiveIntensity:0.7,transparent:true,opacity:0.9});
-  var lshade=new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.28,0.44,10,1,true),lshadeMat);
-  lshade.position.set(-1.55,1.5,4.6); IN.add(lshade);
-  var lampGlow2=new THREE.PointLight(0xffeeaa,1.0,7); lampGlow2.position.set(-1.55,1.3,4.6); IN.add(lampGlow2);
-
-  // Large floor plant in corner
-  IB(0.55,0.65,0.55,0x7a5040, 2.4,0.47,4.85);  // pot
-  IB(0.48,0.08,0.48,0x5a3828, 2.4,0.80,4.85);   // soil
-  var palM=new THREE.MeshLambertMaterial({color:0x2a7a30});
-  [[0,1.05,0],[0.38,1.1,0.2],[-0.35,1.08,0.18],[0.22,1.35,-0.2],[-0.28,1.3,-.15],[0,1.58,0.08]].forEach(function(lf){
-    var leaf=new THREE.Mesh(new THREE.SphereGeometry(0.32,6,5),palM);
-    leaf.scale.set(1,0.35,1.4); leaf.position.set(2.4+lf[0],lf[1],4.85+lf[2]); IN.add(leaf);
-  });
-
-  // Wall art above sofa
-  IB(0.06,1.8,3.2, 0xd4b896,   -9.08,4.2,0.5); // frame on left wall
-  IB(0.04,1.5,2.85,0x6a7890,   -9.05,4.2,0.5); // painting
-  IB(0.04,0.9,1.6, 0x8a9aaa,   -9.04,4.2,0.5); // lighter inner
-
-  // ════════════════════════════════════════════════════════
-  //  BEDROOM  (left x:-9→-3, z:-8→0)
-  // ════════════════════════════════════════════════════════
-
-  // Bed platform
-  IB(3.4,0.22,5.4, 0x7a5030,-6.2,0.25,-3.0);   // platform warm oak
-  IB(3.4,1.15,0.2, 0x5a3018,-6.2,0.85,-5.6);   // headboard
-  IB(3.4,0.52,0.18,0x5a3018,-6.2,0.58,-0.4);   // footboard
-  IB(3.18,0.28,5.0,0xf0e8e0,-6.2,0.50,-3.0);   // mattress white
-  IB(3.0,0.20,3.5, 0xf5c8c0,-6.2,0.66,-2.1);   // blush duvet
-  IB(2.85,0.14,3.2,0xf8d8d0,-6.2,0.76,-2.0);   // duvet lighter folds
-  // Pillows (warm white)
-  IB(1.12,0.22,0.9,0xfff8f4,-6.7,0.75,-5.1);
-  IB(1.12,0.22,0.9,0xfff8f4,-5.7,0.75,-5.1);
-  // Tiny accent pillow
-  IB(0.7,0.24,0.7, 0xf0c8b8,-6.2,0.85,-4.6);
-
-  // Nightstand
-  IB(0.8,0.5,0.8, 0x7a5230,-4.5,0.40,-4.8);
-  IB(0.78,0.06,0.78,0x8a6240,-4.5,0.65,-4.8);
-  // Nightstand lamp
-  var nlstem=new THREE.Mesh(new THREE.CylinderGeometry(0.025,0.025,0.28,6),new THREE.MeshLambertMaterial({color:0xc8a030}));
-  nlstem.position.set(-4.5,0.80,-4.8); IN.add(nlstem);
-  var nlshd=new THREE.Mesh(new THREE.CylinderGeometry(0.22,0.16,0.2,8,1,true),lshadeMat.clone());
-  nlshd.position.set(-4.5,0.98,-4.8); IN.add(nlshd);
-  var bedGlow2=new THREE.PointLight(0xffcc88,0.9,5); bedGlow2.position.set(-4.5,1.2,-4.8); IN.add(bedGlow2);
-
-  // Wardrobe — tall double
-  IB(2.2,4.0,0.72,0x7a5030,-7.7,2.0,-6.9);
-  IB(2.08,3.75,0.08,0x8a6040,-7.7,2.0,-6.55);
-  IB(0.06,0.06,0.05,0xd4a820,-7.15,2.0,-6.5); // handle
-  IB(0.06,0.06,0.05,0xd4a820,-8.25,2.0,-6.5);
-
-  // Bedroom rug — soft lavender
-  IB(3.8,0.04,5.6,0x9080a8,-6.2,0.17,-3.0);
-  IB(3.4,0.05,5.1,0xa899c8,-6.2,0.18,-3.0);
-
-  // Bedroom window (warm sunset glow from back wall)
-  var winGlM=new THREE.MeshStandardMaterial({color:0xffc878,emissive:new THREE.Color(0xff9922),emissiveIntensity:0.6,transparent:true,opacity:0.72});
-  IB(0.14,2.2,2.0,0x8a7060,-6.2,2.6,-8.0);
-  var wGl=new THREE.Mesh(new THREE.BoxGeometry(0.08,1.8,1.6),winGlM);
-  wGl.position.set(-6.2,2.6,-8.0); IN.add(wGl);
-  // Window light
-  var winLight=new THREE.PointLight(0xff9944,0.8,8); winLight.position.set(-6.2,2.8,-7.5); IN.add(winLight);
-
-  // ════════════════════════════════════════════════════════
-  //  KITCHEN  (right x:3→9, z:-8→0)
-  // ════════════════════════════════════════════════════════
-
-  // Counter — sage green cabinets, cream tops
-  IB(5.4,0.14,1.0,0xe8e0d4,6.0,1.06,-6.5);  // back counter top
-  IB(1.0,0.14,4.6,0xe8e0d4,8.5,1.06,-4.2);  // side counter top
-  IB(5.4,1.0,0.92,0x6a7a6a,6.0,0.56,-6.5);  // sage cabinet back
-  IB(0.92,1.0,4.6,0x6a7a6a,8.56,0.56,-4.2); // sage cabinet side
-  // Backsplash — white subway tile feel
-  IB(5.4,1.3,0.07,0xf0eee8,6.0,1.76,-7.04);
-  IB(0.07,1.3,4.6,0xf0eee8,9.08,1.76,-4.2);
-
-  // Cabinet handles
-  [4.0,5.0,6.0,7.2,8.1].forEach(function(cxv){
-    IB(0.18,0.06,0.05,0xc8b06a,cxv,0.7,-6.52);
-  });
-
-  // Sink
-  IB(1.05,0.06,0.72,0xb8c8cc,5.5,1.1,-6.5);
-  IB(0.92,0.2,0.60, 0xa0b0b4,5.5,0.96,-6.5);
-  IB(0.06,0.42,0.06,0x909090,5.5,1.3,-6.92);
-  IB(0.06,0.06,0.28,0x909090,5.5,1.7,-6.78);
-
-  // Overhead cabinets — sage
-  IB(5.4,1.4,0.68,0x5a6a5a,6.0,4.6,-6.7);
-  IB(0.68,1.4,4.6,0x5a6a5a,8.7,4.6,-4.2);
-
-  // Stove/oven — matte black
-  IB(1.45,1.0,0.92,0x2a2a2a,7.5,0.56,-6.5);
-  IB(1.33,0.08,0.80,0x1a1a1a,7.5,1.08,-6.5);
-  [-0.28,0.28].forEach(function(bx){
-    [-0.22,0.22].forEach(function(bz){
-      var burner=new THREE.Mesh(new THREE.CylinderGeometry(0.13,0.13,0.04,10),new THREE.MeshLambertMaterial({color:0x111111}));
-      burner.position.set(7.5+bx,1.13,-6.5+bz); IN.add(burner);
+  // Back wall painting + window (canvas painted onto wall face)
+  (function(){
+    var t=ctex(512,128,function(cx,W,H){
+      // Wall base
+      cx.fillStyle='#dcb895'; cx.fillRect(0,0,W,H);
+      // Wainscoting band at bottom
+      cx.fillStyle='#a07848'; cx.fillRect(0,H-28,W,28);
+      cx.fillStyle='#b88858'; cx.fillRect(0,H-28,W,3);
+      // Window (center)
+      cx.fillStyle='#c0dcf0'; cx.fillRect(205,8,102,88);
+      cx.strokeStyle='#7a5030'; cx.lineWidth=5;
+      cx.strokeRect(205,8,102,88);
+      cx.beginPath(); cx.moveTo(256,8);  cx.lineTo(256,96); cx.stroke();
+      cx.beginPath(); cx.moveTo(205,52); cx.lineTo(307,52); cx.stroke();
+      // Curtains
+      cx.fillStyle='rgba(230,200,160,0.7)'; cx.fillRect(185,4,24,96);
+      cx.fillStyle='rgba(230,200,160,0.7)'; cx.fillRect(307,4,24,96);
+      // Left art frame
+      cx.fillStyle='#7a5030'; cx.fillRect(56,10,68,58);
+      cx.fillStyle='#9ab0a8'; cx.fillRect(61,15,58,48);
+      cx.fillStyle='#4a7a40'; cx.fillRect(64,32,16,30); cx.fillStyle='#3a9030'; cx.fillRect(64,18,28,20);
+      cx.fillStyle='#a8c878'; cx.beginPath(); cx.arc(78,28,10,0,Math.PI*2); cx.fill();
+      // Right art frame
+      cx.fillStyle='#7a5030'; cx.fillRect(388,10,68,58);
+      cx.fillStyle='#f0c8a0'; cx.fillRect(393,15,58,48);
+      cx.fillStyle='#e87858'; cx.beginPath(); cx.arc(422,39,13,0,Math.PI*2); cx.fill();
+      cx.fillStyle='#c04838'; cx.beginPath(); cx.arc(422,39,7,0,Math.PI*2); cx.fill();
+      // Clock
+      cx.fillStyle='#5a3820'; cx.beginPath(); cx.arc(350,30,22,0,Math.PI*2); cx.fill();
+      cx.fillStyle='#f8f0e0'; cx.beginPath(); cx.arc(350,30,17,0,Math.PI*2); cx.fill();
+      cx.strokeStyle='#2a1808'; cx.lineWidth=2.5;
+      cx.beginPath(); cx.moveTo(350,30); cx.lineTo(350,16); cx.stroke();
+      cx.beginPath(); cx.moveTo(350,30); cx.lineTo(361,30); cx.stroke();
     });
+    var m=new THREE.Mesh(new THREE.PlaneGeometry(18,2.8),
+      new THREE.MeshLambertMaterial({map:t}));
+    m.position.set(0,1.4,-7.88); IN.add(m);
+  })();
+
+  // Left wall decoration
+  (function(){
+    var t=ctex(256,128,function(cx,W,H){
+      cx.fillStyle='#dfc09a'; cx.fillRect(0,0,W,H);
+      cx.fillStyle='#a07848'; cx.fillRect(0,H-28,W,28);
+      cx.fillStyle='#b88858'; cx.fillRect(0,H-28,W,3);
+      // Window
+      cx.fillStyle='#c0dcf0'; cx.fillRect(70,8,100,78);
+      cx.strokeStyle='#7a5030'; cx.lineWidth=4;
+      cx.strokeRect(70,8,100,78);
+      cx.beginPath(); cx.moveTo(120,8); cx.lineTo(120,86); cx.stroke();
+      cx.beginPath(); cx.moveTo(70,47); cx.lineTo(170,47); cx.stroke();
+      // Curtains
+      cx.fillStyle='rgba(230,200,160,0.7)'; cx.fillRect(52,4,22,82); cx.fillRect(168,4,22,82);
+      // Bookshelf painted on wall
+      cx.fillStyle='#7a5230'; cx.fillRect(188,4,62,92);
+      cx.fillStyle='#8a6240'; cx.fillRect(192,8,54,84);
+      var bc=['#c03030','#2a8040','#2050a0','#d08020','#7030a0','#c8a020','#c05040'];
+      for(var r2=0;r2<3;r2++){
+        var bx2=194;
+        for(var b2=0;b2<5;b2++){
+          cx.fillStyle=bc[(r2*5+b2)%7]; cx.fillRect(bx2,10+r2*26,10,22);
+          cx.fillStyle='rgba(255,255,255,0.15)'; cx.fillRect(bx2,10+r2*26,2,22);
+          bx2+=11;
+        }
+      }
+    });
+    var m=new THREE.Mesh(new THREE.PlaneGeometry(2.8,16),
+      new THREE.MeshLambertMaterial({map:t}));
+    m.rotation.y=Math.PI/2; m.position.set(-8.88,1.4,0); IN.add(m);
+  })();
+
+  // Right wall (kitchen)
+  (function(){
+    var t=ctex(256,128,function(cx,W,H){
+      cx.fillStyle='#d8b888'; cx.fillRect(0,0,W,H);
+      cx.fillStyle='#a07848'; cx.fillRect(0,H-28,W,28);
+      // Counter/cabinet
+      cx.fillStyle='#607860'; cx.fillRect(20,30,210,90); // sage cabinets
+      cx.fillStyle='#e0d8cc'; cx.fillRect(18,24,214,8);  // counter top
+      cx.strokeStyle='#506050'; cx.lineWidth=1.5;
+      [90,150,210].forEach(function(x3){cx.beginPath();cx.moveTo(x3,32);cx.lineTo(x3,118);cx.stroke();});
+      cx.fillStyle='#c8a040';
+      [55,120,180,235].forEach(function(x3){cx.fillRect(x3,72,12,5);});
+      // Overhead cabinets
+      cx.fillStyle='#506050'; cx.fillRect(20,0,210,22);
+      cx.strokeStyle='#405040'; cx.lineWidth=1;
+      [90,150,210].forEach(function(x3){cx.beginPath();cx.moveTo(x3,0);cx.lineTo(x3,22);cx.stroke();});
+      // Fridge (right side)
+      cx.fillStyle='#888a90'; cx.fillRect(218,0,36,120);
+      cx.fillStyle='#9a9ca8'; cx.fillRect(221,4,30,55); cx.fillRect(221,62,30,52);
+      cx.strokeStyle='#666'; cx.lineWidth=1.5;
+      cx.strokeRect(221,4,30,55); cx.strokeRect(221,62,30,52);
+      cx.fillStyle='#c8a030'; cx.fillRect(246,30,4,8); cx.fillRect(246,84,4,8);
+    });
+    var m=new THREE.Mesh(new THREE.PlaneGeometry(2.8,16),
+      new THREE.MeshLambertMaterial({map:t}));
+    m.rotation.y=-Math.PI/2; m.position.set(8.88,1.4,0); IN.add(m);
+  })();
+
+  // ══════════════════════════════════════════════════════════════
+  //  FLOOR RUGS
+  // ══════════════════════════════════════════════════════════════
+  flat(ctex(128,96,function(cx,W,H){
+    cx.fillStyle='#8c2e2e'; cx.fillRect(0,0,W,H);
+    cx.fillStyle='#f0dfc8'; cx.fillRect(7,5,W-14,H-10);
+    cx.fillStyle='#7a1e1e'; cx.fillRect(14,10,W-28,H-20);
+    cx.fillStyle='#c84040'; cx.fillRect(20,14,W-40,H-28);
+    cx.strokeStyle='#c09070'; cx.lineWidth=1.5; cx.strokeRect(25,18,W-50,H-36);
+    var mx=W/2,my=H/2;
+    cx.strokeStyle='#d4a870'; cx.lineWidth=1;
+    cx.beginPath();cx.moveTo(mx,18);cx.lineTo(W-25,my);cx.lineTo(mx,H-18);cx.lineTo(25,my);cx.closePath();cx.stroke();
+  }), 0,1.5, 7.0,5.0);
+
+  flat(ctex(80,128,function(cx,W,H){
+    cx.fillStyle='#6858a0'; cx.fillRect(0,0,W,H);
+    cx.fillStyle='#c0b4e0'; cx.fillRect(6,6,W-12,H-12);
+    cx.fillStyle='#5848a0'; cx.fillRect(12,12,W-24,H-24);
+    cx.fillStyle='#9088c8'; cx.fillRect(17,17,W-34,H-34);
+    cx.strokeStyle='#d8d0f0'; cx.lineWidth=1; cx.strokeRect(21,21,W-42,H-42);
+  }), -6,-3.0, 4.0,5.5);
+
+  flat(ctex(96,96,function(cx,W,H){
+    for(var ty=0;ty<H;ty+=12) for(var tx=0;tx<W;tx+=12){
+      cx.fillStyle=((tx+ty)/12%2===0)?'#e2d8c8':'#cfc4b4';
+      cx.fillRect(tx,ty,12,12);
+    }
+    cx.strokeStyle='rgba(0,0,0,0.08)'; cx.lineWidth=0.5;
+    for(var tg=0;tg<H;tg+=12){cx.beginPath();cx.moveTo(0,tg);cx.lineTo(W,tg);cx.stroke();}
+    for(var tg2=0;tg2<W;tg2+=12){cx.beginPath();cx.moveTo(tg2,0);cx.lineTo(tg2,H);cx.stroke();}
+  }), 5.5,-5.0, 5.5,5.5);
+
+  // ══════════════════════════════════════════════════════════════
+  //  FURNITURE — each gets a unique _yStep via flat()
+  // ══════════════════════════════════════════════════════════════
+
+  // SOFA
+  flat(ctex(160,64,function(cx,W,H){
+    cx.fillStyle='#8a5030'; cx.fillRect(0,0,W,H);       // frame
+    cx.fillStyle='#b87050'; cx.fillRect(10,0,W-20,H*0.3); // back
+    cx.fillStyle='#d09060'; cx.fillRect(12,2,W-24,H*0.25);
+    cx.fillStyle='#c07848'; cx.fillRect(6,H*0.3,W-12,H*0.7); // seat
+    cx.fillStyle='#d8906a'; cx.fillRect(10,H*0.34,W-20,H*0.58);
+    cx.strokeStyle='#985028'; cx.lineWidth=2.5;
+    [W/3,W*2/3].forEach(function(x){cx.beginPath();cx.moveTo(x,H*0.3);cx.lineTo(x,H);cx.stroke();});
+    cx.fillStyle='#f0d0b0'; cx.fillRect(W-52,H*0.35,26,24); // throw pillow
+    cx.strokeStyle='#d8b890'; cx.lineWidth=1; cx.strokeRect(W-52,H*0.35,26,24);
+    cx.fillStyle='rgba(255,220,190,0.5)'; cx.beginPath(); cx.arc(W-38,H*0.35+8,6,0,Math.PI*2); cx.fill();
+  }), 0,3.5, 6.5,2.5);
+
+  // COFFEE TABLE
+  flat(ctex(112,80,function(cx,W,H){
+    cx.fillStyle='#3c2210'; cx.fillRect(0,0,W,H);
+    cx.fillStyle='#5a3418'; cx.fillRect(5,5,W-10,H-10);
+    cx.fillStyle='#c8a020'; [[4,4],[W-12,4],[4,H-12],[W-12,H-12]].forEach(function(c){cx.fillRect(c[0],c[1],8,8);});
+    cx.fillStyle='#284878'; cx.fillRect(12,10,30,22); cx.fillStyle='#183060'; cx.fillRect(12,10,5,22); // book
+    cx.fillStyle='rgba(255,210,80,0.6)'; cx.beginPath();cx.arc(W-22,14,10,0,Math.PI*2);cx.fill(); // candle glow
+    cx.fillStyle='#f0e8d0'; cx.fillRect(W-25,12,7,16);
+    cx.fillStyle='#ffcc44'; cx.fillRect(W-23,7,5,6);
+    cx.fillStyle='#8a5030'; cx.beginPath();cx.arc(W/2+8,H-14,7,0,Math.PI*2);cx.fill(); // vase
+    cx.fillStyle='#2a7830'; cx.beginPath();cx.arc(W/2+8,H-22,6,Math.PI,0);cx.fill();
+  }), 0,1.2, 3.8,2.2);
+
+  // ARMCHAIR
+  flat(ctex(72,72,function(cx,W,H){
+    cx.fillStyle='#7a4020'; cx.fillRect(0,0,W,H);
+    cx.fillStyle='#a86040'; cx.fillRect(8,8,W-16,H-16);
+    cx.fillStyle='#c87850'; cx.fillRect(13,15,W-26,H-24);
+    cx.fillStyle='#5a2c10'; cx.fillRect(0,0,W,H*0.28);
+    cx.fillStyle='#7a4028'; cx.fillRect(3,3,W-6,H*0.23);
+  }), -2.5,0.5, 2.4,2.4);
+
+  // DINING TABLE
+  flat(ctex(128,96,function(cx,W,H){
+    cx.fillStyle='#6c4820'; cx.fillRect(0,0,W,H);
+    cx.fillStyle='#8a6030'; cx.fillRect(5,5,W-10,H-10);
+    cx.fillStyle='rgba(255,248,236,0.5)'; cx.fillRect(9,9,W-18,H-18); // cloth
+    [[W/4,H/3],[W*3/4,H/3],[W/4,H*2/3],[W*3/4,H*2/3]].forEach(function(p){
+      cx.fillStyle='#ece0d0'; cx.beginPath();cx.arc(p[0],p[1],11,0,Math.PI*2);cx.fill();
+      cx.fillStyle='#d0c4b4'; cx.beginPath();cx.arc(p[0],p[1],6,0,Math.PI*2);cx.fill();
+    });
+    cx.fillStyle='#6a5020'; cx.beginPath();cx.arc(W/2,H/2,6,0,Math.PI*2);cx.fill();
+    cx.fillStyle='#2a7830'; cx.beginPath();cx.arc(W/2,H/2-5,5,Math.PI,0);cx.fill();
+    cx.fillStyle='#c8a020'; [[5,5],[W-13,5],[5,H-13],[W-13,H-13]].forEach(function(c){cx.fillRect(c[0],c[1],8,8);});
+  }), 5.5,-2.5, 4.5,3.2);
+
+  // DINING CHAIRS (4)
+  [[-0.8,-4.4],[7.8,-4.4],[5.5,-1.0],[5.5,-4.0]].forEach(function(pos){
+    flat(ctex(40,40,function(cx,W,H){
+      cx.fillStyle='#5a3010'; cx.fillRect(0,0,W,H);
+      cx.fillStyle='#7a5028'; cx.fillRect(3,3,W-6,H-6);
+      cx.fillStyle='#a87840'; cx.fillRect(6,8,W-12,H-14); // cushion
+    }), pos[0],pos[1], 1.3,1.3);
   });
 
-  // Dining table — round feel, warm wood
-  IB(2.3,0.1,1.65,0x9a7040,5.8,0.9,-2.8);
-  IB(2.18,0.06,1.53,0xb08050,5.8,0.96,-2.8);
-  [[-0.8,0.5],[-0.8,-0.5],[0.8,0.5],[0.8,-0.5]].forEach(function(l){
-    IB(0.08,0.8,0.08,0xb8962a,5.8+l[0],0.5,-2.8+l[1]); // gold legs
-  });
-  // Dining chairs — sage cushion
-  [[4.5,-2.8,0],[7.1,-2.8,Math.PI],[5.8,-1.85,Math.PI/2],[5.8,-3.75,-Math.PI/2]].forEach(function(c){
-    IB(0.92,0.48,0.92,0x8a7060,c[0],0.34,c[1]);   // seat
-    IB(0.92,0.70,0.2,0x6a5040,c[0]+Math.sin(c[2])*0.44, 0.94, c[1]+Math.cos(c[2])*0.44); // back
-    IB(0.82,0.18,0.80,0xa8b898,c[0],0.80,c[1]);    // sage cushion
-  });
+  // BED
+  flat(ctex(128,160,function(cx,W,H){
+    cx.fillStyle='#5c3018'; cx.fillRect(0,0,W,H);
+    cx.fillStyle='#eee8e0'; cx.fillRect(6,8,W-12,H-14); // mattress
+    cx.fillStyle='#f4b8b0'; cx.fillRect(8,22,W-16,H-30); // duvet
+    cx.fillStyle='#f8ccc4'; cx.fillRect(11,26,W-22,H-40);
+    cx.strokeStyle='#e0a89a'; cx.lineWidth=1.5;
+    for(var fi=0;fi<4;fi++){var fy2=38+fi*18;cx.beginPath();cx.moveTo(11,fy2);cx.bezierCurveTo(W/3,fy2-4,W*2/3,fy2+4,W-11,fy2);cx.stroke();}
+    cx.fillStyle='#fffaf6'; cx.fillRect(13,9,W/2-19,14); cx.fillRect(W/2+6,9,W/2-19,14);
+    cx.strokeStyle='#e0d8d0'; cx.lineWidth=1; cx.strokeRect(13,9,W/2-19,14); cx.strokeRect(W/2+6,9,W/2-19,14);
+    cx.fillStyle='#ffaac8'; cx.font='bold 11px serif'; cx.fillText('♡',W/2-6,20);
+    cx.fillStyle='#3c1c08'; cx.fillRect(0,0,W,8); cx.fillRect(0,H-7,W,7);
+  }), -6,-3.0, 4.2,5.5);
 
-  // Kitchen window — sunset glow
-  IB(0.14,1.8,1.8,0x8a7060,9.0,2.4,-2.6);
-  var wGR=new THREE.Mesh(new THREE.BoxGeometry(0.08,1.4,1.4),winGlM.clone());
-  wGR.position.set(9.0,2.4,-2.6); IN.add(wGR);
+  // NIGHTSTAND
+  flat(ctex(48,48,function(cx,W,H){
+    cx.fillStyle='#5c3818'; cx.fillRect(0,0,W,H);
+    cx.fillStyle='#7a5030'; cx.fillRect(3,3,W-6,H-6);
+    cx.fillStyle='rgba(255,228,120,0.7)'; cx.beginPath();cx.arc(W/2,H/2,W/2-4,0,Math.PI*2);cx.fill();
+    cx.fillStyle='rgba(255,210,70,0.9)'; cx.beginPath();cx.arc(W/2,H/2,W/3,0,Math.PI*2);cx.fill();
+    cx.fillStyle='#fff8d0'; cx.beginPath();cx.arc(W/2,H/2,W/7,0,Math.PI*2);cx.fill();
+  }), -4.2,-4.8, 1.8,1.8);
 
-  // ── FIREPLACE (bedroom corner) ─────────────────────────────
-  IB(3.2,5.0,0.36,0x8a7868,-6.0,2.5,-8.0);   // surround warm stone
-  IB(2.0,2.1,0.28,0x180e08,-6.0,1.1,-7.98);  // opening
-  IB(3.6,0.22,1.1, 0x9a7848,-6.0,3.18,-7.72);// mantel
-  IB(1.4,0.14,0.18,0x6a3a18,-6.0,0.22,-7.94);// log 1
-  IB(1.2,0.12,0.16,0x5a2c0e,-6.0,0.34,-7.94);// log 2
-  // Fire
-  [[0.45,0.9,0xff5500,0xff2200,1.6],[0.28,0.65,0xffaa00,0xff7700,2.1],[0.16,0.45,0xffee44,0xffcc00,2.6]].forEach(function(f,i){
-    var fm=new THREE.Mesh(
-      new THREE.ConeGeometry(f[0],f[1],6),
-      new THREE.MeshStandardMaterial({color:f[2],emissive:new THREE.Color(f[3]),emissiveIntensity:f[4],transparent:true,opacity:0.9-i*0.08})
-    );
-    fm.position.set(-6.0,0.70,-7.92); IN.add(fm); fireMeshes.push(fm);
-  });
-  // Mantel objects
-  [-6.9,-6.0,-5.1].forEach(function(cx){
-    IB(0.09,0.38,0.09,0xf5f0e8,cx,3.42,-7.72);
-    var cfl=new THREE.Mesh(new THREE.SphereGeometry(0.06,5,4),new THREE.MeshStandardMaterial({color:0xffee44,emissive:new THREE.Color(0xffcc00),emissiveIntensity:2.2}));
-    cfl.position.set(cx,3.79,-7.72); IN.add(cfl);
-  });
-  // Mantel art
-  IB(0.06,1.1,0.78,0x7a6050,-6.0,3.88,-7.78);
-  IB(0.04,0.88,0.60,0x4a6078,-6.0,3.86,-7.77);
+  // WARDROBE top
+  flat(ctex(96,40,function(cx,W,H){
+    cx.fillStyle='#3e2408'; cx.fillRect(0,0,W,H);
+    cx.fillStyle='#5a3418'; cx.fillRect(2,2,W/2-3,H-4); cx.fillRect(W/2+1,2,W/2-3,H-4);
+    cx.fillStyle='#6a4228'; cx.fillRect(4,4,W/2-7,H-8); cx.fillRect(W/2+3,4,W/2-7,H-8);
+    cx.fillStyle='#c8a020'; cx.fillRect(W/4-4,H/2-3,8,6); cx.fillRect(W*3/4-4,H/2-3,8,6);
+  }), -7.5,-6.4, 3.5,1.7);
 
-  // Update fire light position
-  fireL.position.set(-6.0,1.8,-7.5);
+  // BOOKSHELF strip
+  flat(ctex(64,32,function(cx,W,H){
+    cx.fillStyle='#3e2408'; cx.fillRect(0,0,W,H);
+    var bc2=['#c03030','#2a8040','#2050a0','#d08020','#7030a0','#c8a020','#c05040'];
+    var bx3=3;
+    for(var bi=0;bi<6;bi++){cx.fillStyle=bc2[bi%7];cx.fillRect(bx3,3,9,H-6);cx.fillStyle='rgba(255,255,255,0.12)';cx.fillRect(bx3,3,2,H-6);bx3+=10;}
+  }), -7.5,-2.0, 2.1,0.9);
 
-}// end buildCozyInterior()
+  // FIREPLACE top-down
+  flat(ctex(80,48,function(cx,W,H){
+    cx.fillStyle='#7a6050'; cx.fillRect(0,0,W,H);
+    cx.fillStyle='#5a4838'; cx.fillRect(3,3,W-6,H-6);
+    cx.fillStyle='#0e0a08'; cx.fillRect(W*0.2,H*0.1,W*0.6,H*0.8);
+    cx.fillStyle='rgba(255,80,0,0.88)'; cx.fillRect(W*0.22,H*0.12,W*0.56,H*0.76);
+    cx.fillStyle='rgba(255,170,20,0.82)'; cx.fillRect(W*0.3,H*0.2,W*0.4,H*0.62);
+    cx.fillStyle='rgba(255,240,60,0.92)'; cx.beginPath();cx.arc(W/2,H/2,H*0.22,0,Math.PI*2);cx.fill();
+    cx.fillStyle='#4e2e10'; cx.fillRect(0,0,W,H*0.1);
+    cx.fillStyle='#5a3818'; cx.fillRect(2,H*0.02,W-4,H*0.06);
+  }), -5.5,-7.3, 3.2,2.0);
 
-// ─────────────────────────────────────────────────────────────
-//  INDOOR COLLISION — matches the new room layout
-//  Spawn (0,0,2.5) is explicitly verified clear below.
-// ─────────────────────────────────────────────────────────────
-function blockedIn(nx,nz){
-  // Outer walls
-  if(nx<-8.9||nx>8.9||nz>7.7||nz<-7.9)return true;
-  // Left divider wall (x≈−3, z<−0.5): passthrough gap at z>−0.5
-  if(nx>-3.22&&nx<-2.78&&nz<-0.5)return true;
-  // Right divider wall (x≈3, z<−2): passthrough gap at z>−2
-  if(nx>2.78&&nx<3.22&&nz<-2.0)return true;
-  // Sofa block
-  if(nx>-2.5&&nx<2.5&&nz>3.1&&nz<4.6)return true;
-  // Bed block
-  if(nx<-4.5&&nx>-8.0&&nz>-5.8&&nz<-0.2)return true;
-  // Wardrobe
-  if(nx<-6.8&&nz<-6.2)return true;
-  // Fireplace
-  if(nx<-4.5&&nz<-7.5)return true;
-  // Kitchen counters (back)
-  if(nx>3.5&&nz<-5.8)return true;
-  // Kitchen counter (right wall)
-  if(nx>7.9&&nz<-1.8)return true;
-  // Dining table
-  if(nx>4.5&&nx<7.2&&nz>-3.5&&nz<-2.1)return true;
-  // Bookshelf
-  if(nx>8.3&&nz>0.8&&nz<4.2)return true;
-  // Armchair
-  if(nx<-1.6&&nx>-3.2&&nz>-0.2&&nz<1.4)return true;
-  return false;
+  // KITCHEN COUNTER top
+  flat(ctex(160,48,function(cx,W,H){
+    cx.fillStyle='#607060'; cx.fillRect(0,0,W,H);
+    cx.fillStyle='#708070'; cx.fillRect(2,2,W-4,H-4);
+    cx.fillStyle='#ddd6c4'; cx.fillRect(0,0,W,H*0.28);
+    cx.strokeStyle='#505f50'; cx.lineWidth=1.5;
+    [W*0.25,W*0.5,W*0.75].forEach(function(x){cx.beginPath();cx.moveTo(x,H*0.3);cx.lineTo(x,H);cx.stroke();});
+    cx.fillStyle='#c8a040'; [W*0.125,W*0.375,W*0.625,W*0.875].forEach(function(x){cx.fillRect(x-5,H*0.62,10,4);});
+    cx.fillStyle='#a8b8bc'; cx.fillRect(W*0.55,H*0.04,W*0.24,H*0.2);
+    cx.fillStyle='#98a8ac'; cx.fillRect(W*0.57,H*0.06,W*0.2,H*0.14);
+    cx.fillStyle='#111'; [[W*0.12,H*0.1],[W*0.26,H*0.1]].forEach(function(b){cx.beginPath();cx.arc(b[0],b[1],6,0,Math.PI*2);cx.fill();});
+  }), 5.5,-6.3, 5.5,2.0);
+
+  // FLOOR LAMP glow
+  flat(ctex(32,32,function(cx,W,H){
+    cx.fillStyle='rgba(255,220,90,0.6)'; cx.beginPath();cx.arc(W/2,H/2,W/2-1,0,Math.PI*2);cx.fill();
+    cx.fillStyle='rgba(255,200,50,0.8)'; cx.beginPath();cx.arc(W/2,H/2,W/3,0,Math.PI*2);cx.fill();
+    cx.fillStyle='#fff8d0'; cx.beginPath();cx.arc(W/2,H/2,W/6,0,Math.PI*2);cx.fill();
+  }), -7.5,3.0, 1.1,1.1);
+
+  // LIVING PLANT
+  flat(ctex(32,32,function(cx,W,H){
+    cx.fillStyle='#8a5030'; cx.beginPath();cx.arc(W/2,H*0.65,W/3,0,Math.PI*2);cx.fill();
+    cx.fillStyle='#1a6828'; [[W/2,H*0.22],[W/2-7,H*0.4],[W/2+8,H*0.38],[W/2-4,H*0.12],[W/2+5,H*0.15]].forEach(function(l){cx.beginPath();cx.ellipse(l[0],l[1],9,6,0,0,Math.PI*2);cx.fill();});
+    cx.fillStyle='#2a8838'; cx.beginPath();cx.ellipse(W/2,H*0.18,5,9,0,0,Math.PI*2);cx.fill();
+  }), 2.8,4.3, 1.4,1.4);
+
+  // BEDROOM PLANT
+  flat(ctex(28,28,function(cx,W,H){
+    cx.fillStyle='#7a4828'; cx.beginPath();cx.arc(W/2,H*0.68,W/3,0,Math.PI*2);cx.fill();
+    cx.fillStyle='#1a7848'; cx.beginPath();cx.ellipse(W/2,H*0.35,7,10,0,0,Math.PI*2);cx.fill();
+    cx.fillStyle='#2a9858'; cx.beginPath();cx.ellipse(W/2-5,H*0.5,5,7,-0.4,0,Math.PI*2);cx.fill();
+    cx.beginPath();cx.ellipse(W/2+5,H*0.5,5,7,0.4,0,Math.PI*2);cx.fill();
+  }), -4.0,-6.5, 1.1,1.1);
+
+  // ══════════════════════════════════════════════════════════════
+  //  LIGHTS
+  // ══════════════════════════════════════════════════════════════
+  var bulbM=new THREE.MeshStandardMaterial({color:0xffee88,emissive:new THREE.Color(0xffcc44),emissiveIntensity:2.5});
+  var bulb=new THREE.Mesh(new THREE.SphereGeometry(0.18,8,6),bulbM);
+  bulb.position.set(0,5.4,0); IN.add(bulb);
+  var shadeM=new THREE.MeshLambertMaterial({color:0xe8c880,transparent:true,opacity:0.9,side:THREE.BackSide});
+  var shade=new THREE.Mesh(new THREE.ConeGeometry(0.55,0.45,10,1,true),shadeM);
+  shade.position.set(0,5.2,0); IN.add(shade);
+
+  // Fire animation planes
+  var fmA=new THREE.Mesh(new THREE.PlaneGeometry(0.7,1.0),new THREE.MeshStandardMaterial({color:0xff4400,emissive:new THREE.Color(0xff2200),emissiveIntensity:2.0,transparent:true,opacity:0.88,depthWrite:false}));
+  fmA.position.set(-5.5,0.8,-7.4); fmA.rotation.x=-Math.PI/2+0.5; IN.add(fmA); fireMeshes.push(fmA);
+  var fmB=new THREE.Mesh(new THREE.PlaneGeometry(0.4,0.7),new THREE.MeshStandardMaterial({color:0xffaa00,emissive:new THREE.Color(0xff8800),emissiveIntensity:2.5,transparent:true,opacity:0.82,depthWrite:false}));
+  fmB.position.set(-5.5,1.05,-7.4); fmB.rotation.x=-Math.PI/2+0.5; IN.add(fmB); fireMeshes.push(fmB);
+
+  // Update light positions to match layout
+  fireL.position.set(-5.5,1.8,-6.8);
+  lampGlow=new THREE.PointLight(0xffeeaa,1.1,7);
+  lampGlow.position.set(-7.5,1.5,3.0); IN.add(lampGlow);
+  kitchenL.position.set(5.5,3.5,-5.0);
+  ceilLight.position.set(0,5.2,0);
 }
 
-// Build the interior immediately
 buildCozyInterior();
-
-// ── interiorWarmLight alias for game loop flicker ──────────
-var interiorWarmLight=ceilLight;
+// Wire up aliases now that buildCozyInterior() has run
+// lampGlow is now assigned (outer var set inside buildCozyInterior)
+// kitchenL already declared and initialized above
+// interiorWarmLight aliases the ceiling chandelier light
+interiorWarmLight = ceilLight;
+// Indoor light aliases (assigned inside buildCozyInterior)
 
 // ═════════════════════════════════════════════════════════════
 //  CHARACTER BUILDER
@@ -1558,7 +1907,7 @@ function updateLabel(lbl,obj,yOff,cam){
 // ─────────────────────────────────────────────────────────────
 var jIn={x:0,y:0,on:false};
 var joy=nipplejs.create({zone:document.getElementById('jz'),mode:'static',position:{left:'65px',bottom:'65px'},color:'rgba(255,200,140,0.9)',size:110,restOpacity:.72,fadeTime:150});
-joy.on('move',function(e,d){if(d.vector){jIn.x=d.vector.x;jIn.y=-d.vector.y;jIn.on=true;}});
+joy.on('move',function(e,d){if(d.vector){jIn.x=d.vector.x;jIn.y=d.vector.y;jIn.on=true;}});
 joy.on('end',function(){jIn.x=0;jIn.y=0;jIn.on=false;});
 var keys={};
 window.addEventListener('keydown',function(e){keys[e.code]=true;});
@@ -1580,6 +1929,38 @@ function blockedOut(nx,nz){
   if(nx>HOUSE.position.x-5.0&&nx<HOUSE.position.x+5.0&&nz>HOUSE.position.z-4.5&&nz<HOUSE.position.z+6.2)return true;
   for(var t=0;t<TREE_POS.length;t++){var dx=nx-TREE_POS[t][0],dz=nz-TREE_POS[t][1];if(dx*dx+dz*dz<TREE_R*TREE_R)return true;}
   for(var m=0;m<MTN_C.length;m++){var mx=nx-MTN_C[m][0],mz=nz-MTN_C[m][1],mr=MTN_C[m][2];if(mx*mx+mz*mz<mr*mr)return true;}
+  return false;
+}
+// ── Indoor collision — matches room layout ──────────────────
+// Room: x: -9→+9, z: -8→+8. Spawn (0, FLOOR_Y, 2.5) clear.
+function blockedIn(nx,nz){
+  // Outer walls
+  if(nx<-8.7||nx>8.7||nz>7.5||nz<-7.7) return true;
+  // Front door gap (always passable): x -2.5→2.5, z 7.5→8
+  // Sofa — back of living room
+  if(nx>-3.5&&nx<3.5&&nz>2.4&&nz<4.8) return true;
+  // Coffee table — slightly smaller than mesh
+  if(nx>-2.2&&nx<2.2&&nz>0.2&&nz<2.3) return true;
+  // Armchair
+  if(nx>-3.8&&nx<-1.3&&nz>-0.6&&nz<1.7) return true;
+  // Divider wall left (x≈-3, z<-0.5)
+  if(nx>-3.2&&nx<-2.8&&nz<-0.5) return true;
+  // Divider wall right (x≈3, z<-2)
+  if(nx>2.8&&nx<3.2&&nz<-2.0) return true;
+  // Bed (back-left bedroom)
+  if(nx<-3.8&&nx>-8.4&&nz>-5.8&&nz<-0.2) return true;
+  // Wardrobe
+  if(nx<-5.8&&nz<-5.6) return true;
+  // Bookshelf
+  if(nx<-6.6&&nz>-3.0&&nz<-0.8) return true;
+  // Fireplace
+  if(nx<-3.8&&nz<-6.5) return true;
+  // Kitchen counter (right back)
+  if(nx>4.5&&nz<-5.4) return true;
+  // Dining table
+  if(nx>3.3&&nx<7.8&&nz>-4.2&&nz<-1.6) return true;
+  // Floor lamp (just a small bump)
+  if(nx<-7.0&&nx>-8.2&&nz>2.4&&nz<3.6) return true;
   return false;
 }
 function tryMove(pos,mx,mz,speed,dt,blockFn){
@@ -1676,7 +2057,6 @@ hugBtn.addEventListener('click',function(){
   hugActive=!hugActive;hugTimer=0;
   hugBtn.classList.toggle('active',hugActive);
   if(hugActive){
-    // Use the correct character pair depending on which scene we're in
     var fel=insideHouse?inFel:outFel;
     var chr=insideHouse?inChris:outChris;
     var snapDx=fel.position.x-chr.position.x;
@@ -1685,7 +2065,9 @@ hugBtn.addEventListener('click',function(){
       fel.rotation.y=Math.atan2(-snapDx,-snapDz);
       chr.rotation.y=Math.atan2(snapDx,snapDz);
     }
-    // Show toast, auto-dismiss after 3 seconds
+    // Set hug sprite frames
+    setSpriteState(outFel,'hug'); setSpriteState(outChris,'hug');
+    setSpriteState(inFel,'hug');  setSpriteState(inChris,'hug');
     emoteBubble.textContent='Hugging';
     emoteBubble.classList.add('show');
     clearTimeout(toastTimeout);
@@ -1693,6 +2075,8 @@ hugBtn.addEventListener('click',function(){
   } else {
     clearTimeout(toastTimeout);
     emoteBubble.classList.remove('show');
+    setSpriteState(outFel,'idle'); setSpriteState(outChris,'idle');
+    setSpriteState(inFel,'idle');  setSpriteState(inChris,'idle');
     var chars=insideHouse?[inFel,inChris]:[outFel,outChris];
     chars.forEach(function(ch){ch._lArm.rotation.z=0;ch._rArm.rotation.z=0;ch._lArm.rotation.x=0;ch._rArm.rotation.x=0;});
   }
@@ -1703,6 +2087,9 @@ holdBtn.addEventListener('click',function(){
   holdHandActive=!holdHandActive;
   holdBtn.classList.toggle('active',holdHandActive);
   if(holdHandActive){
+    // Set hold-hand sprite frames
+    setSpriteState(outFel,'hold'); setSpriteState(outChris,'hold');
+    setSpriteState(inFel,'hold');  setSpriteState(inChris,'hold');
     emoteBubble.textContent='Holding Hands';
     emoteBubble.classList.add('show');
     clearTimeout(toastTimeout);
@@ -1710,6 +2097,8 @@ holdBtn.addEventListener('click',function(){
   } else {
     clearTimeout(toastTimeout);
     emoteBubble.classList.remove('show');
+    setSpriteState(outFel,'idle'); setSpriteState(outChris,'idle');
+    setSpriteState(inFel,'idle');  setSpriteState(inChris,'idle');
     var chars=insideHouse?[inFel,inChris]:[outFel,outChris];
     chars.forEach(function(ch){ch._lArm.rotation.z=0;ch._rArm.rotation.z=0;});
   }
@@ -1774,7 +2163,7 @@ function enterHouse(){
 
     // Snap indoor camera directly above characters — no lerp stutter on entry
     inCam.position.set(inFel.position.x, IN_CAM_Y, inFel.position.z + IN_CAM_DZ);
-    inCam.lookAt(inFel.position.x, 1.0, inFel.position.z);
+    inCam.lookAt(inFel.position.x, 0, inFel.position.z);
 
     // Character fill light — snap to spawn
     glbCharLight.position.set(inFel.position.x,3.5,inFel.position.z);
@@ -1805,6 +2194,951 @@ document.getElementById('ehb').addEventListener('click',enterHouse);
 exitBtn.addEventListener('click',exitHouse);
 
 // ─────────────────────────────────────────────────────────────
+//  BIGGER PETS — scale up all pets
+// ─────────────────────────────────────────────────────────────
+outCat.scale.setScalar(1.45);
+inCat.scale.setScalar(1.25);
+outBunny.scale.setScalar(1.55);
+inBunny.scale.setScalar(1.30);
+outDino.scale.setScalar(1.50);
+inDino.scale.setScalar(1.28);
+
+// ─────────────────────────────────────────────────────────────
+//  SPRITE-STYLE CHARACTERS — replace block chars with flat
+//  billboard sprites using canvas-generated textures
+// ─────────────────────────────────────────────────────────────
+function makeSpriteChar(isFel){
+  var canvas=document.createElement('canvas');
+  canvas.width=64; canvas.height=96;
+  var ctx=canvas.getContext('2d');
+
+  if(isFel){
+    // Shoes
+    ctx.fillStyle='#f0f0f8'; ctx.fillRect(18,84,10,10); ctx.fillRect(36,84,10,10);
+    // Legs / tights
+    ctx.fillStyle='#2a1a3a'; ctx.fillRect(20,64,10,22); ctx.fillRect(36,64,10,22);
+    // Skirt
+    ctx.fillStyle='#ff4499';
+    ctx.beginPath(); ctx.moveTo(12,62); ctx.lineTo(52,62); ctx.lineTo(56,76); ctx.lineTo(8,76); ctx.closePath(); ctx.fill();
+    ctx.fillStyle='#ff66aa'; ctx.fillRect(14,54,36,12);
+    // Body
+    ctx.fillStyle='#ffeef6'; ctx.fillRect(18,38,28,18);
+    // Arms
+    ctx.fillStyle='#ff6eb4';
+    ctx.fillRect(8,40,12,18); // left arm
+    ctx.fillRect(44,40,12,18); // right arm
+    // Hands
+    ctx.fillStyle='#ffd6b0'; ctx.beginPath(); ctx.arc(14,58,5,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(50,58,5,0,Math.PI*2); ctx.fill();
+    // Neck
+    ctx.fillStyle='#ffd6b0'; ctx.fillRect(27,32,10,8);
+    // Head
+    ctx.fillStyle='#ffd6b0';
+    ctx.beginPath(); ctx.arc(32,22,14,0,Math.PI*2); ctx.fill();
+    // Hair
+    ctx.fillStyle='#3d1c0a';
+    ctx.beginPath(); ctx.arc(32,14,14,Math.PI,0); ctx.fill();
+    ctx.fillRect(16,14,8,14); ctx.fillRect(40,14,8,14); // side hair
+    ctx.fillRect(22,8,20,6); // top
+    // Hairpin
+    ctx.fillStyle='#ff2277'; ctx.beginPath(); ctx.arc(20,12,3,0,Math.PI*2); ctx.fill();
+    // Eyes
+    ctx.fillStyle='#fff'; ctx.fillRect(22,18,8,6); ctx.fillRect(34,18,8,6);
+    ctx.fillStyle='#6633ff'; ctx.fillRect(24,19,5,4); ctx.fillRect(36,19,5,4);
+    ctx.fillStyle='#110033'; ctx.fillRect(26,20,3,3); ctx.fillRect(38,20,3,3);
+    ctx.fillStyle='#fff'; ctx.fillRect(27,20,1,1); ctx.fillRect(39,20,1,1);
+    // Blush
+    ctx.fillStyle='rgba(255,150,180,0.6)'; ctx.beginPath(); ctx.ellipse(20,25,4,3,0,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(44,25,4,3,0,0,Math.PI*2); ctx.fill();
+    // Mouth
+    ctx.fillStyle='#ff4488'; ctx.fillRect(28,28,8,2);
+  } else {
+    // Shoes/boots
+    ctx.fillStyle='#2a1f14'; ctx.fillRect(17,84,12,10); ctx.fillRect(35,84,12,10);
+    // Pants
+    ctx.fillStyle='#1a3a6b'; ctx.fillRect(19,58,11,28); ctx.fillRect(34,58,11,28);
+    // Belt
+    ctx.fillStyle='#1a1208'; ctx.fillRect(16,54,32,6);
+    ctx.fillStyle='#c8a030'; ctx.fillRect(28,54,8,6); // buckle
+    // Shirt/torso
+    ctx.fillStyle='#1e3a6e'; ctx.fillRect(16,30,32,26);
+    // Arms
+    ctx.fillStyle='#1e3a6e';
+    ctx.fillRect(4,32,14,22); // left
+    ctx.fillRect(46,32,14,22); // right
+    // Hands
+    ctx.fillStyle='#ffd6b0'; ctx.beginPath(); ctx.arc(11,55,5,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(53,55,5,0,Math.PI*2); ctx.fill();
+    // Neck
+    ctx.fillStyle='#ffd6b0'; ctx.fillRect(26,22,12,10);
+    // Head
+    ctx.fillStyle='#ffd6b0'; ctx.beginPath(); ctx.arc(32,14,16,0,Math.PI*2); ctx.fill();
+    // Hair — black
+    ctx.fillStyle='#0a0a0a';
+    ctx.beginPath(); ctx.arc(32,8,16,Math.PI,0); ctx.fill();
+    ctx.fillRect(14,8,6,14); ctx.fillRect(44,8,6,14);
+    ctx.fillRect(16,4,32,8);
+    // Ears
+    ctx.fillStyle='#ffd6b0'; ctx.fillRect(13,10,6,8); ctx.fillRect(45,10,6,8);
+    // Eyes
+    ctx.fillStyle='#fff'; ctx.fillRect(21,10,9,7); ctx.fillRect(34,10,9,7);
+    ctx.fillStyle='#2277ff'; ctx.fillRect(23,11,6,5); ctx.fillRect(36,11,6,5);
+    ctx.fillStyle='#0a1a44'; ctx.fillRect(25,12,4,4); ctx.fillRect(38,12,4,4);
+    ctx.fillStyle='#fff'; ctx.fillRect(26,12,1,1); ctx.fillRect(39,12,1,1);
+    // Eyebrows
+    ctx.fillStyle='#0a0a08'; ctx.fillRect(21,8,9,2); ctx.fillRect(34,8,9,2);
+    // Mouth
+    ctx.fillStyle='#c08070'; ctx.fillRect(27,20,10,2);
+  }
+
+  var tex=new THREE.CanvasTexture(canvas);
+  tex.magFilter=THREE.NearestFilter; // keep pixel-art crisp
+  tex.minFilter=THREE.NearestFilter;
+
+  // Billboard plane — always faces camera
+  var mat=new THREE.MeshBasicMaterial({map:tex,transparent:true,alphaTest:0.1,side:THREE.DoubleSide});
+  var mesh=new THREE.Mesh(new THREE.PlaneGeometry(1.2,1.8),mat);
+  mesh.position.y=0.9; // lift so feet touch floor
+  return mesh;
+}
+
+// Replace character Groups with sprite-wrapped Groups
+function buildSpriteChar(scene,isFel){
+  var G=new THREE.Group();
+  var sprite=makeSpriteChar(isFel);
+  G.add(sprite);
+  G._sprite=sprite;
+  // Dummy pivot groups so existing anim code doesn't crash
+  var dummy=new THREE.Group();
+  G._lArm=dummy; G._rArm=dummy; G._lLeg=dummy; G._rLeg=dummy;
+  G._isDummy=true;
+  scene.add(G);
+  return G;
+}
+
+// ─────────────────────────────────────────────────────────────
+//  2.5D PIXEL-ART SPRITE CHARACTERS
+//  Matches reference: big chibi head, proper outfit, 3 walk frames
+// ─────────────────────────────────────────────────────────────
+
+// ─────────────────────────────────────────────────────────────
+//  PIXEL ART SPRITE SYSTEM
+//  Canvas: 32×48 px drawn at 4× = 128×192 actual pixels
+//  Frames: 0=idle, 1=walk_a, 2=walk_b, 3=hug, 4=hold_hand
+// ─────────────────────────────────────────────────────────────
+function drawPixelSprite(isFel, frameIdx){
+  var S=4; // scale factor — 4px per logical pixel
+  var W=32, H=48;
+  var canvas=document.createElement('canvas');
+  canvas.width=W*S; canvas.height=H*S;
+  var ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  function px(x,y,w,h,col){
+    ctx.fillStyle=col;
+    ctx.fillRect(x*S,y*S,(w||1)*S,(h||1)*S);
+  }
+  function circle(cx,cy,r,col){
+    ctx.fillStyle=col;
+    ctx.beginPath();
+    ctx.arc(cx*S+S/2,cy*S+S/2,r*S,0,Math.PI*2);
+    ctx.fill();
+  }
+
+  if(isFel){
+    // ═══════════════════ FELICITY ═══════════════════
+    // Reference: long black hair, black dress, white collar, knee-high boots
+
+    // ── Leg positions by frame ──
+    var ll=[12,33], rl=[18,33]; // idle
+    if(frameIdx===1){ ll=[11,32]; rl=[19,34]; }
+    else if(frameIdx===2){ ll=[13,34]; rl=[17,32]; }
+    else if(frameIdx===3){ ll=[13,33]; rl=[17,33]; } // hug — legs together
+    else if(frameIdx===4){ ll=[12,33]; rl=[19,33]; } // hold hand
+
+    // Knee-high black boots
+    px(ll[0]-1,ll[1]+3,5,6,'#151010'); // left boot
+    px(rl[0]-1,rl[1]+3,5,6,'#151010'); // right boot
+    // Boot highlight
+    px(ll[0],ll[1]+4,2,1,'#2a1818');
+    px(rl[0],rl[1]+4,2,1,'#2a1818');
+
+    // Socks / lower leg (white)
+    px(ll[0],ll[1],4,4,'#f8f8f8');
+    px(rl[0],rl[1],4,4,'#f8f8f8');
+
+    // Skirt — black, slightly flared
+    px(9,26,14,8,'#1a1a1a');
+    px(8,29,16,5,'#222222'); // wider at bottom
+    px(7,31,18,3,'#1a1a1a'); // hem
+
+    // Dress body — black
+    px(11,18,10,10,'#1a1a1a');
+    // White collar / bow
+    px(13,18,6,3,'#f5f5f5');
+    px(14,20,4,2,'#e8e8e8');
+    px(15,22,2,2,'#f5f5f5'); // bow knot
+
+    // Arms — frame dependent
+    var laY=frameIdx===1?19:frameIdx===2?21:frameIdx===3?17:20;
+    var raY=frameIdx===1?21:frameIdx===2?19:frameIdx===3?17:20;
+    if(frameIdx===4){ laY=19; raY=18; } // hold hand — one arm reaches out
+    // Left arm (skin)
+    px(7,laY,5,9,'#ffd6b0');
+    px(6,laY+7,5,3,'#ffc9a0'); // hand
+    // Right arm (skin)
+    px(20,raY,5,9,'#ffd6b0');
+    px(20,raY+7,5,3,'#ffc9a0'); // hand
+
+    // Hold hand override — right arm reaches right
+    if(frameIdx===4){
+      px(20,17,5,6,'#ffd6b0');
+      px(24,18,4,3,'#ffc9a0'); // extended hand
+    }
+    // Hug override — arms wrap forward
+    if(frameIdx===3){
+      px(6,18,6,8,'#ffd6b0');
+      px(20,18,6,8,'#ffd6b0');
+      px(5,23,7,3,'#ffc9a0');
+      px(20,23,7,3,'#ffc9a0');
+    }
+
+    // Neck
+    px(14,14,4,5,'#ffd6b0');
+
+    // ── HEAD ──
+    // Base skin
+    px(10,5,12,12,'#ffd6b0');
+    px(9,7,14,9,'#ffd6b0');
+    px(10,6,12,11,'#ffd6b0');
+
+    // Long black hair — Felicity's signature look
+    // Top / crown
+    px(10,2,12,5,'#0e0c0a');
+    px(9,3,14,4,'#0e0c0a');
+    // Side bangs (straight across forehead)
+    px(10,5,12,3,'#0e0c0a');
+    px(10,6,3,4,'#0e0c0a'); // left fringe
+    px(19,6,3,4,'#0e0c0a'); // right fringe
+    // Long side hair (falls past shoulders)
+    px(8,5,3,18,'#0e0c0a'); // left side
+    px(21,5,3,18,'#0e0c0a'); // right side
+    // Hair ends
+    px(8,22,3,2,'#0e0c0a');
+    px(21,22,3,2,'#0e0c0a');
+    // Hair outline / depth
+    px(9,4,2,3,'#161210');
+    px(21,4,2,3,'#161210');
+
+    // ── FACE ──
+    // Eyes — large, warm brown (chibi style)
+    px(12,9,5,4,'#fff8f0'); // left white
+    px(19,9,5,4,'#fff8f0'); // right white — adjusted for chibi
+    // Wait — let me recalculate for 32px width
+    // Head is at x:9-23, eyes centered
+    px(12,9,4,4,'#fff8f0'); // left white
+    px(18,9,4,4,'#fff8f0'); // right white
+    px(12,9,4,4,'#5a3a20'); // left iris
+    px(18,9,4,4,'#5a3a20'); // right iris
+    px(13,10,3,3,'#0a0a0a'); // left pupil
+    px(19,10,3,3,'#0a0a0a'); // right pupil
+    px(13,9,1,1,'#ffffff'); // left shine
+    px(19,9,1,1,'#ffffff'); // right shine
+    // Top eyelashes
+    px(11,8,5,1,'#0a0a0a'); // left lash
+    px(17,8,5,1,'#0a0a0a'); // right lash
+    px(11,8,1,2,'#0a0a0a'); // left outer lash
+    px(22,8,1,2,'#0a0a0a'); // right outer lash
+
+    // Blush circles
+    ctx.fillStyle='rgba(255,140,140,0.50)';
+    ctx.beginPath(); ctx.ellipse(11.5*S,13.5*S,2.2*S,1.5*S,0,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(20.5*S,13.5*S,2.2*S,1.5*S,0,0,Math.PI*2); ctx.fill();
+
+    // Mouth — small cute
+    px(14,14,4,1,'#c07878');
+    px(15,15,2,1,'#b06060');
+
+    // Hug expression — closed happy eyes (draw ON TOP, no clearRect)
+    if(frameIdx===3){
+      // Cover open eyes with skin tone first
+      px(11,8,12,7,'#ffd6b0'); // skin over-paint eye area
+      // Re-draw hair fringe that overlaps this zone
+      px(10,6,3,4,'#0e0c0a'); // left fringe
+      px(19,6,3,4,'#0e0c0a'); // right fringe
+      px(8,5,3,6,'#0e0c0a');  // left side hair
+      px(21,5,3,6,'#0e0c0a'); // right side hair
+      // Closed eye curves (~~ style)
+      px(11,10,6,2,'#0a0a0a'); // left closed eye
+      px(17,10,6,2,'#0a0a0a'); // right closed eye
+      // Rosy blush bigger for happy hug
+      ctx.fillStyle='rgba(255,120,120,0.55)';
+      ctx.beginPath(); ctx.ellipse(11.5*S,13*S,3*S,2*S,0,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(20.5*S,13*S,3*S,2*S,0,0,Math.PI*2); ctx.fill();
+      // Big happy smile
+      px(12,14,8,1,'#c07878');
+      px(11,13,1,2,'#c07878');
+      px(20,13,1,2,'#c07878');
+    }
+
+  } else {
+    // ═══════════════════ CHRIS ═══════════════════
+    // Outfit: cream/white tee with cute black cat graphic,
+    // grey-blue jeans, white sneakers — based on cat t-shirt reference
+
+    // ── Leg positions by frame ──
+    var cll=[12,33], crl=[18,33];
+    if(frameIdx===1){ cll=[11,32]; crl=[19,34]; }
+    else if(frameIdx===2){ cll=[13,34]; crl=[17,32]; }
+    else if(frameIdx===3){ cll=[13,33]; crl=[17,33]; }
+    else if(frameIdx===4){ cll=[11,33]; crl=[19,33]; }
+
+    // Sneakers — white with grey sole
+    px(cll[0]-1,cll[1]+4,6,3,'#e8e8e8'); // left shoe white
+    px(crl[0]-1,crl[1]+4,6,3,'#e8e8e8'); // right shoe white
+    px(cll[0]-1,cll[1]+6,6,1,'#b0b0b0'); // grey sole
+    px(crl[0]-1,crl[1]+6,6,1,'#b0b0b0');
+    px(cll[0],cll[1]+4,2,1,'#cccccc');   // toe highlight
+    px(crl[0],crl[1]+4,2,1,'#cccccc');
+
+    // Jeans — blue-grey (nice mid-tone)
+    px(cll[0],cll[1],4,6,'#6a7ea0');
+    px(crl[0],crl[1],4,6,'#6a7ea0');
+    px(cll[0]+1,cll[1]+1,2,4,'#5a6e90'); // darker seam
+    px(crl[0]+1,crl[1]+1,2,4,'#5a6e90');
+
+    // T-shirt body — cream/warm white
+    px(9,17,14,12,'#f2ede6');
+    px(8,19,16,10,'#ede8e0');
+    // T-shirt collar (crew neck)
+    px(13,17,6,2,'#d8d2c8');
+    px(14,16,4,2,'#e0dbd3');
+
+    // ── CAT GRAPHIC on shirt ──────────────────────────────
+    // Big round head (grey cat)
+    px(12,20,8,6,'#9a9a9a');
+    px(11,22,10,4,'#a8a8a8');
+    // Cat ears (pointy)
+    px(11,19,3,3,'#888888');
+    px(18,19,3,3,'#888888');
+    px(12,20,2,2,'#cc7788'); // inner ear pink
+    px(18,20,2,2,'#cc7788');
+    // Big round white eyes
+    px(12,21,3,3,'#ffffff');
+    px(17,21,3,3,'#ffffff');
+    px(13,22,2,2,'#0a0a0a'); // pupils
+    px(18,22,2,2,'#0a0a0a');
+    px(13,21,1,1,'#ffffff'); // eye shine
+    px(18,21,1,1,'#ffffff');
+    // Tiny pink nose
+    px(15,23,2,1,'#ff9999');
+    // Whisker dots (tiny)
+    px(12,23,1,1,'#555555');
+    px(19,23,1,1,'#555555');
+    // Little sequin dress on cat (sparkly white rectangles)
+    px(12,25,8,3,'#d8d8d8');
+    px(13,25,6,3,'#eeeeee');
+    px(12,26,1,2,'#cccccc'); // sequin shimmer
+    px(14,26,1,2,'#ffffff');
+    px(16,26,1,2,'#cccccc');
+    px(18,26,1,2,'#ffffff');
+    // Cat tail curling to side
+    px(20,25,1,3,'#9a9a9a');
+    px(20,27,2,1,'#9a9a9a');
+    px(21,26,1,2,'#a8a8a8');
+    // Flower brooch on cat dress
+    px(14,25,2,2,'#222222');
+    px(15,24,1,1,'#cccccc');
+
+    // T-shirt arms (short sleeves showing skin)
+    var claY=frameIdx===1?18:frameIdx===2?20:frameIdx===3?16:19;
+    var craY=frameIdx===1?20:frameIdx===2?18:frameIdx===3?16:19;
+    if(frameIdx===4){ claY=18; craY=17; }
+    px(5,claY,5,7,'#f2ede6');  // left sleeve
+    px(5,claY+5,5,4,'#ffd6b0'); // left forearm/hand skin
+    px(22,craY,5,7,'#f2ede6'); // right sleeve
+    px(22,craY+5,4,4,'#ffd6b0'); // right forearm/hand skin
+    px(6,claY+9,3,2,'#ffd6b0'); // left hand
+    px(22,craY+9,3,2,'#ffd6b0'); // right hand
+
+    // Hold hand — right arm extends
+    if(frameIdx===4){
+      px(22,16,4,8,'#f2ede6');
+      px(26,17,3,3,'#ffd6b0');
+    }
+    // Hug — arms wrap
+    if(frameIdx===3){
+      px(4,18,6,9,'#f2ede6');
+      px(22,18,6,9,'#f2ede6');
+      px(3,23,7,4,'#ffd6b0');
+      px(22,23,7,4,'#ffd6b0');
+    }
+
+    // Neck
+    px(14,14,4,5,'#ffd6b0');
+
+    // ── HEAD ──
+    px(10,5,12,12,'#ffd6b0');
+    px(9,7,14,9,'#ffd6b0');
+    px(10,6,12,11,'#ffd6b0');
+
+    // BLACK messy hair
+    px(9,2,14,5,'#0a0a0a');
+    px(8,3,16,4,'#0a0a0a');
+    px(9,1,3,4,'#0a0a0a');
+    px(13,0,4,5,'#111111');
+    px(18,1,3,4,'#0a0a0a');
+    px(11,2,2,3,'#141414');
+    px(16,1,3,4,'#0a0a0a');
+    px(8,5,3,10,'#0a0a0a');  // side hair
+    px(21,5,3,10,'#0a0a0a');
+    px(10,5,4,3,'#0a0a0a');  // fringe
+    px(17,5,4,3,'#0a0a0a');
+    px(13,4,3,4,'#0a0a0a');
+    px(12,3,4,2,'#1a1a1a');
+
+    // ── FACE ──
+    px(12,9,4,4,'#fff8f0'); // eye whites
+    px(18,9,4,4,'#fff8f0');
+    px(12,9,4,4,'#4a2a10'); // brown iris
+    px(18,9,4,4,'#4a2a10');
+    px(13,10,3,3,'#0a0a0a'); // pupils
+    px(19,10,3,3,'#0a0a0a');
+    px(13,9,1,1,'#ffffff');  // shine
+    px(19,9,1,1,'#ffffff');
+    px(11,7,5,2,'#0a0a0a');  // eyebrows
+    px(17,7,5,2,'#0a0a0a');
+    // Blush
+    ctx.fillStyle='rgba(255,130,110,0.35)';
+    ctx.beginPath(); ctx.ellipse(11*S,13.5*S,2*S,1.4*S,0,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(21*S,13.5*S,2*S,1.4*S,0,0,Math.PI*2); ctx.fill();
+    // Mouth
+    px(14,14,4,1,'#c08070');
+    px(15,15,2,1,'#b07060');
+
+    // Hug expression — paint over, no clearRect
+    if(frameIdx===3){
+      px(9,7,14,7,'#ffd6b0'); // skin over-paint
+      px(9,2,14,5,'#0a0a0a'); // crown
+      px(9,1,3,4,'#0a0a0a');
+      px(16,2,3,4,'#0a0a0a');
+      px(8,5,3,5,'#0a0a0a');
+      px(21,5,3,5,'#0a0a0a');
+      px(9,10,5,2,'#0a0a0a');  // closed eyes
+      px(16,10,5,2,'#0a0a0a');
+      ctx.fillStyle='rgba(255,140,120,0.45)';
+      ctx.beginPath(); ctx.ellipse(10*S,13*S,2.5*S,1.8*S,0,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(20*S,13*S,2.5*S,1.8*S,0,0,Math.PI*2); ctx.fill();
+      px(11,14,8,1,'#c08070');
+      px(10,13,1,2,'#c08070');
+      px(20,13,1,2,'#c08070');
+    }
+  }
+
+  var tex=new THREE.CanvasTexture(canvas);
+  tex.magFilter=THREE.NearestFilter;
+  tex.minFilter=THREE.NearestFilter;
+  return tex;
+}
+
+// Build animated sprite with 5 frames: idle, walkA, walkB, hug, holdHand
+function buildSpriteChar(scene,isFel){
+  var G=new THREE.Group();
+
+  var frames=[
+    drawPixelSprite(isFel,0), // idle
+    drawPixelSprite(isFel,1), // walk a
+    drawPixelSprite(isFel,2), // walk b
+    drawPixelSprite(isFel,3), // hug
+    drawPixelSprite(isFel,4), // hold hand
+  ];
+
+  var mat=new THREE.MeshBasicMaterial({
+    map:frames[0],
+    transparent:true,
+    alphaTest:0.05,
+    side:THREE.DoubleSide,
+    depthWrite:false
+  });
+
+  // 2.5D — taller plane, chibi proportions
+  var mesh=new THREE.Mesh(new THREE.PlaneGeometry(1.6,2.4), mat);
+  mesh.position.y=1.2; // feet sit on floor
+  G.add(mesh);
+
+  G._sprite=mesh;
+  G._frames=frames;
+  G._mat=mat;
+  G._frameTime=0;
+  G._curFrame=0;
+  G._stateFrame=0; // forced frame by game state
+
+  // Ground shadow
+  var shadowMat=new THREE.MeshBasicMaterial({color:0x000000,transparent:true,opacity:0.20,depthWrite:false});
+  var shadow=new THREE.Mesh(new THREE.CircleGeometry(0.52,12),shadowMat);
+  shadow.rotation.x=-Math.PI/2;
+  shadow.position.y=0.01;
+  G.add(shadow);
+
+  var dummy=new THREE.Group();
+  G._lArm=dummy; G._rArm=dummy; G._lLeg=dummy; G._rLeg=dummy;
+  G._isDummy=true;
+
+  scene.add(G);
+  return G;
+}
+
+// Animate sprite frame — respects forced state frames (hug=3, hold=4)
+function updateSpriteAnim(ch, moving, dt){
+  if(!ch||!ch._isDummy||!ch._frames)return;
+
+  var stateF=ch._stateFrame||0;
+
+  if(stateF>=3){
+    // Hug (3) or Hold Hand (4) state
+    if(moving){
+      // WALK animation plays even during hug/hold — cycle frames 1↔2
+      ch._frameTime+=dt;
+      if(ch._frameTime>0.16){
+        ch._frameTime=0;
+        // Alternate between walk frames 1 and 2
+        var nextF=ch._curFrame===1?2:1;
+        ch._curFrame=nextF;
+        ch._mat.map=ch._frames[nextF];
+        ch._mat.needsUpdate=true;
+      }
+    } else {
+      // Stationary — show the state pose (hug/hold frame)
+      if(ch._curFrame!==stateF){
+        ch._curFrame=stateF;
+        ch._mat.map=ch._frames[stateF];
+        ch._mat.needsUpdate=true;
+      }
+    }
+    return;
+  }
+
+  // Normal idle/walk
+  if(moving){
+    ch._frameTime+=dt;
+    if(ch._frameTime>0.16){
+      ch._frameTime=0;
+      ch._curFrame=ch._curFrame===1?2:1;
+      ch._mat.map=ch._frames[ch._curFrame];
+      ch._mat.needsUpdate=true;
+    }
+  } else {
+    if(ch._curFrame!==0){
+      ch._curFrame=0;
+      ch._mat.map=ch._frames[0];
+      ch._mat.needsUpdate=true;
+    }
+  }
+}
+
+// Set sprite to a named state
+function setSpriteState(ch, state){
+  if(!ch||!ch._isDummy)return;
+  // states: 'idle'=0, 'walk'=auto, 'hug'=3, 'hold'=4
+  if(state==='hug')  ch._stateFrame=3;
+  else if(state==='hold') ch._stateFrame=4;
+  else ch._stateFrame=0;
+}
+
+// Sprite always faces the camera
+function updateSpriteFacing(sprite,cam){
+  if(!sprite._sprite)return;
+  var cp=cam.position;
+  // Compute angle from sprite to camera in WORLD space
+  var angle=Math.atan2(cp.x-sprite.position.x, cp.z-sprite.position.z);
+  // Counteract parent's Y rotation so sprite always faces camera
+  sprite._sprite.rotation.y=angle-sprite.rotation.y;
+  // Also ensure sprite is upright (no tilt inherited from parent)
+  sprite._sprite.rotation.x=0;
+  sprite._sprite.rotation.z=0;
+}
+
+// Rebuild outdoor characters as sprites
+OUT.remove(outFel); OUT.remove(outChris);
+var outFel=buildSpriteChar(OUT,true);    outFel.position.set(0,0,5);
+var outChris=buildSpriteChar(OUT,false); outChris.position.set(2,0,6.5);
+
+// Rebuild indoor characters as sprites
+IN.remove(inFel); IN.remove(inChris);
+var inFel=buildSpriteChar(IN,true);    inFel.position.copy(IN_SPAWN);  inFel.rotation.y=0;
+var inChris=buildSpriteChar(IN,false); inChris.position.set(IN_SPAWN.x+1.0,IN_SPAWN.y,IN_SPAWN.z); inChris.rotation.y=0;
+
+// Override limb functions to no-op for sprite chars
+var _origAnimLimbs=animLimbs, _origWalkLegs=walkLegs, _origWalkArms=walkArms, _origIdleLimbs=idleLimbs;
+function animLimbs(ch,ph){ if(ch&&ch._isDummy)return; _origAnimLimbs(ch,ph); }
+function walkLegs(ch,ph){  if(ch&&ch._isDummy)return; _origWalkLegs(ch,ph);  }
+function walkArms(ch,ph){  if(ch&&ch._isDummy)return; _origWalkArms(ch,ph);  }
+function idleLimbs(ch){    if(ch&&ch._isDummy)return; _origIdleLimbs(ch);    }
+function resetLimbs(ch){   if(ch&&ch._isDummy)return; ch._lLeg.rotation.set(0,0,0); ch._rLeg.rotation.set(0,0,0); ch._lArm.rotation.set(0,0,0); ch._rArm.rotation.set(0,0,0); }
+
+// ─────────────────────────────────────────────────────────────
+//  3D STARS + MOON IN SCENE (not DOM overlay)
+// ─────────────────────────────────────────────────────────────
+
+// Create star field as actual Three.js Points
+var starGeo=new THREE.BufferGeometry();
+var starPositions=[];
+for(var si=0;si<800;si++){
+  var theta=Math.random()*Math.PI*2;
+  var phi=Math.random()*Math.PI*0.45; // upper hemisphere only
+  var r=180+Math.random()*20;
+  starPositions.push(
+    Math.cos(theta)*Math.sin(phi)*r,
+    Math.cos(phi)*r * 0.8 + 15,        // keep above horizon
+    Math.sin(theta)*Math.sin(phi)*r
+  );
+}
+starGeo.setAttribute('position',new THREE.Float32BufferAttribute(starPositions,3));
+var starMat=new THREE.PointsMaterial({color:0xffffff,size:0.6,sizeAttenuation:true,transparent:true,opacity:0});
+var starField=new THREE.Points(starGeo,starMat);
+OUT.add(starField);
+
+// Moon — glowing sphere in the sky
+var moonGeo=new THREE.SphereGeometry(4.5,16,12);
+var moonMat=new THREE.MeshStandardMaterial({
+  color:0xfff8e8,
+  emissive:new THREE.Color(0xfff0d0),
+  emissiveIntensity:0.9,
+  roughness:0.8
+});
+var moon=new THREE.Mesh(moonGeo,moonMat);
+moon.position.set(-60,55,-80);
+moon.visible=false;
+OUT.add(moon);
+
+// Moon glow light
+var moonLight=new THREE.PointLight(0x8899cc,0,40);
+moonLight.position.copy(moon.position);
+OUT.add(moonLight);
+
+// ─────────────────────────────────────────────────────────────
+//  FIREFLIES
+// ─────────────────────────────────────────────────────────────
+var FIREFLY_COUNT = 60;
+var fireflyData = [];
+var fireflyGeos = [];
+var fireflyMeshes = [];
+var fireflyMat = new THREE.MeshStandardMaterial({
+  color: 0xccff88,
+  emissive: new THREE.Color(0x88ff44),
+  emissiveIntensity: 3.0,
+  transparent: true,
+  opacity: 0
+});
+for(var ffi = 0; ffi < FIREFLY_COUNT; ffi++){
+  var ffGeo = new THREE.SphereGeometry(0.09, 4, 3);
+  var ffMesh = new THREE.Mesh(ffGeo, fireflyMat.clone());
+  var ffAngle = Math.random()*Math.PI*2;
+  var ffRadius = 5 + Math.random()*22;
+  ffMesh.position.set(
+    Math.cos(ffAngle)*ffRadius,
+    0.5 + Math.random()*2.5,
+    -14 + Math.sin(ffAngle)*ffRadius
+  );
+  OUT.add(ffMesh);
+  fireflyMeshes.push(ffMesh);
+  fireflyData.push({
+    baseX: ffMesh.position.x,
+    baseY: ffMesh.position.y,
+    baseZ: ffMesh.position.z,
+    phase: Math.random()*Math.PI*2,
+    speed: 0.4 + Math.random()*0.6,
+    blinkPhase: Math.random()*Math.PI*2,
+    blinkSpeed: 1.0 + Math.random()*2.0,
+    driftX: (Math.random()-.5)*0.02,
+    driftZ: (Math.random()-.5)*0.02
+  });
+}
+var fireflyNightFrac = 0; // updated each frame
+
+// ─────────────────────────────────────────────────────────────
+//  CAMERA VIEW TOGGLE — 3 modes: top-down, follow, sky view
+// ─────────────────────────────────────────────────────────────
+var camMode=0; // 0=top-down, 1=follow behind, 2=sky looking down
+var camBtn=document.getElementById('cam-btn');
+camBtn.classList.add('show');
+
+var CAM_MODES=['Top Down','Follow','Sky View'];
+camBtn.textContent=CAM_MODES[camMode];
+
+camBtn.addEventListener('click',function(){
+  camMode=(camMode+1)%3;
+  camBtn.textContent=CAM_MODES[camMode];
+});
+
+
+
+// ─────────────────────────────────────────────────────────────
+//  REAL-TIME PHILIPPINES CLOCK  (UTC+8)
+//  Changes sky/lighting based on actual local time
+// ─────────────────────────────────────────────────────────────
+var skyStates=[
+  // [startHour, endHour, skyHex, sunHex, sunIntensity, hemiSkyHex, hemiGroundHex, hemiIntensity, ambientHex, ambientIntensity, label, emoji]
+  [0,  5,  0x05060f, 0x334488, 0.10, 0x0a0a20, 0x050508, 0.20, 0x101020, 0.15, 'Night',    '🌙'],
+  [5,  6,  0x1a0f22, 0xff7744, 0.40, 0x331a44, 0x1a0a10, 0.35, 0x221218, 0.25, 'Dawn',     '🌄'],
+  [6,  8,  0xff8c42, 0xffb347, 0.90, 0xffcc88, 0x7a5aa8, 0.60, 0xff9966, 0.30, 'Sunrise',  '🌅'],
+  [8,  11, 0x87ceeb, 0xfff5e0, 1.10, 0xaaddff, 0x44aa22, 0.70, 0xffffee, 0.45, 'Morning',  '☀️'],
+  [11, 14, 0x5eb8e8, 0xffffff, 1.30, 0x88ccff, 0x55bb22, 0.80, 0xffffff, 0.55, 'Noon',     '🌞'],
+  [14, 17, 0x6ac4ee, 0xfff0cc, 1.10, 0xaaddff, 0x44aa22, 0.70, 0xffffee, 0.45, 'Afternoon','⛅'],
+  [17, 19, 0xff6b35, 0xffb347, 0.80, 0xffcc88, 0x7a5aa8, 0.55, 0xff9966, 0.28, 'Sunset',   '🌇'],
+  [19, 21, 0x1a0a28, 0xff4422, 0.30, 0x220a30, 0x080410, 0.28, 0x180810, 0.20, 'Dusk',     '🌆'],
+  [21, 24, 0x05060f, 0x334488, 0.10, 0x0a0a20, 0x050508, 0.20, 0x101020, 0.15, 'Night',    '🌙'],
+];
+
+var timeDisplay=document.getElementById('time-display');
+// Star canvas is hidden — stars are in 3D scene now
+var starCanvas=document.getElementById('star-canvas');
+starCanvas.style.display='none';
+
+function getPHTime(){
+  var now=new Date();
+  var ph=new Date(now.getTime()+8*3600000);
+  return {h:ph.getUTCHours(),m:ph.getUTCMinutes(),s:ph.getUTCSeconds()};
+}
+
+function getSkyState(h){
+  for(var i=0;i<skyStates.length;i++){
+    if(h>=skyStates[i][0]&&h<skyStates[i][1])return skyStates[i];
+  }
+  return skyStates[0];
+}
+
+function lerpColor(a,b,t){
+  var ar=(a>>16)&0xff,ag=(a>>8)&0xff,ab2=a&0xff;
+  var br=(b>>16)&0xff,bg=(b>>8)&0xff,bb2=b&0xff;
+  return ((Math.round(ar+(br-ar)*t)<<16)|(Math.round(ag+(bg-ag)*t)<<8)|(Math.round(ab2+(bb2-ab2)*t)));
+}
+
+// ─────────────────────────────────────────────────────────────
+//  MANUAL DAY/NIGHT OVERRIDE — doesn't affect real PH clock
+// ─────────────────────────────────────────────────────────────
+var manualTOD   = null;   // null | 'day' | 'night'
+var todLerpFrom = null;   // sky snapshot to lerp from
+var todLerpTo   = null;   // sky snapshot to lerp to
+var todLerpT    = 0;      // elapsed lerp seconds
+var todLerpDur  = 3.0;    // transition duration in seconds
+var todActive   = false;  // true while lerp in progress
+
+function snapSkyNow(){
+  var ambC=0x101020, ambI=0.18;
+  OUT.children.forEach(function(c){if(c.isAmbientLight){ambC=c.color.getHex();ambI=c.intensity;}});
+  return {
+    bg:OUT.background.getHex(),
+    sunC:sun.color.getHex(), sunI:sun.intensity,
+    hSky:hemi.color.getHex(), hGrd:hemi.groundColor.getHex(), hInt:hemi.intensity,
+    ambC:ambC, ambI:ambI,
+    nf:fireflyNightFrac, sa:starMat.opacity
+  };
+}
+function skyTargetForTOD(tod){
+  if(tod==='day') return {bg:0x87ceeb,sunC:0xfff5e0,sunI:1.1,hSky:0xaaddff,hGrd:0x44aa22,hInt:0.70,ambC:0xffffee,ambI:0.45,nf:0,sa:0};
+  return {bg:0x05060f,sunC:0x334488,sunI:0.10,hSky:0x0a0a20,hGrd:0x050508,hInt:0.20,ambC:0x101020,ambI:0.18,nf:1,sa:1};
+}
+function applySkyState(from,to,t){
+  t=Math.max(0,Math.min(1,t));
+  var ei=function(a,b){return a+(b-a)*t;};
+  var ec=function(a,b){return lerpColor(a,b,t);};
+  OUT.background.setHex(ec(from.bg,to.bg));
+  sun.color.setHex(ec(from.sunC,to.sunC)); sun.intensity=ei(from.sunI,to.sunI);
+  hemi.color.setHex(ec(from.hSky,to.hSky)); hemi.groundColor.setHex(ec(from.hGrd,to.hGrd)); hemi.intensity=ei(from.hInt,to.hInt);
+  OUT.children.forEach(function(c){if(c.isAmbientLight){c.color.setHex(ec(from.ambC,to.ambC));c.intensity=ei(from.ambI,to.ambI);}});
+  var nf=ei(from.nf,to.nf);
+  fireflyNightFrac=nf; starMat.opacity=ei(from.sa,to.sa); starMat.needsUpdate=true;
+  moon.visible=nf>0.1; moonLight.intensity=nf*0.9;
+  if(ground&&ground.material) ground.material.color.setHex(ec(nf>0.5?0x2a3820:0x4a7a30,to.nf>0.5?0x2a3820:0x4a7a30));
+}
+
+// Advance tod lerp each frame (called from animate())
+function tickTODLerp(dt){
+  if(!todActive||!todLerpFrom||!todLerpTo) return;
+  todLerpT+=dt;
+  var t=Math.min(1,todLerpT/todLerpDur);
+  // Ease in-out
+  t=t<0.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+  applySkyState(todLerpFrom,todLerpTo,t);
+  if(todLerpT>=todLerpDur) todActive=false;
+}
+
+function updateDayNight(){
+  // Always update clock display regardless of override
+  var pt=getPHTime();
+  var hh=pt.h.toString().padStart(2,'0');
+  var mm=pt.m.toString().padStart(2,'0');
+
+  if(manualTOD!==null){
+    // Manual mode: show badge + real time, don't touch sky (lerp handles it)
+    var badge=manualTOD==='day'?'☀️':'🌙';
+    timeDisplay.textContent=badge+' '+hh+':'+mm+' PH';
+    return;
+  }
+
+  // Real-time PH mode
+  var h=pt.h,m2=pt.m,hf=h+m2/60;
+  var ss=getSkyState(h),next=getSkyState(h+1>=24?0:h+1);
+  var frac=Math.max(0,Math.min(1,(hf-ss[0])/(ss[1]-ss[0]||1)));
+
+  OUT.background.setHex(lerpColor(ss[2],next[2],frac));
+  sun.color.setHex(lerpColor(ss[3],next[3],frac)); sun.intensity=ss[4]+(next[4]-ss[4])*frac;
+  var sa=(hf/24)*Math.PI*2-Math.PI/2;
+  sun.position.set(Math.cos(sa)*40,Math.sin(sa)*35,20);
+  hemi.color.setHex(lerpColor(ss[5],next[5],frac)); hemi.groundColor.setHex(lerpColor(ss[6],next[6],frac)); hemi.intensity=ss[7]+(next[7]-ss[7])*frac;
+  OUT.children.forEach(function(c){if(c.isAmbientLight){c.color.setHex(lerpColor(ss[8],next[8],frac));c.intensity=ss[9]+(next[9]-ss[9])*frac;}});
+  var nf=0;
+  if(h>=0&&h<5)nf=1;else if(h>=5&&h<6)nf=1-(hf-5);else if(h>=19&&h<21)nf=(hf-19)/2;else if(h>=21)nf=1;
+  nf=Math.max(0,Math.min(1,nf));
+  starMat.opacity=nf; starMat.needsUpdate=true;
+  var ma=sa+Math.PI;
+  moon.position.set(Math.cos(ma)*80,Math.abs(Math.sin(ma))*55+10,Math.sin(ma)*40);
+  moonLight.position.copy(moon.position); moon.visible=nf>0.1; moonLight.intensity=nf*0.9;
+  if(ground&&ground.material) ground.material.color.setHex(nf>0.5?0x2a3820:0x4a7a30);
+  fireflyNightFrac=nf;
+  OUT.children.forEach(function(c){if(c.isAmbientLight){var mi=nf*0.18;if(c.intensity<mi)c.intensity=mi;}});
+  timeDisplay.textContent=ss[11]+' '+hh+':'+mm+' PH';
+}
+
+var lastSkyH=-1;
+updateDayNight();
+// Only fires in real-time mode; manual mode is handled by tickTODLerp in animate()
+setInterval(function(){ if(manualTOD===null) updateDayNight(); },10000);
+
+// ── Day/Night toggle button ───────────────────────────────────
+var todBtn=document.getElementById('tod-btn');
+todBtn.classList.add('show');
+
+todBtn.addEventListener('click',function(){
+  todLerpFrom=snapSkyNow();
+  todLerpT=0; todActive=true;
+
+  if(manualTOD===null){
+    // Real time → manual toggle based on current sky
+    manualTOD = fireflyNightFrac>0.4 ? 'day' : 'night';
+    todLerpTo  = skyTargetForTOD(manualTOD);
+  } else if(manualTOD==='day'){
+    manualTOD='night';
+    todLerpTo=skyTargetForTOD('night');
+  } else {
+    // night → release back to real time
+    manualTOD=null;
+    // Build a 'now' sky target from real PH time
+    var pt=getPHTime(); var h=pt.h,mf=h+pt.m/60;
+    var ss=getSkyState(h),nx=getSkyState(h+1>=24?0:h+1);
+    var fr=Math.max(0,Math.min(1,(mf-ss[0])/(ss[1]-ss[0]||1)));
+    var nf=0;
+    if(h>=0&&h<5)nf=1;else if(h>=5&&h<6)nf=1-(mf-5);else if(h>=19&&h<21)nf=(mf-19)/2;else if(h>=21)nf=1;
+    todLerpTo={bg:lerpColor(ss[2],nx[2],fr),sunC:lerpColor(ss[3],nx[3],fr),sunI:ss[4]+(nx[4]-ss[4])*fr,
+      hSky:lerpColor(ss[5],nx[5],fr),hGrd:lerpColor(ss[6],nx[6],fr),hInt:ss[7]+(nx[7]-ss[7])*fr,
+      ambC:lerpColor(ss[8],nx[8],fr),ambI:ss[9]+(nx[9]-ss[9])*fr,nf:nf,sa:nf};
+  }
+
+  var lbl=manualTOD==='day'?'☀️ Day':manualTOD==='night'?'🌙 Night':'⏱ Auto';
+  todBtn.textContent=lbl;
+  todBtn.className='show '+(manualTOD==='day'?'is-day':manualTOD==='night'?'is-night':'');
+});
+
+
+// ─────────────────────────────────────────────────────────────
+//  INVENTORY SYSTEM — place items on the ground
+// ─────────────────────────────────────────────────────────────
+var selectedItem='flower';
+var placedItems=[];
+
+// Select slot
+document.querySelectorAll('.inv-slot').forEach(function(slot){
+  slot.addEventListener('click',function(){
+    document.querySelectorAll('.inv-slot').forEach(function(s){s.classList.remove('selected');});
+    slot.classList.add('selected');
+    selectedItem=slot.dataset.item;
+  });
+});
+
+// Build a placeable item mesh
+function buildPlaceableMesh(type){
+  var G=new THREE.Group();
+  if(type==='flower'){
+    var stk=new THREE.Mesh(new THREE.CylinderGeometry(.03,.04,.4,5),new THREE.MeshLambertMaterial({color:0x3a8a2a}));
+    stk.position.y=.2; G.add(stk);
+    var colors=[0xff6699,0xffaacc,0xff3366,0xff88bb];
+    var col=colors[Math.floor(Math.random()*colors.length)];
+    for(var pi=0;pi<5;pi++){
+      var pet=new THREE.Mesh(new THREE.SphereGeometry(.1,5,4),new THREE.MeshLambertMaterial({color:col}));
+      pet.position.set(Math.cos(pi/5*Math.PI*2)*.12,.42,Math.sin(pi/5*Math.PI*2)*.12); G.add(pet);
+    }
+    var ctr=new THREE.Mesh(new THREE.SphereGeometry(.07,5,4),new THREE.MeshLambertMaterial({color:0xffee44}));
+    ctr.position.y=.44; G.add(ctr);
+  } else if(type==='tulip'){
+    var stk2=new THREE.Mesh(new THREE.CylinderGeometry(.025,.035,.55,5),new THREE.MeshLambertMaterial({color:0x3a8a2a}));
+    stk2.position.y=.275; G.add(stk2);
+    var tulipCols=[0xff3366,0xff9900,0xcc44ff,0xff6699];
+    var tc=tulipCols[Math.floor(Math.random()*tulipCols.length)];
+    var cone=new THREE.Mesh(new THREE.ConeGeometry(.14,.28,6,1,true),new THREE.MeshLambertMaterial({color:tc}));
+    cone.position.y=.64; G.add(cone);
+    var ctr2=new THREE.Mesh(new THREE.SphereGeometry(.07,6,5),new THREE.MeshLambertMaterial({color:0xffee88}));
+    ctr2.position.y=.72; G.add(ctr2);
+  } else if(type==='mushroom'){
+    var stem=new THREE.Mesh(new THREE.CylinderGeometry(.12,.16,.32,7),new THREE.MeshLambertMaterial({color:0xf5f0e8}));
+    stem.position.y=.16; G.add(stem);
+    var cap=new THREE.Mesh(new THREE.SphereGeometry(.28,9,7,0,Math.PI*2,0,Math.PI/2),new THREE.MeshLambertMaterial({color:0xdd2222}));
+    cap.position.y=.34; G.add(cap);
+    for(var si=0;si<4;si++){
+      var spot=new THREE.Mesh(new THREE.SphereGeometry(.04,5,4),new THREE.MeshLambertMaterial({color:0xffffff}));
+      spot.position.set(Math.cos(si/4*Math.PI*2)*.16,.40,Math.sin(si/4*Math.PI*2)*.16); G.add(spot);
+    }
+  } else if(type==='stone'){
+    var rk=new THREE.Mesh(new THREE.DodecahedronGeometry(.22,0),new THREE.MeshPhongMaterial({color:0x8a8070,flatShading:true}));
+    rk.position.y=.18; rk.rotation.y=Math.random()*Math.PI; G.add(rk);
+  } else if(type==='lantern'){
+    var post=new THREE.Mesh(new THREE.CylinderGeometry(.04,.05,.7,6),new THREE.MeshLambertMaterial({color:0x888878}));
+    post.position.y=.35; G.add(post);
+    var cap=new THREE.Mesh(new THREE.ConeGeometry(.15,.18,6),new THREE.MeshLambertMaterial({color:0x888878}));
+    cap.position.y=.88; G.add(cap);
+    var gls=new THREE.Mesh(new THREE.BoxGeometry(.22,.28,.22),new THREE.MeshStandardMaterial({color:0xffeeaa,emissive:new THREE.Color(0xffcc44),emissiveIntensity:.9,transparent:true,opacity:.85}));
+    gls.position.y=.65; G.add(gls);
+    var glow=new THREE.PointLight(0xffee88,.7,4); glow.position.y=.65; G.add(glow);
+  } else if(type==='tree'){
+    var trunk=new THREE.Mesh(new THREE.CylinderGeometry(.18,.28,1.6,7),new THREE.MeshLambertMaterial({color:0x7a5230}));
+    trunk.position.y=.8; G.add(trunk);
+    [[1.0,1.6,1.7],[.8,1.4,2.8],[.55,1.2,3.7]].forEach(function(c){
+      var cone2=new THREE.Mesh(new THREE.ConeGeometry(c[0],c[1],7),new THREE.MeshLambertMaterial({color:0x2d7a2d}));
+      cone2.position.y=c[2]; G.add(cone2);
+    });
+  }
+  G._type=type;
+  // Pop-in animation state
+  G.scale.setScalar(0);
+  G._popT=0;
+  return G;
+}
+
+// Place item at Felicity's position with pop-in animation
+function placeItem(){
+  if(insideHouse)return; // only place outside
+  var fel=outFel;
+  var x=fel.position.x+(Math.random()-.5)*.8;
+  var z=fel.position.z+1.2+(Math.random()-.5)*.8;
+  var mesh=buildPlaceableMesh(selectedItem);
+  mesh.position.set(x,0,z);
+  OUT.add(mesh);
+  placedItems.push(mesh);
+}
+
+// Tap to place (mobile: tap on ground area, desktop: press Space or E)
+window.addEventListener('keydown',function(e){
+  if(e.code==='Space'||e.code==='KeyE') placeItem();
+});
+
+// Add place button to inventory
+var placeBtn=document.createElement('button');
+placeBtn.id='place-btn';
+placeBtn.textContent='Place';
+placeBtn.style.cssText='background:rgba(255,200,100,.22);backdrop-filter:blur(12px);color:rgba(255,240,200,.95);border:1.5px solid rgba(255,200,100,.5);border-radius:50px;padding:7px 18px;font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;touch-action:manipulation;font-family:inherit;flex-shrink:0;box-shadow:0 2px 10px rgba(0,0,0,.25)';
+placeBtn.addEventListener('click',placeItem);
+document.getElementById('inv-bar').appendChild(placeBtn);
+
+// ─────────────────────────────────────────────────────────────
 //  HUG LERP TARGETS
 // ─────────────────────────────────────────────────────────────
 var _hugFelTarget=new THREE.Vector3();
@@ -1822,6 +3156,8 @@ function animate(){
   requestAnimationFrame(animate);
   var dt=Math.min(clock.getDelta(),.05);
   elapsed+=dt;
+  // Smooth day/night manual transition
+  tickTODLerp(dt);
 
   // ── BIRDS ────────────────────────────────────────────────────
   birds.forEach(function(bg){
@@ -1874,13 +3210,22 @@ function animate(){
   fireL.intensity=1.4+Math.sin(fireFlicker)*.55+Math.sin(fireFlicker*1.7)*.22;
   fireMeshes.forEach(function(fm,i){fm.scale.y=.85+Math.sin(fireFlicker*(1.1+i*.25))*.22;fm.rotation.y=elapsed*(2+i);});
   lanternGlows.forEach(function(ll){ll.intensity=.58+Math.sin(elapsed*2.1+ll.position.x)*.1;});
-  intLight.intensity=.65+Math.sin(elapsed*1.7)*.12;
-  kitchenL.intensity=.85+Math.sin(elapsed*1.9)*.1;
-  interiorWarmLight.intensity=2.0+Math.sin(elapsed*1.3)*.28;
+  if(intLight) intLight.intensity=.65+Math.sin(elapsed*1.7)*.12;
+  if(kitchenL) kitchenL.intensity=.85+Math.sin(elapsed*1.9)*.1;
+  if(interiorWarmLight) interiorWarmLight.intensity=2.0+Math.sin(elapsed*1.3)*.28;
+  if(lampGlow) lampGlow.intensity=1.0+Math.sin(elapsed*2.1)*.15;
 
   // Input
   var kb=kbIn();
-  var mx=jIn.on?jIn.x:kb.x,mz=jIn.on?jIn.y:kb.y;
+  var rawX=jIn.on?jIn.x:kb.x, rawZ=jIn.on?-jIn.y:kb.y;  // joystick up (+) => move forward (-Z)
+
+  // Camera-relative movement so joystick "up" always moves away from camera
+  // In top-down (mode 0) and sky (mode 2): world-space Z- is forward = rawZ as-is
+  // In follow (mode 1): rotate input by camera's Y angle so up = forward on screen
+  var mx=rawX, mz=rawZ;
+  // Follow mode now uses fixed world-space offset — no input remapping needed.
+  // rawX = strafe left/right, rawZ = forward/back (same as top-down).
+  // No camera-relative rotation so holding right never spins 360.
   var moving=Math.abs(mx)>.015||Math.abs(mz)>.015;
 
   if(insideHouse){
@@ -1923,8 +3268,11 @@ function animate(){
         );
       }
       inChris.position.lerp(_hugChrisTarget, Math.min(1,dt*6));
+      // During hug: characters face each other for positioning logic
+      // but their sprites will still be camera-facing via updateSpriteFacing
       inChris.rotation.y=Math.atan2(hDx,hDz);
       inFel.rotation.y  =Math.atan2(-hDx,-hDz);
+      // Sprites face camera independently — no override needed (updateSpriteFacing handles it)
 
       // ── Chris Y during hug
       inChris.position.y = FLOOR_Y + (moving ? Math.abs(Math.sin(iwt*9))*0.04 : Math.abs(Math.sin(elapsed*1.8))*0.018);
@@ -1937,12 +3285,19 @@ function animate(){
         idleLimbs(inFel);
         idleLimbs(inChris);
       }
-      // Arms in hug pose (overrides arm X from walkArms — intentional)
-      var sway=Math.sin(elapsed*1.9)*0.055;
-      inFel._lArm.rotation.x  =-1.05+sway; inFel._rArm.rotation.x  =-1.05+sway;
-      inFel._lArm.rotation.z  =-0.80;       inFel._rArm.rotation.z  = 0.80;
-      inChris._lArm.rotation.x=-1.05-sway;  inChris._rArm.rotation.x=-1.05-sway;
-      inChris._lArm.rotation.z=-0.80;        inChris._rArm.rotation.z= 0.80;
+      // Arms in hug pose — smooth interpolated
+      var sway=Math.sin(elapsed*1.6)*0.06;
+      var hugBlend=Math.min(1,hugTimer*3.5); // 0→1 over ~0.28s
+      var targetArmX = -1.1 + sway;
+      var targetArmZ = 0.82;
+      inFel._lArm.rotation.x  += (targetArmX  - inFel._lArm.rotation.x)*dt*8;
+      inFel._rArm.rotation.x  += (targetArmX  - inFel._rArm.rotation.x)*dt*8;
+      inFel._lArm.rotation.z  += (-targetArmZ - inFel._lArm.rotation.z)*dt*8;
+      inFel._rArm.rotation.z  += (targetArmZ  - inFel._rArm.rotation.z)*dt*8;
+      inChris._lArm.rotation.x+= (targetArmX  - inChris._lArm.rotation.x)*dt*8;
+      inChris._rArm.rotation.x+= (targetArmX  - inChris._rArm.rotation.x)*dt*8;
+      inChris._lArm.rotation.z+= (-targetArmZ - inChris._lArm.rotation.z)*dt*8;
+      inChris._rArm.rotation.z+= (targetArmZ  - inChris._rArm.rotation.z)*dt*8;
 
       // Hearts
       if(Math.floor(hugTimer*7)>Math.floor((hugTimer-dt)*7)){
@@ -2129,15 +3484,21 @@ function animate(){
     })();
 
 
+    // ── RPG-maker ortho camera follows Felicity smoothly ──────
     inCamP.set(inFel.position.x, IN_CAM_Y, inFel.position.z + IN_CAM_DZ);
-    inCam.position.lerp(inCamP, Math.min(1, dt * 9));
-    inCamL.set(inFel.position.x, 1.0, inFel.position.z);
+    inCam.position.lerp(inCamP, Math.min(1, dt * 6));
+    inCamL.set(inFel.position.x, 0, inFel.position.z);
     inCam.lookAt(inCamL);
     // Move character fill light with Felicity so she's always well-lit
     if(glbCharLight){
       glbCharLight.position.x=inFel.position.x;
       glbCharLight.position.z=inFel.position.z;
     }
+    // Sprite frame + facing indoors
+    updateSpriteAnim(inFel, moving, dt);
+    updateSpriteAnim(inChris, moving, dt);
+    updateSpriteFacing(inFel,inCam);
+    updateSpriteFacing(inChris,inCam);
     renderer.render(IN,inCam);
 
   } else {
@@ -2182,6 +3543,7 @@ function animate(){
       outChris.position.lerp(_hugChrisTarget,Math.min(1,dt*6));
       outChris.rotation.y=Math.atan2(oHDx,oHDz);
       outFel.rotation.y=Math.atan2(-oHDx,-oHDz);
+      // Sprite facing is handled by updateSpriteFacing — preserves face-to-camera
       if(!moving){
         idleLimbs(outFel); idleLimbs(outChris);
         outFel.position.y  =Math.abs(Math.sin(elapsed*1.8))*0.016;
@@ -2189,11 +3551,16 @@ function animate(){
       } else {
         outChris.position.y=outFel.position.y;
       }
-      var oSway=Math.sin(elapsed*1.9)*0.055;
-      outFel._lArm.rotation.x  =-1.0+oSway; outFel._rArm.rotation.x  =-1.0+oSway;
-      outFel._lArm.rotation.z  =-0.75;       outFel._rArm.rotation.z  = 0.75;
-      outChris._lArm.rotation.x=-1.0-oSway; outChris._rArm.rotation.x=-1.0-oSway;
-      outChris._lArm.rotation.z=-0.75;       outChris._rArm.rotation.z= 0.75;
+      var oSway=Math.sin(elapsed*1.6)*0.06;
+      var oTA=-1.1+oSway;
+      outFel._lArm.rotation.x  +=(oTA   - outFel._lArm.rotation.x)*dt*9;
+      outFel._rArm.rotation.x  +=(oTA   - outFel._rArm.rotation.x)*dt*9;
+      outFel._lArm.rotation.z  +=(-0.82 - outFel._lArm.rotation.z)*dt*9;
+      outFel._rArm.rotation.z  +=(0.82  - outFel._rArm.rotation.z)*dt*9;
+      outChris._lArm.rotation.x+=(oTA   - outChris._lArm.rotation.x)*dt*9;
+      outChris._rArm.rotation.x+=(oTA   - outChris._rArm.rotation.x)*dt*9;
+      outChris._lArm.rotation.z+=(-0.82 - outChris._lArm.rotation.z)*dt*9;
+      outChris._rArm.rotation.z+=(0.82  - outChris._rArm.rotation.z)*dt*9;
       if(Math.floor(hugTimer*6)>Math.floor((hugTimer-dt)*6)){
         for(var _hi=0;_hi<3;_hi++){
           spawnHeart(OUT,
@@ -2224,8 +3591,9 @@ function animate(){
         walkArms(outFel,  wt*9);
         outChris.position.y=Math.abs(Math.sin(wt*9))*0.05;
         // Override joined arm Z after walk swing
-        outFel._rArm.rotation.z  = 0.52+Math.sin(elapsed*1.4)*0.05;
-        outChris._lArm.rotation.z=-0.52+Math.sin(elapsed*1.4)*0.05;
+        var hh_target = 0.54+Math.sin(elapsed*1.5)*0.06;
+        outFel._rArm.rotation.z   += (hh_target  - outFel._rArm.rotation.z)*dt*7;
+        outChris._lArm.rotation.z += (-hh_target - outChris._lArm.rotation.z)*dt*7;
       } else {
         idleLimbs(outChris);
         outChris.position.y=Math.abs(Math.sin(elapsed*1.2+1))*0.022;
@@ -2349,17 +3717,82 @@ function animate(){
       }
     })();
 
-    // Outdoor camera
-    camP.copy(outFel.position).add(CAM_OFF);
-    outCam.position.lerp(camP,dt*7);
-    camL.copy(outFel.position);camL.y+=1.3;
-    outCam.lookAt(camL);
+    // Outdoor camera — 3 modes
+    if(camMode===0){
+      // Cozy top-down: nice angle, shows sky on horizon
+      camP.set(outFel.position.x, 22, outFel.position.z+16);
+      outCam.position.lerp(camP,dt*7);
+      camL.copy(outFel.position); camL.y+=1.0;
+      outCam.lookAt(camL);
+    } else if(camMode===1){
+      // Fixed-offset follow — stays at a constant world-space position
+      // relative to Felicity. Does NOT use outFel.rotation.y so holding
+      // joystick left/right never spins the camera 360 degrees.
+      camP.set(outFel.position.x, outFel.position.y+9, outFel.position.z+11);
+      outCam.position.lerp(camP, dt*6);
+      camL.copy(outFel.position); camL.y+=1.2;
+      outCam.lookAt(camL);
+    } else {
+      // Sky view — tilted to see horizon + stars at night
+      camP.set(outFel.position.x, 48, outFel.position.z+18);
+      outCam.position.lerp(camP,dt*4);
+      var skyLookAt=new THREE.Vector3(outFel.position.x, 2, outFel.position.z-8);
+      outCam.lookAt(skyLookAt);
+    }
 
     // Door proximity
     _dpv.set(outFel.position.x,0,outFel.position.z);
     var wasNear=doorNear;
     doorNear=_dpv.distanceTo(DOOR_POS)<4.5;
     if(doorNear!==wasNear){if(doorNear)enterBtn.classList.add('show');else enterBtn.classList.remove('show');}
+
+    // Sprite frame + facing outdoors
+    updateSpriteAnim(outFel, moving, dt);
+    updateSpriteAnim(outChris, moving, dt);
+    updateSpriteFacing(outFel,outCam);
+    updateSpriteFacing(outChris,outCam);
+    // Pop-in animation for placed items
+    for(var pi2=placedItems.length-1;pi2>=0;pi2--){
+      var pm=placedItems[pi2];
+      if(pm._popT<1){
+        pm._popT+=dt*3;
+        var sc=Math.min(1,pm._popT);
+        // Overshoot spring
+        var spring=sc<0.7?(sc/0.7):(1+(1-sc/1)*0.3*Math.sin((sc-0.7)/0.3*Math.PI));
+        pm.scale.setScalar(Math.max(0,spring));
+      }
+    }
+    // ── FIREFLIES (night only) ─────────────────────────────
+    if(fireflyNightFrac > 0.05){
+      for(var _ffi=0;_ffi<fireflyMeshes.length;_ffi++){
+        var _ff = fireflyData[_ffi];
+        var _fm = fireflyMeshes[_ffi];
+        // Drift slowly
+        _ff.baseX += _ff.driftX;
+        _ff.baseZ += _ff.driftZ;
+        // Bounce back if too far
+        if(Math.abs(_ff.baseX)>30 || Math.abs(_ff.baseZ+14)>30){
+          _ff.driftX *= -1; _ff.driftZ *= -1;
+        }
+        // Gentle floating
+        _ff.phase += dt * _ff.speed;
+        _fm.position.x = _ff.baseX + Math.sin(_ff.phase)*0.4;
+        _fm.position.y = _ff.baseY + Math.sin(_ff.phase*1.3)*0.35;
+        _fm.position.z = _ff.baseZ + Math.cos(_ff.phase*0.8)*0.3;
+        // Blink on/off
+        _ff.blinkPhase += dt * _ff.blinkSpeed;
+        var blinkVal = (Math.sin(_ff.blinkPhase)*0.5+0.5);
+        blinkVal = Math.pow(blinkVal, 3); // sharper blink
+        var ffOpacity = fireflyNightFrac * blinkVal * 0.95;
+        _fm.material.opacity = ffOpacity;
+        _fm.material.emissiveIntensity = 2.5 + blinkVal * 2.5;
+        _fm.visible = fireflyNightFrac > 0.05;
+      }
+    } else {
+      for(var _ffi2=0;_ffi2<fireflyMeshes.length;_ffi2++){
+        fireflyMeshes[_ffi2].visible = false;
+      }
+    }
 
     renderer.render(OUT,outCam);
     updateLabel(lblF,outFel,3.5,outCam);
@@ -2373,7 +3806,9 @@ function animate(){
 window.addEventListener('resize',function(){
   W=window.innerWidth;H=window.innerHeight;
   outCam.aspect=W/H;outCam.updateProjectionMatrix();
-  inCam.aspect=W/H;inCam.updateProjectionMatrix();
+  inCam.left=-IN_ORTHO_H*(W/H); inCam.right=IN_ORTHO_H*(W/H);
+  inCam.top=IN_ORTHO_H; inCam.bottom=-IN_ORTHO_H;
+  inCam.updateProjectionMatrix();
   renderer.setSize(W,H);
 });
 
