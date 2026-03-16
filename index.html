@@ -3,472 +3,256 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no"/>
-<title>Cozy</title>
+<title>Felicity's World</title>
 <style>
-/* ───────────────────────────────────────────────────
-   RESET & BASE
-─────────────────────────────────────────────────── */
 *{margin:0;padding:0;box-sizing:border-box}
-html,body{
-  width:100%;height:100%;overflow:hidden;
-  background:#1a0e0a;touch-action:none;
-  user-select:none;-webkit-user-select:none;
-  font-family:'Segoe UI',system-ui,sans-serif
-}
+html,body{width:100%;height:100%;overflow:hidden;background:#1a0e0a;touch-action:none;user-select:none;-webkit-user-select:none;font-family:'Segoe UI',system-ui,sans-serif}
 #c{display:block;width:100%;height:100%;position:absolute;top:0;left:0}
 
-/* ── HUD ──────────────────────────────────────── */
-#hud{
-  position:fixed;top:0;left:0;width:100%;height:100%;
-  pointer-events:none;z-index:10
-}
+/* ── HUD ── */
+#hud{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:10}
+
+/* ── TITLE — top-left, small, unobtrusive ── */
 #title{
-  position:absolute;top:16px;left:50%;
-  transform:translateX(-50%);text-align:center;
-  pointer-events:none
+  position:absolute;top:14px;left:14px;text-align:left;pointer-events:none
 }
 #title h1{
-  font-size:clamp(12px,2.5vw,17px);font-weight:700;
-  color:rgba(255,220,160,.92);letter-spacing:.22em;
+  font-size:clamp(11px,2.2vw,14px);font-weight:800;
+  color:rgba(255,220,140,.95);letter-spacing:.22em;text-transform:uppercase;
+  text-shadow:0 0 14px rgba(255,100,0,.5),1px 1px 4px rgba(0,0,0,.9)
+}
+#title p{font-size:8px;color:rgba(255,200,100,.4);letter-spacing:.14em;margin-top:1px}
+
+/* ── JOYSTICK ── */
+#jz{position:absolute;bottom:96px;left:22px;width:120px;height:120px;pointer-events:all;touch-action:none}
+.nipple .front{background:rgba(255,220,160,.85)!important}
+.nipple .back{background:rgba(255,200,120,.15)!important;border:2px solid rgba(255,200,110,.35)!important}
+
+/* ── CORNER INFO ── */
+#info{position:absolute;bottom:18px;right:14px;text-align:right;font-size:8px;color:rgba(255,200,120,.28);letter-spacing:.05em;line-height:1.8}
+
+/* ── NAME LABELS ── */
+.lbl{position:fixed;pointer-events:none;transform:translate(-50%,-100%);font-size:10px;font-weight:700;letter-spacing:.08em;padding:2px 9px;border-radius:10px;white-space:nowrap;text-shadow:0 1px 4px rgba(0,0,0,.9);z-index:7;backdrop-filter:blur(4px)}
+.lbl-f{background:rgba(255,80,140,.25);border:1px solid rgba(255,140,190,.5);color:#ffc0e8}
+.lbl-c{background:rgba(60,120,255,.25);border:1px solid rgba(100,160,255,.5);color:#b8d8ff}
+
+/* ══════════════════════════════════════════════════════════════
+   STARDEW VALLEY STYLE BUTTONS
+   Warm wooden pixel-art look — brown gradient, pixel border
+════════════════════════════════════════════════════════════════ */
+.sv-btn{
+  font-family:'Courier New',Courier,monospace;
+  cursor:pointer;touch-action:manipulation;
+  background:linear-gradient(to bottom,#c8942a 0%,#9a6418 40%,#7a4a10 100%);
+  border:3px solid #3e1e06;
+  outline:none;
+  box-shadow:
+    0 0 0 1.5px #c89030,
+    3px 4px 0 #2a1004,
+    inset 0 1px 0 rgba(255,230,140,.55);
+  border-radius:5px;
+  color:#fff8dc;
+  font-size:11px;font-weight:900;letter-spacing:.08em;
+  text-shadow:1px 1px 0 rgba(0,0,0,.85);
   text-transform:uppercase;
-  text-shadow:0 0 18px rgba(255,120,0,.4),0 2px 10px rgba(0,0,0,.7)
+  padding:8px 16px;
+  white-space:nowrap;
+  transition:filter .08s;
+  image-rendering:pixelated
 }
-#title p{font-size:9px;color:rgba(255,200,120,.42);letter-spacing:.16em;margin-top:2px}
-
-/* ── JOYSTICK ──────────────────────────────────── */
-#jz{
-  position:absolute;bottom:100px;left:26px;
-  width:130px;height:130px;
-  pointer-events:all;touch-action:none
+.sv-btn:active{
+  transform:translate(2px,3px);
+  box-shadow:
+    0 0 0 1.5px #c89030,
+    1px 1px 0 #2a1004,
+    inset 0 1px 0 rgba(255,230,140,.55);
+  filter:brightness(.9)
 }
-/* nipplejs custom */
-.nipple .front{background:rgba(255,220,180,.9)!important;box-shadow:0 2px 12px rgba(0,0,0,.3)!important}
-.nipple .back{background:rgba(255,200,140,.18)!important;border:2px solid rgba(255,200,130,.4)!important}
+.sv-btn:hover{filter:brightness(1.12)}
 
-/* ── CORNER INFO ───────────────────────────────── */
-#info{
-  position:absolute;bottom:22px;right:18px;
-  text-align:right;font-size:9px;
-  color:rgba(255,200,140,.3);letter-spacing:.06em;line-height:1.9
+/* Active state (toggled on) */
+.sv-btn.sv-active{
+  background:linear-gradient(to bottom,#e8a030 0%,#c07020 40%,#9a5010 100%);
+  border-color:#5a2800;
+  box-shadow:
+    0 0 0 1.5px #e8b040,
+    3px 4px 0 #3a1800,
+    inset 0 1px 0 rgba(255,240,160,.65)
 }
 
-/* ── NAME LABELS ──────────────────────────────── */
-.lbl{
-  position:fixed;pointer-events:none;
-  transform:translate(-50%,-100%);
-  font-size:11px;font-weight:700;letter-spacing:.09em;
-  padding:3px 10px;border-radius:12px;
-  white-space:nowrap;text-shadow:0 1px 5px rgba(0,0,0,.9);
-  z-index:7;backdrop-filter:blur(5px)
-}
-.lbl-f{background:rgba(255,90,150,.28);border:1px solid rgba(255,150,200,.55);color:#ffc8e8}
-.lbl-c{background:rgba(60,130,255,.28);border:1px solid rgba(100,170,255,.55);color:#c0d8ff}
+/* Small icon variant */
+.sv-btn-sm{padding:5px 11px;font-size:10px}
 
-/* ── ENTER BUTTON ─────────────────────────────── */
+/* ── EXIT BUTTON ── top-left, hidden by default */
+#exit-btn{
+  position:fixed;top:12px;left:12px;z-index:60;display:none
+}
+
+/* ── CAM + TOD — top-right cluster ── */
+#cam-btn{
+  position:fixed;top:12px;right:12px;z-index:30;display:none
+}
+#cam-btn.show{display:block}
+#tod-btn{
+  position:fixed;top:52px;right:12px;z-index:30;display:none
+}
+#tod-btn.show{display:block}
+
+/* ── ACTION PANEL — right side, stacked ── */
+#action-panel{
+  position:fixed;right:12px;bottom:88px;
+  z-index:20;display:flex;flex-direction:column;gap:8px;pointer-events:all
+}
+.act-btn{min-width:118px;text-align:center}
+
+/* ── ENTER BUTTON ── */
 #enter-btn{
-  position:fixed;left:50%;top:52%;
-  transform:translate(-50%,-50%);
-  z-index:20;pointer-events:none;opacity:0;
-  transition:opacity .25s ease,top .25s ease
+  position:fixed;left:50%;top:52%;transform:translate(-50%,-50%);
+  z-index:20;pointer-events:none;opacity:0;transition:opacity .25s,top .25s
 }
 #enter-btn.show{opacity:1;pointer-events:all;top:50%}
 #enter-btn button{
-  background:rgba(20,12,6,.84);backdrop-filter:blur(16px);
-  color:rgba(255,220,160,.95);
-  border:1px solid rgba(255,200,120,.25);
-  border-radius:24px;padding:10px 22px;
-  font-size:12px;font-weight:600;letter-spacing:.1em;
-  text-transform:uppercase;cursor:pointer;
-  font-family:inherit;touch-action:manipulation;
-  transition:background .15s,transform .1s,box-shadow .15s;
-  box-shadow:0 4px 18px rgba(0,0,0,.45);white-space:nowrap
+  background:linear-gradient(to bottom,#c8942a,#7a4a10);
+  border:3px solid #3e1e06;
+  box-shadow:0 0 0 1.5px #c89030,3px 4px 0 #2a1004,inset 0 1px 0 rgba(255,230,140,.5);
+  border-radius:5px;padding:11px 24px;
+  color:#fff8dc;font-size:13px;font-weight:900;letter-spacing:.1em;
+  text-transform:uppercase;cursor:pointer;font-family:'Courier New',monospace;
+  touch-action:manipulation;text-shadow:1px 1px 0 rgba(0,0,0,.8)
 }
-#enter-btn button:hover{background:rgba(40,22,10,.9);box-shadow:0 6px 24px rgba(0,0,0,.55)}
-#enter-btn button:active{transform:scale(.93)}
+#enter-btn button:active{transform:translate(2px,3px)}
 
-/* ── EXIT BUTTON ──────────────────────────────── */
-#exit-btn{
-  position:fixed;top:13px;left:13px;z-index:60;
-  background:rgba(20,12,6,.84);backdrop-filter:blur(14px);
-  color:rgba(255,210,140,.9);
-  border:1px solid rgba(255,190,100,.2);
-  border-radius:22px;padding:8px 16px;
-  font-size:11px;font-weight:600;letter-spacing:.09em;
-  text-transform:uppercase;cursor:pointer;
-  font-family:inherit;display:none;touch-action:manipulation;
-  transition:transform .1s
+/* ── EMOTE BUBBLE ── */
+#emote-bubble{
+  position:fixed;left:50%;top:28%;transform:translateX(-50%);
+  background:rgba(10,6,2,.88);border:2px solid rgba(255,200,100,.35);
+  border-radius:14px;padding:6px 18px;color:rgba(255,225,160,.9);
+  font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  backdrop-filter:blur(8px);z-index:25;pointer-events:none;
+  opacity:0;transition:opacity .3s;text-shadow:0 1px 4px rgba(0,0,0,.8)
 }
-#exit-btn:active{transform:scale(.93)}
+#emote-bubble.show{opacity:1}
 
-/* ── ACTION BUTTONS — clean cozy pill, no emojis ── */
-#action-panel{
-  position:fixed;right:14px;bottom:180px;
-  z-index:20;display:flex;flex-direction:column;gap:7px;
-  pointer-events:all
-}
-.act-btn{
-  background:rgba(255,245,235,.13);
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  color:rgba(255,230,205,.9);
-  border:1px solid rgba(255,215,180,.28);
-  border-radius:50px;
-  padding:8px 18px;
-  font-size:10.5px;font-weight:700;
-  font-family:inherit;
-  letter-spacing:.14em;
-  text-transform:uppercase;
-  cursor:pointer;touch-action:manipulation;
-  white-space:nowrap;
-  box-shadow:0 2px 12px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.07);
-  transition:background .18s,box-shadow .18s,transform .08s,border-color .18s,color .18s;
-  min-width:108px;
-  text-align:center;
-  display:flex;align-items:center;justify-content:center;gap:6px
-}
-.act-btn::before{
-  content:'';display:inline-block;
-  width:5px;height:5px;border-radius:50%;
-  background:rgba(255,200,150,.5);flex-shrink:0;
-  transition:background .18s,box-shadow .18s
-}
-.act-btn:hover{
-  background:rgba(255,235,215,.2);
-  box-shadow:0 3px 16px rgba(0,0,0,.32),inset 0 1px 0 rgba(255,255,255,.1)
-}
-.act-btn:active{transform:scale(.94);box-shadow:0 1px 5px rgba(0,0,0,.22)}
-.act-btn.active{
-  background:rgba(255,185,110,.22);
-  border-color:rgba(255,200,130,.5);
-  color:rgba(255,248,225,.98);
-  box-shadow:0 2px 14px rgba(210,110,0,.2),inset 0 1px 0 rgba(255,255,255,.1)
-}
-.act-btn.active::before{
-  background:rgba(255,200,80,.9);
-  box-shadow:0 0 6px rgba(255,180,50,.65)
-}
-
-/* ── CAMERA VIEW TOGGLE ───────────────────────────── */
-#cam-btn{
-  position:fixed;top:14px;left:50%;transform:translateX(-50%);
-  z-index:30;
-  background:rgba(10,8,6,.72);backdrop-filter:blur(14px);
-  border:1px solid rgba(255,200,120,.18);
-  border-radius:20px;padding:5px 14px;
-  font-size:10px;font-weight:700;letter-spacing:.14em;
-  color:rgba(255,220,160,.88);
-  cursor:pointer;touch-action:manipulation;
-  font-family:inherit;text-transform:uppercase;
-  transition:background .15s,transform .08s;
-  display:none
-}
-#cam-btn:active{transform:translateX(-50%) scale(.93)}
-#cam-btn.show{display:block}
-
-/* ── DAY / NIGHT TOGGLE ───────────────────────────── */
-#tod-btn{
-  position:fixed;top:50px;left:50%;transform:translateX(-50%);
-  z-index:30;
-  background:rgba(10,8,6,.72);backdrop-filter:blur(14px);
-  border:1px solid rgba(255,200,120,.18);
-  border-radius:20px;padding:5px 14px;
-  font-size:10px;font-weight:700;letter-spacing:.14em;
-  color:rgba(255,220,160,.88);
-  cursor:pointer;touch-action:manipulation;
-  font-family:inherit;text-transform:uppercase;
-  transition:background .15s,border-color .18s,transform .08s;
-  display:none;white-space:nowrap
-}
-#tod-btn:active{transform:translateX(-50%) scale(.93)}
-#tod-btn.show{display:block}
-#tod-btn.is-day{
-  border-color:rgba(255,200,80,.5);
-  color:rgba(255,230,150,.95)
-}
-#tod-btn.is-night{
-  border-color:rgba(140,160,255,.5);
-  color:rgba(180,200,255,.95)
-}
+/* ── TIME DISPLAY ── */
 #time-display{
-  position:fixed;top:14px;right:14px;z-index:30;
-  background:rgba(10,8,6,.72);backdrop-filter:blur(14px);
-  border:1px solid rgba(255,200,120,.18);
-  border-radius:20px;padding:5px 13px;
-  font-size:11px;font-weight:700;letter-spacing:.12em;
-  color:rgba(255,220,160,.88);
-  pointer-events:none
+  position:fixed;top:12px;left:50%;transform:translateX(-50%);
+  background:rgba(10,6,2,.75);border:2px solid rgba(255,200,100,.3);
+  border-radius:18px;padding:4px 14px;color:rgba(255,220,140,.88);
+  font-size:10px;font-weight:700;letter-spacing:.12em;
+  backdrop-filter:blur(8px);z-index:25;pointer-events:none;
+  text-shadow:0 1px 3px rgba(0,0,0,.8)
 }
 
-/* ── STAR CANVAS (night sky — behind 3D canvas) ─────── */
-#star-canvas{
-  position:fixed;inset:0;z-index:0;
-  pointer-events:none;opacity:0;
-  transition:opacity 2s ease
+/* ── PLAY SCREEN ── */
+#play-screen{
+  position:fixed;inset:0;z-index:300;
+  background:radial-gradient(ellipse at center,#2a1608 0%,#0e0804 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;
+  opacity:1;transition:opacity .6s
 }
-#star-canvas.visible{opacity:1}
+#play-screen.fade-out{opacity:0;pointer-events:none}
+#play-title{text-align:center}
+#play-title h1{font-size:clamp(22px,5vw,36px);font-weight:900;color:rgba(255,220,140,.95);letter-spacing:.28em;text-transform:uppercase;text-shadow:0 0 30px rgba(255,120,0,.6),0 2px 12px rgba(0,0,0,.9)}
+#play-title p{font-size:11px;color:rgba(255,190,100,.45);letter-spacing:.2em;margin-top:6px}
+.divider{width:80px;height:2px;background:linear-gradient(to right,transparent,rgba(255,200,100,.5),transparent);margin:10px auto}
+#play-btn{
+  background:linear-gradient(to bottom,#c8942a,#7a4a10);
+  border:3px solid #3e1e06;border-radius:5px;
+  box-shadow:0 0 0 1.5px #c89030,4px 5px 0 #2a1004,inset 0 1px 0 rgba(255,230,140,.5);
+  color:#fff8dc;font-size:15px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;
+  cursor:pointer;font-family:'Courier New',monospace;touch-action:manipulation;
+  padding:12px 36px;text-shadow:1px 1px 0 rgba(0,0,0,.8)
+}
+#play-btn:active{transform:translate(3px,4px)}
+#play-hint{font-size:10px;color:rgba(255,200,100,.3);letter-spacing:.2em;text-transform:uppercase}
 
-/* ── INVENTORY BAR — Minecraft cozy wooden chest style ── */
+/* ── LOADING ── */
+#ld{
+  position:fixed;inset:0;z-index:200;background:#0e0804;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  transition:opacity .5s;
+  opacity:0;pointer-events:none;
+}
+#ld.fade{opacity:0;pointer-events:none}
+#ld.show{opacity:1;pointer-events:all}
+#ld h2{font-size:22px;font-weight:900;color:rgba(255,210,120,.88);letter-spacing:.3em;text-transform:uppercase;text-shadow:0 0 20px rgba(255,100,0,.5)}
+.lb{width:200px;height:8px;background:rgba(255,200,100,.15);border-radius:4px;border:1px solid rgba(255,200,100,.2);overflow:hidden}
+.lf{width:0%;height:100%;background:linear-gradient(to right,#c8942a,#ffcc44);border-radius:4px;transition:width .3s}
+
+/* ── SCENE FADE ── */
+#scene-fade{
+  position:fixed;inset:0;background:#0e0804;z-index:50;
+  opacity:0;pointer-events:none;transition:opacity .4s
+}
+#scene-fade.active{opacity:1;pointer-events:all}
+
+/* ── STAR CANVAS ── */
+#star-canvas{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:1}
+
+/* ══════════════════════════════════════════════════════════════
+   INVENTORY
+════════════════════════════════════════════════════════════════ */
+#inv-toggle{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  z-index:31;
+  background:linear-gradient(to bottom,#6a3c14,#4a2408);
+  border:3px solid #3e1e06;border-bottom:none;
+  box-shadow:0 0 0 1.5px #8b5a20,2px 0 0 #2a1004;
+  border-radius:8px 8px 0 0;
+  color:rgba(255,220,130,.9);font-size:10px;font-weight:900;letter-spacing:.14em;
+  text-transform:uppercase;font-family:'Courier New',monospace;
+  cursor:pointer;touch-action:manipulation;
+  padding:5px 18px 4px;white-space:nowrap;pointer-events:all;
+  transition:bottom .3s cubic-bezier(.4,0,.2,1);text-shadow:1px 1px 0 rgba(0,0,0,.8)
+}
+#inv-toggle.inv-open{bottom:var(--inv-h,78px)}
+#inv-toggle:active{filter:brightness(.85)}
+
 #inv-bar{
-  position:fixed;bottom:0;left:50%;
-  transform:translateX(-50%);
-  z-index:30;
-  display:flex;align-items:center;gap:6px;
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  z-index:30;display:flex;align-items:center;gap:6px;
   padding:10px 14px 14px;
   background:
-    linear-gradient(180deg, #2a1a0a 0%, #1e1208 40%, #160e06 100%);
-  border-top:3px solid #8b6020;
-  border-left:3px solid #8b6020;
-  border-right:3px solid #8b6020;
-  border-radius:12px 12px 0 0;
-  box-shadow:
-    0 -4px 0 0 #5a3a10 inset,
-    0 4px 24px rgba(0,0,0,.7),
-    0 0 0 1px #3a2408;
-  pointer-events:all;
-  max-width:100vw;
-  overflow-x:auto;
-  -webkit-overflow-scrolling:touch;
-  /* Wood grain texture */
-  background-image:
-    repeating-linear-gradient(
-      180deg,
-      transparent 0px, transparent 3px,
-      rgba(0,0,0,.06) 3px, rgba(0,0,0,.06) 4px
-    ),
-    linear-gradient(180deg, #3a2010 0%, #2a1608 100%);
+    repeating-linear-gradient(180deg,transparent 0px,transparent 3px,rgba(0,0,0,.06) 3px,rgba(0,0,0,.06) 4px),
+    linear-gradient(180deg,#4a2808 0%,#2e1604 100%);
+  border-top:3px solid #8b5a20;border-left:3px solid #8b5a20;border-right:3px solid #8b5a20;
+  box-shadow:0 0 0 1.5px #c89030 inset,0 4px 20px rgba(0,0,0,.6);
+  border-radius:10px 10px 0 0;
+  pointer-events:all;max-width:100vw;overflow-x:auto;-webkit-overflow-scrolling:touch;
+  transition:transform .3s cubic-bezier(.4,0,.2,1),opacity .28s
 }
-/* Chest label strip at top */
+#inv-bar.hidden{transform:translateX(-50%) translateY(100%);opacity:0;pointer-events:none}
 #inv-bar::before{
-  content:'🎒 Inventory';
+  content:'🎒 Bag';
   position:absolute;top:-22px;left:50%;transform:translateX(-50%);
-  font-size:9px;font-weight:800;letter-spacing:.18em;
-  text-transform:uppercase;
-  color:rgba(255,210,140,.85);
-  background:linear-gradient(180deg,#3a2010,#2a1608);
-  border:2px solid #8b6020;
-  border-bottom:none;
-  border-radius:8px 8px 0 0;
-  padding:3px 12px 1px;
-  white-space:nowrap;
-  box-shadow:0 -2px 8px rgba(0,0,0,.4)
+  font-size:9px;font-weight:900;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,210,130,.8);font-family:'Courier New',monospace;
+  background:linear-gradient(180deg,#4a2808,#2e1604);
+  border:2px solid #8b5a20;border-bottom:none;border-radius:7px 7px 0 0;
+  padding:3px 11px 1px;white-space:nowrap;text-shadow:1px 1px 0 rgba(0,0,0,.8)
 }
 .inv-slot{
-  width:54px;height:54px;
-  /* Minecraft-style slot: dark square with inset shadow */
-  background:linear-gradient(135deg,#0e0a06 0%,#1a1008 60%,#221408 100%);
-  border:2px solid #5a3a10;
-  border-radius:4px;
-  box-shadow:
-    2px 2px 0 0 rgba(0,0,0,.6) inset,
-    -1px -1px 0 0 rgba(255,200,100,.08) inset,
-    0 0 0 1px #3a2208;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  gap:1px;
-  cursor:pointer;touch-action:manipulation;
-  flex-shrink:0;
-  transition:border-color .1s,box-shadow .1s,transform .08s;
-  position:relative;
-  image-rendering:pixelated
+  display:flex;flex-direction:column;align-items:center;
+  background:rgba(0,0,0,.35);border:2px solid rgba(200,148,40,.28);
+  border-radius:5px;padding:7px 10px;cursor:pointer;
+  touch-action:manipulation;transition:background .12s,border-color .12s;
+  min-width:62px;position:relative
 }
-.inv-slot:hover{
-  border-color:#c8882a;
-  box-shadow:
-    2px 2px 0 0 rgba(0,0,0,.6) inset,
-    -1px -1px 0 0 rgba(255,200,100,.15) inset,
-    0 0 8px rgba(200,140,40,.3),
-    0 0 0 1px #3a2208
+.inv-slot.selected,.inv-slot:hover{
+  background:rgba(200,148,40,.2);border-color:rgba(255,200,80,.7)
 }
-.inv-slot:active{transform:scale(.93)}
-.inv-slot.selected{
-  border-color:#f0c040;
-  background:linear-gradient(135deg,#1a1206 0%,#261a08 60%,#301e0a 100%);
-  box-shadow:
-    2px 2px 0 0 rgba(0,0,0,.5) inset,
-    -1px -1px 0 0 rgba(255,220,120,.2) inset,
-    0 0 12px rgba(240,190,60,.4),
-    0 0 0 1px #806010
-}
-/* Golden shimmer on selected */
-.inv-slot.selected::after{
-  content:'';position:absolute;inset:0;border-radius:3px;
-  background:linear-gradient(135deg,rgba(255,220,80,.08) 0%,transparent 60%);
-  pointer-events:none
-}
-.inv-slot .slot-icon{
-  font-size:24px;line-height:1;
-  filter:drop-shadow(1px 1px 0 rgba(0,0,0,.8))
-}
-.inv-slot .slot-label{
-  font-size:6.5px;font-weight:700;letter-spacing:.06em;
-  text-transform:uppercase;
-  color:rgba(255,205,140,.65);
-  white-space:nowrap;
-  text-shadow:0 1px 2px rgba(0,0,0,.9)
-}
-.inv-slot .slot-count{
-  position:absolute;bottom:3px;right:4px;
-  font-size:8px;font-weight:900;
-  color:rgba(255,255,255,.9);
-  text-shadow:1px 1px 0 rgba(0,0,0,.9),-1px -1px 0 rgba(0,0,0,.9),
-              1px -1px 0 rgba(0,0,0,.9),-1px 1px 0 rgba(0,0,0,.9);
-  letter-spacing:0;
-  font-family:monospace
-}
-
-/* Place button — Minecraft style */
+.slot-icon{font-size:22px;line-height:1}
+.slot-label{font-size:7px;font-weight:700;color:rgba(255,210,130,.7);letter-spacing:.1em;text-transform:uppercase;margin-top:3px;font-family:'Courier New',monospace}
+.slot-count{position:absolute;bottom:3px;right:5px;font-size:8px;font-weight:900;color:rgba(255,220,140,.8);font-family:'Courier New',monospace}
 #place-btn{
-  background:linear-gradient(180deg,#5a8a20 0%,#3a6010 50%,#2a4a08 100%) !important;
-  border:2px solid #8ab030 !important;
-  border-radius:4px !important;
-  box-shadow:2px 2px 0 #1a3008,0 0 0 1px #2a5010 !important;
-  color:#d4ff80 !important;
-  font-size:9px !important;
-  font-weight:900 !important;
-  letter-spacing:.12em !important;
-  padding:8px 14px !important;
-  text-shadow:0 1px 2px rgba(0,0,0,.8) !important;
-  transition:transform .08s,filter .1s !important
+  background:linear-gradient(to bottom,#508020,#2c4a10);
+  border:3px solid #1a2a06;border-radius:5px;
+  box-shadow:0 0 0 1.5px #80b830,2px 3px 0 #1a2a06,inset 0 1px 0 rgba(180,255,100,.4);
+  color:#e8ffd0;font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;
+  cursor:pointer;font-family:'Courier New',monospace;touch-action:manipulation;
+  padding:8px 14px;text-shadow:1px 1px 0 rgba(0,0,0,.7);white-space:nowrap
 }
-#place-btn:active{transform:scale(.93) translateY(1px) !important;filter:brightness(.85) !important}
-
-
-
-/* ── INTERACTION TOAST (replaces emoji bubble) ─── */
-#emote-bubble{
-  position:fixed;left:50%;top:40%;
-  transform:translate(-50%,-50%) scale(.85) translateY(6px);
-  z-index:25;pointer-events:none;opacity:0;
-  font-size:10px;font-weight:700;letter-spacing:.18em;
-  text-transform:uppercase;
-  color:rgba(255,235,200,.9);
-  background:rgba(20,12,6,.72);
-  border:1px solid rgba(255,200,130,.22);
-  border-radius:50px;
-  padding:6px 16px;
-  backdrop-filter:blur(12px);
-  box-shadow:0 4px 20px rgba(0,0,0,.4);
-  white-space:nowrap;
-  transition:opacity .3s ease,transform .35s cubic-bezier(.34,1.56,.64,1)
-}
-#emote-bubble.show{opacity:1;transform:translate(-50%,-50%) scale(1) translateY(0)}
-
-/* ═══════════════════════════════════════════════════
-   PLAY SCREEN — full-screen landing overlay
-═══════════════════════════════════════════════════ */
-#play-screen{
-  position:fixed;inset:0;z-index:400;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  background:linear-gradient(168deg,#0e0806 0%,#1c0f08 40%,#120a12 100%);
-  transition:opacity .9s ease,visibility .9s ease
-}
-#play-screen.fade-out{opacity:0;visibility:hidden;pointer-events:none}
-
-/* Decorative grain overlay */
-#play-screen::before{
-  content:'';position:absolute;inset:0;
-  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-  opacity:.35;pointer-events:none
-}
-
-/* Soft radial warm glow behind title */
-#play-screen::after{
-  content:'';position:absolute;
-  width:420px;height:420px;
-  border-radius:50%;
-  background:radial-gradient(circle,rgba(200,80,20,.12) 0%,transparent 70%);
-  pointer-events:none
-}
-
-#play-title{
-  position:relative;z-index:1;
-  text-align:center;margin-bottom:52px
-}
-#play-title h1{
-  font-size:clamp(22px,6vw,42px);
-  font-weight:300;
-  color:rgba(255,215,155,.92);
-  letter-spacing:.35em;
-  text-transform:uppercase;
-  text-shadow:0 0 40px rgba(220,120,30,.3),0 2px 16px rgba(0,0,0,.8);
-  margin-bottom:10px
-}
-#play-title p{
-  font-size:clamp(9px,2vw,12px);
-  color:rgba(255,190,120,.38);
-  letter-spacing:.25em;
-  text-transform:uppercase
-}
-
-/* Decorative line */
-#play-title .divider{
-  width:48px;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(255,180,80,.45),transparent);
-  margin:14px auto
-}
-
-#play-btn{
-  position:relative;z-index:1;
-  background:rgba(255,240,220,.08);
-  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-  color:rgba(255,225,185,.92);
-  border:1px solid rgba(255,200,130,.3);
-  border-radius:50px;
-  padding:14px 44px;
-  font-size:12px;font-weight:700;
-  letter-spacing:.28em;text-transform:uppercase;
-  font-family:inherit;
-  cursor:pointer;touch-action:manipulation;
-  box-shadow:0 0 0 0 rgba(255,160,60,0),0 4px 24px rgba(0,0,0,.45);
-  transition:background .2s,border-color .2s,box-shadow .25s,transform .12s;
-  outline:none
-}
-#play-btn:hover{
-  background:rgba(255,230,195,.15);
-  border-color:rgba(255,200,120,.52);
-  box-shadow:0 0 0 4px rgba(255,160,60,.08),0 6px 28px rgba(0,0,0,.5)
-}
-#play-btn:active{transform:scale(.95)}
-/* subtle breathing pulse on idle */
-@keyframes pulse-border{
-  0%,100%{box-shadow:0 0 0 0 rgba(255,160,60,0),0 4px 24px rgba(0,0,0,.45)}
-  50%{box-shadow:0 0 0 6px rgba(255,160,60,.07),0 4px 24px rgba(0,0,0,.45)}
-}
-#play-btn{animation:pulse-border 3s ease-in-out infinite}
-
-/* Small hint text below button */
-#play-hint{
-  position:relative;z-index:1;
-  margin-top:22px;
-  font-size:9px;letter-spacing:.18em;text-transform:uppercase;
-  color:rgba(255,180,100,.22)
-}
-
-/* ═══════════════════════════════════════════════════
-   SCENE TRANSITION FADE
-═══════════════════════════════════════════════════ */
-#scene-fade{
-  position:fixed;inset:0;z-index:200;
-  background:#0e0806;
-  opacity:0;pointer-events:none;
-  transition:opacity .45s ease
-}
-#scene-fade.visible{opacity:1;pointer-events:all}
-
-/* ── LOADING SCREEN ───────────────────────────── */
-#ld{
-  position:fixed;inset:0;
-  background:linear-gradient(160deg,#0e0806,#1a0e0a,#0a0e16);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  z-index:300;transition:opacity .7s ease
-}
-#ld.go{opacity:0;pointer-events:none}
-#ld h2{
-  color:rgba(255,210,140,.9);font-size:20px;font-weight:300;
-  letter-spacing:.38em;text-transform:uppercase;margin-bottom:30px;
-  text-shadow:0 0 30px rgba(255,160,60,.3)
-}
-.lb{width:190px;height:2px;background:rgba(255,180,80,.12);border-radius:2px;overflow:hidden}
-.lf{height:100%;width:0%;background:linear-gradient(90deg,#d4640a,#f5b04a);border-radius:2px;transition:width .08s linear}
+#place-btn:active{transform:translate(1px,2px)}
 </style>
 </head>
 <body>
@@ -502,9 +286,9 @@ html,body{
 <canvas id="c"></canvas>
 
 <!-- Camera view toggle (Minecraft-style) -->
-<button id="cam-btn">View</button>
+<button id="cam-btn" class="sv-btn sv-btn-sm">📷 View</button>
 <!-- Day / Night manual toggle -->
-<button id="tod-btn">☀️ Day</button>
+<button id="tod-btn" class="sv-btn sv-btn-sm">☀️ Day</button>
 
 <!-- Name labels -->
 <div id="lbl-f" class="lbl lbl-f">Felicity</div>
@@ -512,16 +296,19 @@ html,body{
 
 <!-- Enter / exit house -->
 <div id="enter-btn"><button id="ehb">Enter House</button></div>
-<button id="exit-btn">Outside</button>
+<button id="exit-btn" class="sv-btn sv-btn-sm">← Outside</button>
 
 <!-- Action buttons — clean text, no emojis -->
 <div id="action-panel">
-  <button class="act-btn" id="hug-btn">Hug</button>
-  <button class="act-btn" id="hold-btn">Hold Hands</button>
+  <button class="sv-btn act-btn" id="hug-btn">🤗 Hug</button>
+  <button class="sv-btn act-btn" id="hold-btn">🤝 Hold Hands</button>
 </div>
 
 <!-- Interaction toast -->
 <div id="emote-bubble">Together</div>
+
+<!-- Inventory minimize toggle -->
+<button id="inv-toggle" class="inv-open">▼ BAG</button>
 
 <!-- Inventory bar -->
 <div id="inv-bar">
@@ -575,7 +362,7 @@ html,body{
 <script>
 'use strict';
 
-// ── Reference image textures (cropped from inspiration images) ──
+
 var RT_FLOOR="data:image/jpeg;base64,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";
 var RT_LIVING="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAsICAoIBwsKCQoNDAsNERwSEQ8PESIZGhQcKSQrKigkJyctMkA3LTA9MCcnOEw5PUNFSElIKzZPVU5GVEBHSEX/2wBDAQwNDREPESESEiFFLicuRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUVFRUX/wAARCACvAQADASIAAhEBAxEB/8QAHAAAAQUBAQEAAAAAAAAAAAAABQACAwQGBwEI/8QATxAAAgEDAwEGAgQHCwoFBQAAAQIDAAQRBRIhMQYTIkFRYRRxMpGx0RUjQnKBocEHJDM0NWJ0gpLS4RZDUlNUlKKywvAXJWNkc0RVhJPi/8QAGgEAAgMBAQAAAAAAAAAAAAAAAAMBAgQFBv/EADARAAICAQMCAwgCAQUAAAAAAAABAgMREiExBFETFEEiMjNhcYGRoSPw4QVSscHx/9oADAMBAAIRAxEAPwDpGua5Bo1pvk8cr5EcQPLn9g9TXLdQ1W91HUSkWJ9Rm5Y48MKj28gPSvdTvb3Wrp7izzNNdSYiY9I05weegA/WaO6Jo0OkWDhT3lw4JllPVjj7KpGHjbv3V+zZKceljhbzf6B0OhazLHE/4VgUEBwO59R5/XVpNB1n/wC623+70PGuarbvFDCimIKgDsB02jJp6dpNZM+3uoxH/p4Fc6Vdj3WP0avEe67BH8Ca0Jo0GpQMZMgYgAxgZobrEeq6da7mvopO8Yx4EQGRg5IPmOMcUe0HUbu+v4Gu12bWfaBjkbevFBu0lrqMMO68ZTbpMy2+COAdx+7rV4Vrw8tLJnds/GUW+xehKrBEzRT7iitkOMdKFG4vbjXZLW0nEMTBSN6hjnbn06mi0U0fwkXeSgMIhnPXpQaKKdu0cq2ToZ1CtG2eMhAc81lpWZtNG272YZWwXOia7JGGgv4XyehiA+dQtoPaXb/GLfH5g+6i929xadnYheNmaSZe9ZG/0nyeR7cUFgviqxtcaZ3+ZW3hZHjITjHGTzyf1V0VXW2lpRy423NN6vUR0PtMD/GLfJGfoD7qo3P4S0dl/DASS1lO0yxr/Bn3xVi+vN8cjWlqIiJlUbu9bw85wM+LpijdpHFc6O8Eo72Eu6Yfnwhjjr7U3wK29GN/kEeqtilZqyuwU7N9pROyWN9IDIeIZyeJB5An19/P51q81xaXTLrR7w243S6fJkxOTzGcZ2n6q6d2S1F9S0OJ5ZDJNCzQyMepKnz9Tgipjqi9EuS10ISira+GGycVj+1Pan4ffY2EgWYDE04PEQ8wD6+/l86KdrtRbTdCkeKUxTSssMbDqCx8vQ4zXLxpVzq1yYX3Q6fEAZXB5kPB2j66JNt6Ik0Qiou2fCKsDahrEzrpGyO3i472QfTPtmgt5azW99KLjYZ1dlkbblSQfIba6BdiDQNMBQKH3KkcanHXyH7TWGupWudQuLlkCtLIxO4blGW6DiplGMFhD6rZ2tuXBHZWcrXifDDZNvXYzjgEn82tTBonaOWLctzagdei/dQLT2Wz1CC4FvIxilVish8J56Hw8V0ayvPwlbd9Zx92gXY6DPhcdR7/ADpeYy5K9RZZXhx4MNF+Ek16G1vZI3MTEgIAASVOOlF7gEwOHgUAo4yG5B2nmvNWeKHtlJIgBiAXOxc/kU+4uraWF1Qy7iDgGM+hH7ax3Z1+ytjbRPNacmDtImvLi1Bl1SC32AKFeIEkYGPKrrNfbvBrVkwx1ZMfsoV2ZaW4cxnYkJJ3sfLagx9dH9Psbm6UiWSCJyodQqbsDng89elE5JP3UIec51Mgjh1uVS6Xtq4BCjYoJYnoAMcmprnSe1FonfTsiRMRuZguE9zjpVzSZGMCFVikuBqMYjGcbgAR74rSa/PqLaDeiWzgSPujuZZ9xA+W2rxjFrLiZ5WWRlp1GIvY9Z0+UR3F9aqxUN9Fff7qqi81Lyv7X6lqXtFcQ3OoASzjY8SgleemeOcVSiS3j3C2kkVCcjCA46e/tVHCOf8AA6u2WI59eS/AdXudxhvbd9oA8KKSxJwFA8zVu50rtPawiWcxJCcbnKLhPc46UuzlubaON4BE8hvYhGhO0k+In1wOa2GvTai2hXols4EjMR3Ms+4gfLbV4whjj9C7LZqeIy2Mpp+oXdpfCG5xBqMQypx4ZV/aD6V0DStVi1ODco2SpgSRk8qf2j3rLa1p8erWexh3dzAN8UqjlR91C7C8u9PK3N4DDPaviRh0dOCTx1BH2VMZOl7e6/0VUl1McP3l+wV2YIzZf/Gf+WtDfahBpthJPcNhRkADqxx0FZXSb+HTbS0ubhiEWMgADJY7eAPes9q2sXGrXbPIdoHhCg8Rg+Q9/U1tqsUK33yyeo6d235fGEF7iSJZ2YzBfxSbkAOc7R9fBqI20F0itJcDCrhcKc5IBp03M2z4dGBiQ7inXwgc+vlUTPdcfC2yeFNzAxeg4/bVMS/Xy+wSUccbZ+fPqaDRNTh0crcyMbhe9KkRnkEx+9P7R9pLfVrGKGOGSIpJvLOVxjaR5H3oBc7ZtOjWSFIgbofRXGfxZqksNuqhio4UH7ay68LSuB8qFKfiS5R0CFN1pDsBI7oYz16UBhvU03tFLNKrHagUqMZ5jx50wPHsQiKQAgY8f+NCtRihlvG3rtICDxHJ86RCHhy1Dp4sjpZrZe1Fhc2Qtru2nddwOYyqYx0x4qoPqujY/i+pZ/pQ++soLWBtoABJ2/tpnwCHb+LPO38n51oVv9x/kzrpYrhv8mofVdF/2fUv96/xovo2uafeIbS1Rrdk5WOQglh5kHJzXPk02KaAugO5SAVIquA1lKHhZgVIbKnlT5EVtWqrDa5+RlUKr8wi3lHS9b5gj/8Ak/6Wo9+52c6Hcn/3kn2LWEg7QLq1lFFMQLtGzx0kG1uR+0VvP3PP5Euv6ZJ9i1E5KVuV2LaHDptMu4v3RONDtf6ZH9jVltMEk6SxIcKGyT/VWtT+6J/Idr/TI/sasFcdoBpVnNbwY+Kc5JI4jG1eT+wVTOLM/ImMHPp8LuP7T3yCJYd+bhnVz/NUA8n09qzmxHcGZViLPzlT9E9GHSoBNJPN38u5/FvweS555NMLF3JJGM4GD/jVZPW8mmuPhR0hGNVVyYgsrK/GFOdo/KPWtRoHaaPTLB4JYHlYyFt6MMHOPXFY2BijqQRjOOv+NFdP02DUdU2XJECPIMlxjAx09qRP2Qko2Rwy9c3gvtdeeAsgkAGHxnAXnpmrGyYM/wCMPA44H3V7e6PZaTqkPwLhg6tlQd23A9fepCPGTj9dJcsvJMUlFJAbstJpPdTR6rMiePcmXKnoPMVNMLB3maG+RFZiEUzngfXQxdGEm1jbA7xuznqKS6NECneQxorY5Y07DUtSM7nXJadX/JoLDVILK0EcckhdJ1ljkjKsBjPXJ560Ru+1Mt5aSW895O0Ug2uBCg4/tVk49Li2xMwHdsQpMY3EHnjHyq42i6cI4ykl0WkA2BrcANjrzu+VDrnLdL+/kFKlev8AfwEr6JZZIVmLuNvmc8YoY0lzBPcR2rMkcJJZygI6cDJ8+OKs3V1eROqN8KO7GVw+dw4GfqP6qJdnYru7tbrfL3atKCUTBDEgcnIPpSqqZ8y4LXWJJ6XuDbPUZILgTzfEow2tE7IgOQQeRwCOtGbrtTLd2slvPeTtFINrhYUHHz3UC7QY7xIZpS6xyEMCBwceWBQswQ7VLRQqpKjep+ymWQ0SwiK0rFqaOsWOpWl5ax3UJ3BV7tgfpL6gigPahUjjve7+iYgRzxyvlWS0vVJdLuFwdyOoXBOA49D6H0NH9UvYb3TruaBtyNHjnqDt6EeRqk3mK+qJopdd3ywZG+BOh2IU7SzqCf6poOFLKEQZyvT1xnmjk0JuNL02I5IeVBkeQxg0QuNCsdNjn7u9Z5wue7YAk+3HStEecG2bSYIvywd990kaFEHibplF4/VTrfvGRAJ0eMhcEMecLg+XtUbRSTTiaSzXPh4abAOBgdK8jgkjOEtU45A73I+XSnxaS53Mzi3PPp9y1MkxsQjyJMTcAjPO3wEHjjFQfAzMHXZENo8lOftqe0Evdxo0HdIHL537iSQavLHlmzznHlSbNOovDKikycS/ikAI49flQy/gkuL1pECEbBkMM9M1dVeEwCcnkdMcedSKhyxwV4pSwixQsIms7mKaVECMCMopyOD70a+KjwCe8APQlDih93bym3T4dQZFII4HTBzVRLHUlbINuGBpc64z3zgnVgmexVrh5obmZQxO7bDnz55zQ/UFRbt5Y1CxLt5JxuwB+vmrZstRcqx7jLdcjGPnXl9aTHTC0gw/JkG0HA4A4+VNc5tJSlnBnniuLlWsMo6BtbVI9jDbtclfMHaa69+58uzRboYP8ck+xa5Dpksem3YnaJmjTKSMjZOcH9VHW1HI3LaakAefASoP1GrwclPKWUUhLxqMSlh59ToP7oQ3aJajB/jkf2NXH9X51ZyTlF7s7fXwijD6mRy1rqRAGfGSwHvyaB3Ei6jePcIGjhbAy3XgAeVM0TnPgfVoqrxqT3I0BKK7DKL4Sc8dDULSHfhMeoO7GaLTLG9gkcCmXaV4Qc9D61VitLvp8I5weMr5Gp93Zg2pbnluS21iVbkZwa2OgtBPo17YTtPE0swPhTcSNg4PSsutpd4H71Ycjooq/bQX6pIsUYRWYNiYDyGOtZrUpcMFg0t6YbeC1tkaV5g5Z2li2ZAUgcUPuLjuS4ZuSQAB5VVtY7lZVN1t2rkgxjjJGPn61O9t8VIxG8vnaqqMk0mMEngnbBDBeQ7IsWtw22PaSvPP114l8O8i+HtpO8jQhgwDDn2z7darJDqKJ3a6fc//AKzTGgvTOzzafd5YdFQjmtWLXs4mZU1LdP8AZbuLpe9hlu7aVVb6YAVVxg4xz5V4LvSQIgqTHu/o+JOT788VXls72VFQaddovGS6E8jP6qYmj37nmzn2n+YeP1Vsog3X7WxmuSU9mWlubTf3kkMkj8HxAHBAx60S0XvWS5e1u2toQVRg6g7jjPTy60Ohg1OJCiWF11zwKu6Y97ZNOsljcIJX3g93nHGCMVnqVrliS2H3KtRzHkHanMY7qIzzNJhyCduCCVJzVJVtbdWkHekYIUMvhGR5UT1jTdR1V5J4reRJA+9mlATvGPHAPtmqDdktTjZCGjlUsA3dkZA8zz6U2zp5TeUTRbCEMPk8vLWSzl+GuVx9HBHTb6j25/RVqyZh2cvA7bs7sHzPhHWtPqllb6ja9yw8S8o69VPr/hWSktryx069t5CiqufLORjqPSkdR0rreVxk0dNcrNnyQTzrBpOnu4OzvFDY4ONpp/4RS4imSHYkY4wOCTmq090DYaYoR9ySoTuXwnA/XR2+vN1tMfhrZSwwWWIA8n1ptV/hLGM5YX0uyWU+ARLKiwEq4LbSQD8qfYxsYcN9JeMkYNNk1SybR5Ie9BkKY25bk4I6Yx1p2iqDYxrg8g8n51SyOmOStVjnnKwXUUFUzxnA/VVhUG5gMHkUkQBF44NTqoBbKngjGKySkOIVjwEIA5P7KkVOW6kY8qeqAiPw5B8qcMFyAMZpbZBHsbauDzgeXtUioCzcYwOtL6KK3UD7qeF8TY6nmobAYF2qhAHJ/ZVe5W3kkEFzK0SOCBIBnY3BBx+irQAKqCKa8aSHZIgbPPPNCZAL1Oyt7Cwt7a3uRdEEmRwu0DjwjH19a38Ea/AweEfQXy9hWBvwBp8YEPdZYHbx6Gt9DcQCxhBniBCLxvHoK39JlZyc/ruI4Kt9GotZvCP4JvL2Ncq03VI9PkJliZuEZSoB5A8wfLmuqX9zAbaYCeInum/LHoa5jp9rDPBukhRzwASMnoK3O50yjNfMX09StrlCXyLcGpx6leZjjKjBLbgBknHQDy4ovFwzD5Gh9taQQgGGNULY5C0RiUbz6jGePKsHVXO6bmzo01KqCgiZCNsZBznoCPapBjc2TjA54qCzaxuLPvXu27woDhZMANnBGM8cVLE0cm8wyCSNWIR89QDjOf21llBrcpXerJOKQ4cqh48vsNS6e2L+M+kh/wCU1FxhOCCcfZUunqp1GInH8Ief6pqafiL6l7Pcf0DhiIbK809bNJcMR7VPaqSG7z6OfOpWQ5/F52+1eg1PJyBtvbxXEixlMAnrmiD6db28TYQkgZzuqKGNTIgj6k/k9aJNbIsDlw27H5RNKlIAObOOLxbc+WKabKOXxbceWKuLG+fxgO33FePG2fxYbb7Co1PuQU0top5FjKYBPJzUlxYW9vE+EYkDP0qsCNTIgQck+XWn3EEYgcvncB+UTV4yJRmbmI2x3r4lPHyrN63JvgvT08AH/DWvdTkiXO0j8rpWQ1vb3N7txjYOn5tU6x/xb90buh+L9gVNbrPpFkjA9QeOv0TVKGGAXAVZ5WkDfRPI+qiBBbSrIevHH5hodBZzfEfjAFA6sPPHpXOhwzbdrclpHpokD8l3LMc544ozZQC2gWHcXCrgEjnFV4icJwM8ZP6PKrsRwx8IPTH+NUsk3yGlLgsoCEQEZx5Dz4p5kjjY72VScdTzVd5RDb7zyVAwPU9AProdNeNa35ViGLDLMVzSFDUNrr17t7BgTx4TAY4/mGvfiIyWHiJ/MNDBqeRkSRjjoR515+FMkgSJx0yOtHhs0+Xr7hMXMYVAxK465UgVLG6sWZCGBOMj1oM2qbQfxiH5Lmlpt00hkm6LnxL6j1odTxkpPp449hhoFiE8sHnA68UvNgTnP2U3PhTGc17gbm4P6B1pJjB+rB2s0EZCt3i4OM+vlWedbk+UPOP82POtHqfeNZx91GxbepIUZI4oSba4GMCTIx/mT5U2La9C8cAiRJ2HIiGcfkDzq/pKsLd9zclucHHGBTJbacAfwnGP8yfKrGmQyRwSCQMrb+NwwTwPKtMW2iXgJRLhF59MfVVtB42J6dOlVI1UqgwMcdB7VdibxtnyGKTMqDoez1qFwXdi54OcY4/XROztFs7YQK24KOpGOvNPUDbHkjHuPanqArFhwRSpTk+WVwhdAuBg/wCFSaehbUYxkYMh+f0TTMju0zn19PKn2DH8IRgZz3h/5TV6PiL6lLPcf0NTanvUZcY5zmpDPHBKsDMveOMqucE0y32923d43Z8qE6jfW9lrls94+xdgJJUnzeu1N4XByox1NhHVlkt9Iu3hciTuyFIOMEn1rP3uh6vZWslzNdHu0GSBcMTRS61a1vdJvjFPvEUYZgQQQMjnBqvqXaa2vtNubfvDvZSFG36XPmfPisvVLfd7jaJy20LKz2yUYtPupbJZDfSCZk7xYy7bSMZ5bP7KH2gvb2fuYrmRTtLczNjFPt9avIbIWfxANtgqUxyAfIGrGhXun2V1JLOxikH8HIATgelc5SWUjoOMlFvG/oWtFW6stdiSWRmSSFz/AAjHOPY1pbmXvFBll2gnaAx6mgP4WsZ+0kVz8QjQxWrhpGXHp0+6o9W13Tp5IY4ZizNlVUIRycetdSmWK3KKOfNapqMuWgtKe9yuMedYzWk2w3oz+QD/AMNbW52+Lu8bs+VYnWdxgvc5zsHX82ndV8H7od0XxfsDxn8GWO3r/wDwa9ABdvLHnSB26ZYk84P/AEGlg7mx5jOK5yOnPkaA5EeGKncDkDPHpRCAMSTnPGOlUUB8GeMfq4q7CASflyMdarMWz2+fu7AurZIKlcHzoRFqSLO5uYGlkIGCD5CtAqq0ajaGGAACPavBp1puObZP7PlSozUVhkxsnD3QLFqNuqeOycsSSSMUyO/iDjfZsVUEADHHOaOjTrXC5tkH6K8/B1ruP73TgcjbU+LHsX8xb8gJ+E7cS7hZsEK4IyKl05zfXMwtswwnG7z9qKHTrQov72jPAxke1WIoo4QUjQIvHhUY4odixsg8xY+T1chEB5Pl9Vey+BX2YJGAK8UhlU9MHH6qI6XYx311JHOGZVQttU4LEdOaSudxEnhGfd9rMF258ywBqJ5Wx0jB8/CPuox2g0+PTr1O43iORA5VmyVJPI4oKzYANdiE4NZMWmRC8jc8Rn08I+6qzsSRuCnz4UCrTHOfYedM7tpOmcfbT4zj6BhrktQh+7AP0gdv1Zq7GuWbyx51Xh5TeB+USPrNWlXxtgdeDzXHua1PBuj7qHIwCxkHOemflTwx8XXGPKod5CIVQtlgpAPt1p4OSdowP20loB+44TJHQZyMeVS6fJjUIz/6h/5TVQuNq88HAz+g1JpzKdRiJ/1h5z/NNNoj/IvqUs9xmutvxKM2c84rLdspiL20KlcypgL1I2knP/F+qtFaudrd5nbnzryWOKWZX7lHZRgMUBI+Rruyr1fU5UXpzkx+jO9z+FYlwNtizFyOhBDDjz6UNgmup4hIRCpbJ866UIrfLvHDF3kg2uQoyy+h9RTrGzs7GDu4LeKFf9FVxWe2pWPVPcZXb4UdNexz42upBQRFx5YRvupjx3q47xI146MpH7K6ckjZ/GE7ffpTZGJPgGV+uleVr4wW83b3OVxTXDpfFlj2WyKxC+eWXn/v1pQytJqdkpOzfIAC64HP2V0ZtO09DM0Nnbh5sd5hAd4HrTJILaQKZ4ImZPo70BIx0xWiuvTDSuCsrIymptbo9mHdkvnOfKsRrt0oF2mx9xjBGFyPo461rri5S2jMt2+yIebDqfLHqayerSRT2t3LFyjRjBII/J96OraVeHzlD+i+L9ikBt02wOODz/wGkOHfGOahito0srOULgtwSPzTU24bm8JOMH51zUdOfJ7EpPdjJ46c+1TNO8MgSOPvHbAxnGM9P21FEOI84x7j2qnerdpfbraMspRc/i9y5GfL1qYqLl7XBTKT34CEl5IINjRmNxIFGG98H7amGN3U5/OP30JgW4eRTfBoYi65ZY8BcnJOB1Nae6uLR7Iw2ynIbA3RgDHqP1USppllueDPbdOM0qoZT/RQwMYycfnGvCo9/wC0auadenT7xZjEsqlWUqSOMjrVaUhnZlUKCcgA9K5/pyaU3nGDy34nABIGM4yetXQCWY5zyM1SgP75A/mn9FWsAu27HJHl5VdcFZcjhjanTj1pz6ldaastzald4AByM4GfP2oWNSVDtkk7tgeUMZOKp398koVjIZVXnZsKg/OmxreRvl5NZfBpLS+uNTe3ubokttYD0IwxBo1pWjXOrwzTQz20KxytEA8LO3AHOdw9ay+kyJJPazIgjEkRJVemcGug9iOdLu89fi5PsWiutStakvQT1GqiHsP1AesaJc6PDDPLPbTJJMsRWOFkIyDzksfSs7dwCS8mBdtuFwoOB9EVv+2/8l2mOvxkf2NWHlP77nyAfo4/sjrU2LwrPY22KVTdlWZ77kARlRMc4AyMdeKkCtlucZxjjpTlXwrkHjFe4HeMKS2XIwAQmBnH3U1sgsQTyOeTTznYnAB4yf0eVMYHLEccVKAiYlQvPpj6qrJdm2uhJ4SFO8hmwTwafIAFXGBjHQVUkRTM5K5JAGcelaanh5BpNYYcHaj8VtFsDuw2e+Hp8q9j7VbAR8Kpwf8AXD7qzhjQJH4BwR5VItpBIks0jMioRnbwAMda1PqZpci10tbfBoou1YjYE2y88fww+6pm7WBiW+GUADzmH3UFHZm4AGNP1U+n71fj9Vejs3dDP7w1QE9cWr/dUPqLG87/AIK+Xo7r8h2TtbuXHwq+v8MPurxe1wQFfhVOP/WH3UC/ybudwH4O1XAHX4V+D5eXzr3/ACbuhnGn6qc9c2r/AHVXxrMY3/AeXo7r8hUdqwj/AMWXnPHfD7qil7Ud4+fhlHH+uH3UOPZm4wP/AC/VeOg+Ff7qX+TFx56fqgJ9LVz+yrrqLE87/gPL0d1+QT2g1j4u43RLNHGcPKokLLz4cjPHQ+XvVuE3F/psilS0s+FiXAGeAABwPOrKdknM6O2lanI4I277Z8D06+VdI7M9l004Ld3iZuiPAh5EI/ve/l0HupuU3gXCMOnbsym3wkcsXB0yxGM5I6/mGkOGYceRryQiLTbLvPDjGdw6eE1H38JkJEi8+9Uib5rcljZQIyCDnoD8qtxHLHgZA4NUgQVBHHOD9VSrOkTlZGVTjoaiSyUH6mrz6cFjXLFlOB7ZoJbxSzKTFaTvg4JEp6/VR6O6hCqBIv8Aa+dTpdwAsN64HIxS1LSsYKtMz4tpyAfgp/F0/Gn7qcltco+fgJmx5NISPsrQC7hAT8YOevPtXhu4dxG9cY9aFY+xGl4wCtEG6SWYho1J2bWJPJ5ox3g3sAQeQapXF1GsIEcgBZgMg8jPU0PF2U7tviJWIUllYcZz0pqq8TMs4GRg2sluwuO8t95fLMxJGeBz5VJdOjQNvk2gA9GoJDeqkaoLZvD/ADiKeb6Nhg2pI92Jq3h75OjCyOhIM6VMLeOyMgbAiIIAyec+VdK7BSCXR7pwCAbyTqMHotcw0lLmWYXEoKrjbHGRktngcfYK652U0ubSdJ7u4G2WaRpmTOdmccfUKitfyNo5f+oSjpwU+3ZcaRamMgN8ZHjIyOjVz+W8MN1OtwrM2VyY18Iyox5+ldB7dfyVaf0yP7Grmet3ItbucyxybZSmxlAOTsGRjOaXes2JfL/sV03wvuRDXpO78Sxr4sBtp4H31Paa008rF4ztCZwgySR5/KhEtza3Ear3kig+kajPnz4qnsLmHd8NbpNLI6lU8AGTzx1q9kIKPsrcpWrHL2uDRb2wngbI69D5VG2/LExt5AYAowmngAboG6Y+kfvoTrNu0JiRQ0Svk5BOSRjzrKsZNnhtLIMvneKFC+5MsAWHyNAluXTrcL18nI/T05ondhxAys7SAc5Y5I6+dDPhbN9OHfTCOdk8CiPdk+5zx5evJrf06Ti1nkRa3DDSySC7TBHxRGOmGNWobwHTrtCZHOfCduQRtHnVGLFrpk8YaJjImPcf9/aMVd08D8CXZI/K/wCgUW1KCTzn/wBHweT6Bj+gvyFOpqfQX5U6mnDFSpUqAFSpUqAFilSpUAY/VOw3xFw8tjcxwq7FmjmiLqCeuMMD1rG6tp0mlX9zY3DxSskIffGhUHcreRJ9K7FWK7Ydnri6vTfWkTS95CIpVTlhjOCB8iRxzSLK1jKW5u6bqJa1GctjnC/wcXQ4A+yrMcvdWtxMFBZTnnz8NTr2fugMCz1UD+jSf3aKaR2UvL5zA9vcpBI472S5jMeB5gZwTxxxS2nLbBtU4Q9rUg6nYbUNoxfWQz6Wz/36eOxGoD/62yPzt3/v1t1GAB6V7TvBr7HN81d3MR/kTqH+22X+7v8A36a/YfUHUqL6xXP/ALZ/79bmlR4NfYjzVvcwzdhtQbP79sh/+O/9+oz2Bvz1vrI/O3f+/W9pVPhQ7E+au7mA/wDD+/8A9vs/93f+/Xv/AIf32f49Zf7s/wDfrfUqPDh2DzV3+4zug9lU0pxPdSpc3I+iyptVPcAknPvWiAxSpVdJJYQic5TeZPcy/b3+SLT+mR/Y1c2121FxcRkO+V5Crx+SvOfLrXSO3xI0i0x1+Nj+xqwWqQ3MqRPZwF3EhVmVd2BtXgj5+dZbcq1NdjpdL8H7gqy0CK8dlkd0kA3ZOGGPnRez7NC0uoLlbtm7lshWGc+VWuzlpdJdztf2zKoQBCybfP0+r6q0iwRHP4sY8sCkztktmzTFRxkeOcZPShOuaQdYWJTMEEbE4K5BzxRcgnGFxivGHUBf0mkqWHlFnhmMv+zY0/Trphd5DFW8EfQgnyzz1xWcWxywEzzDJwWUqfP0ro+qwGbTLhEiMkhjbaoyMny/XWJisdTa6gE1rIYy435i28ZHU+Vaq7GyrSWwFubVEkkSC4Ld220s7AcjrxRa3hji0ScRliGUNlupO0VQ1pY11a47y17pt+QFAxjyP6etF5d/4MuO82l9g3ben0RTpt4RFaeW8nck+gvyFOpqfQX5CnU84YqVKlQAqVKlQAqVKlQAqWKVKgBYpYpUqAFSpUqAFSpUqAFSpUqAFSpUqAFSpUqAMn+6HvGh2pjIDfGR4yMjo1cw1jWNQsnSEbUjcnc6ggElcDz6Yx+muofug/yLaf02P7Grk3aoThg5YCBioUHJy+0foFIks2pfI2xbXTPT3DPYrWL26uRZzN3sUaeKRyWJOAAAemK3w27VIOSeorm/YOO4+NnlyhQeFwMrh89PStQ3ab4eeISokQSTuZoXOHUk+FgejCuT11Up2YiXps01JzZoWdS+QOMdK8Zl7sDBDdc1krztxFb3CbCshWRkmjj8QZPJ1b0++j0t/cx6Sl3LbBiqh3jibJVfUeuBWGXTzhjK5GxuhLj0Le5fESpxiqso8PqCCQM9KDt2tWFbvvHt5GRVljZWwHQnGMdd3Xj2qhadq/jtReztY1mWRt0creDC4ywPqRWirprVLOOCV1EMpJ8mf1KKVtQujbXsbR96d3eMoOfPFW/ANIm7vOzYNu7rjbXuuvYQ6iUXT0eRSDIxHXPNOlkWbTbqVAQjKCAR08NdqUpNJNj4JJvY7kn0F+Qp1NT6C/IU6tJwhUqVKgBUqVKgBUqVKgBUqVKgBUqVKgBUqVKgBUqVKgBUqVKgBUqVKgBUqVKgDLfugRPJoMLKuViuo3c/6K8jP1kVzjV722h0q4hnTdI+e6JA8J2gZBPn1967bNGk0bRyqro4IZWGQR6GuY9r+zMGlQySSDfpkh4J5aE+h8yPQjnyPrSbIvUpI39LbHS63yD+z+qWLaQY1Xu2jTdMyjlj0zkefIHr0rH6hepeXjd9cblWTYrScsOoyfbmidu2jW8ZSK8ljVhghQwzyDzx7Cmm07OSMWeU7jyTsb7qSsJ5wxt/Tu6KjlLBn+8kxNMHXvO9Cq4bGPbHp91b7U9VMPZqGWS8la4IzuXjJHDD0x5CgQsuzQOe8I/qt91T3EujSQGN7yWRBnCFWxyc8DFRPTNrMXt8ilXS+HGSb5MxcTKUmkWWPvtoyQOucA4/79auaDK8Gs26rP3MZQbyhB4Pp8+M+lEHsezeeJSf6jfdTEg0KFt0Nw8bdMqrfdTtaxjD/AuvonCSk5INatocN7efEzXEgJIBX29Kqz2iXayiJNznbHEq9G8gB+mvF1K0mdUfUZpd5ACFTgk/oFdN7L9l0sRHe3ag3GMxJwREPX84+vl5VC1SaRvttrqjn1NQn0Rn0p1KlWg4YqVKlQAqVKlQAqVKlQB//9k=";
 var RT_BED="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCABLAIADASIAAhEBAxEB/8QAGgABAAMBAQEAAAAAAAAAAAAAAAEEBwIFBv/EADUQAAIABAEICAUFAQAAAAAAAAABAgMEEQUHFSExUVWU0QYSF0FTcYGSEyI2dLIjM0JhkaL/xAAYAQEBAQEBAAAAAAAAAAAAAAAAAQMEBf/EABsRAQEBAQADAQAAAAAAAAAAAAABERICAzIh/9oADAMBAAIRAxEAPwD1wAea9YAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABxNmQSpcUybHDBLgV4oonZQra33FPPOF7zoOJg5jEXwUM84XvOg4mDmM84XvOg4mDmMpq+ChnnC950HEwcxnnC950HEwcxlNXwUM84XvOg4mDmM84XvOg4mDmMpq+ChnnC950HEwcxnnC950HEwcxlNXwAFAAAAAHxuVltdDo0m0oqmTC7PWm3deRk+AdHKjHquKRRQRRRfO24XD1YEomrvR/y7X137jWMrX0e/u5H5M8rI5BG1OcuJSoF8SKYoV+9+o0r+Rv67niw9s2vGiybVl/lk1ltril6SOzat8Cr90s2slIvdTmMT7Nq3wKv3Sx2bVvgVfulm3JWTVvQWWjrX9FrL3U5jE3k0rUm/g1T8opfI57Nq3wKv3Szb7p3ve3kQ1q0XXfoHdOYxHs2rfBq/dLHZtW+BV+6WbbEtO30OR3TmKoAOZ0gAAAAD43K19Hv7uR+TLOSSnlS+h8qdBLhU2bPn9eLvdpkSRWytfR0X3Uj8mVMiNVPnYPi9PNmOKTT1dpUL/h1tL/1s38Phl5/UaOSm1qYBEdJ3T022snZe/o9RxYbQjvqpaX1rbUw3otey79OoiLVF/TRyCfqYm/JnJNgFf/Z";
@@ -595,11 +382,11 @@ var W=window.innerWidth,H=window.innerHeight;
 var renderer=new THREE.WebGLRenderer({canvas:document.getElementById('c'),antialias:true,powerPreference:'high-performance'});
 renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
 renderer.setSize(W,H);
-renderer.shadowMap.enabled=true;
+renderer.shadowMap.enabled=false;
 renderer.shadowMap.type=THREE.PCFSoftShadowMap;
 renderer.outputEncoding=THREE.sRGBEncoding;
 renderer.toneMapping=THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure=1.05;
+renderer.toneMappingExposure=1.25;
 
 var insideHouse=false;
 var clock=new THREE.Clock();
@@ -626,19 +413,19 @@ function sceneBox(sc,w,h,d,color,x,y,z){return addBox(sc,w,h,d,color,x,y,z,null)
 //  OUTDOOR SCENE — SUNSET ATMOSPHERE
 // ═════════════════════════════════════════════════════════════
 var OUT=new THREE.Scene();
-// Warm gradient sky color
-OUT.background=new THREE.Color(0xff8c42); // golden-orange horizon
-OUT.fog=new THREE.FogExp2(0xe07040,.010);  // warm hazy fog
+// Warm cozy golden-hour sky
+OUT.background=new THREE.Color(0xf5c87a); // warm golden afternoon sky
+OUT.fog=new THREE.FogExp2(0xe8b060,.008);  // soft warm hazy fog
 
 var outCam=new THREE.PerspectiveCamera(46,W/H,0.1,300);
 var CAM_OFF=new THREE.Vector3(0,20,16);
 outCam.position.copy(CAM_OFF);
 outCam.lookAt(0,0,0);
 
-// ── SUNSET LIGHTING ──────────────────────────────────────────
-// Low-angle warm directional sun (golden hour)
-var sun=new THREE.DirectionalLight(0xffb347,1.2);
-sun.position.set(-25,8,30); // low on the horizon, slightly in front
+// ── COZY DAY LIGHTING ────────────────────────────────────────
+// Warm golden directional sun — cozy afternoon angle
+var sun=new THREE.DirectionalLight(0xffa040,1.5);
+sun.position.set(-20,18,25);
 sun.castShadow=true;
 sun.shadow.mapSize.set(2048,2048);
 sun.shadow.camera.left=-55;sun.shadow.camera.right=55;
@@ -646,21 +433,21 @@ sun.shadow.camera.top=55;sun.shadow.camera.bottom=-55;
 sun.shadow.camera.far=200;sun.shadow.bias=-0.001;
 OUT.add(sun);
 
-// Hemisphere: warm peach sky top, soft purple-mauve ground bounce
-var hemi=new THREE.HemisphereLight(0xffcc88,0x7a5aa8,0.65);
+// Hemisphere: warm amber sky top, soft warm ground bounce
+var hemi=new THREE.HemisphereLight(0xffd080,0x8a6a30,0.90);
 OUT.add(hemi);
 
-// Soft fill from opposite side (cool blue rim for depth)
-var rimLight=new THREE.DirectionalLight(0x6699cc,0.18);
+// Warm fill from the side
+var rimLight=new THREE.DirectionalLight(0xffcc88,0.35);
 rimLight.position.set(20,12,-15);
 OUT.add(rimLight);
 
-// Ambient low so shadows are rich
-OUT.add(new THREE.AmbientLight(0xff9966,0.28));
+// Warm ambient — golden cozy day
+OUT.add(new THREE.AmbientLight(0xffcc88,0.55));
 
 // ── GROUND (warm green dusk tones) ───────────────────────────
 var gGeo=new THREE.PlaneGeometry(150,150,1,1);
-var ground=new THREE.Mesh(gGeo,new THREE.MeshLambertMaterial({color:0x4a7a30}));
+var ground=new THREE.Mesh(gGeo,new THREE.MeshLambertMaterial({color:0x5a8a30}));
 ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;OUT.add(ground);
 
 // Darker patches
@@ -855,9 +642,31 @@ var bfCols=[0xff4466,0xff88bb,0xffdd44,0xffffff,0xff7744];
 // ─────────────────────────────────────────────────────────────
 //  POND
 // ─────────────────────────────────────────────────────────────
-var pondM=new THREE.MeshStandardMaterial({color:0x3a78b8,roughness:0.05,metalness:0.3,transparent:true,opacity:.88});
-var pond=new THREE.Mesh(new THREE.CircleGeometry(4.5,20),pondM);
+var pondM=new THREE.MeshStandardMaterial({
+  color:0x3a88c8,roughness:0.02,metalness:0.4,transparent:true,opacity:.88,
+  envMapIntensity:1.0
+});
+var pond=new THREE.Mesh(new THREE.CircleGeometry(4.5,24),pondM);
 pond.rotation.x=-Math.PI/2;pond.position.set(14,-.01,8);OUT.add(pond);
+// Pond border stones
+for(var _pi=0;_pi<12;_pi++){
+  var _pang=_pi/12*Math.PI*2;
+  var _pstone=new THREE.Mesh(
+    new THREE.BoxGeometry(0.5+Math.random()*0.3,0.18,0.4+Math.random()*0.2),
+    new THREE.MeshStandardMaterial({color:0x888878,roughness:0.9})
+  );
+  _pstone.position.set(14+Math.cos(_pang)*4.7,-0.02,8+Math.sin(_pang)*4.7);
+  _pstone.rotation.y=_pang;
+  OUT.add(_pstone);
+}
+// Lily pads
+for(var _li=0;_li<4;_li++){
+  var _lily=new THREE.Mesh(new THREE.CircleGeometry(0.4,7),
+    new THREE.MeshStandardMaterial({color:0x2a8030,roughness:0.8}));
+  _lily.rotation.x=-Math.PI/2;
+  _lily.position.set(14+(-1.5+_li*0.8),-0.005,8+(-1+_li*0.5));
+  OUT.add(_lily);
+}
 for(var li=0;li<7;li++){
   var la=Math.random()*Math.PI*2,lr=.5+Math.random()*3.2;
   var lp=new THREE.Mesh(new THREE.CircleGeometry(.42+Math.random()*.2,8),new THREE.MeshLambertMaterial({color:0x228833}));
@@ -1010,43 +819,45 @@ var frogs=[];
 //  INDOOR SCENE
 // ═════════════════════════════════════════════════════════════
 var IN=new THREE.Scene();
-IN.background=new THREE.Color(0x1e140e);
-IN.fog=new THREE.Fog(0x1a1008,30,58);
+IN.background=new THREE.Color(0x3d2410);
+IN.fog=new THREE.Fog(0x3d2410,30,60);
 
-// ── Indoor camera — True RPG Maker / Stardew Valley style ───────────────
-// OrthographicCamera: no perspective distortion, flat top-down view.
-// Camera is directly above, looking down at slight angle to see faces.
-var IN_ORTHO_H=8.0;  // half-height of ortho view (tune to show full room)
-var inCam=new THREE.OrthographicCamera(
-  -IN_ORTHO_H*(W/H), IN_ORTHO_H*(W/H),
-   IN_ORTHO_H,      -IN_ORTHO_H,
-  0.1, 100
-);
-var IN_CAM_Y=20;    // high above
-var IN_CAM_DZ=6;    // slight tilt back so we see character faces
+// ── Indoor camera — true isometric-style top-side angle ──
+// Camera sits high and to the side so you see the whole room like Stardew Valley
+var inCam=new THREE.PerspectiveCamera(45, W/H, 0.1, 120);
+var IN_CAM_Y=14.0;    // high above
+var IN_CAM_DZ=10.0;   // distance behind on Z axis
+var IN_CAM_AIM_Y=1.0; // aim at character mid-height
 inCam.position.set(0, IN_CAM_Y, 2.5 + IN_CAM_DZ);
-inCam.lookAt(0, 0, 2.5);
+inCam.lookAt(0, IN_CAM_AIM_Y, 2.5);
 
-// ── Indoor lighting: layered warm system ─────────────────────
-// 1. Global ambient — warm enough that characters are never fully dark
-IN.add(new THREE.AmbientLight(0xffc090,0.72));
+// ── Indoor lighting: cozy warm layered system ──────────────
+// 1. Warm ambient — very bright so every surface is fully lit
+IN.add(new THREE.AmbientLight(0xffe8c0, 4.5));
 
-// 2. Ceiling pendant / chandelier warm point (feature #4 — sunset-indoor glow)
-var ceilLight=new THREE.PointLight(0xffcc88,2.4,28);
-ceilLight.position.set(0,5.2,0);
-ceilLight.castShadow=true;
-ceilLight.shadow.mapSize.set(512,512);
+// 2. Main ceiling chandelier — very powerful warm golden
+var ceilLight=new THREE.PointLight(0xffcc78, 10.0, 60);
+ceilLight.position.set(0, 3.2, 0);
+ceilLight.castShadow=false;
 IN.add(ceilLight);
 
-// 3. Fireplace flicker light
-var fireL=new THREE.PointLight(0xff7722,1.6,11);
-fireL.position.set(-4.5,1.8,-6.5);
+// 3. Fireplace flicker — warm orange glow
+var fireL=new THREE.PointLight(0xff7020, 5.0, 20);
+fireL.position.set(-5.5,1.5,-6.5);
 IN.add(fireL);
 
-// 4. Kitchen warm lamp
-var kitchenL=new THREE.PointLight(0xffeeaa,0.9,9);
-kitchenL.position.set(5.5,3.8,-4.0);
+// 4. Kitchen accent
+var kitchenL=new THREE.PointLight(0xffeeaa, 4.0, 20);
+kitchenL.position.set(5.5, 2.5, -5.0);
 IN.add(kitchenL);
+
+// Wide fill lights blanketing every corner
+IN.add((function(){var l=new THREE.PointLight(0xffe0b0,5.0,35);l.position.set(-5,2.5, 2);return l;})());
+IN.add((function(){var l=new THREE.PointLight(0xffd898,5.0,35);l.position.set( 5,2.5, 2);return l;})());
+IN.add((function(){var l=new THREE.PointLight(0xffcc88,4.5,32);l.position.set( 0,2.5,-4);return l;})());
+IN.add((function(){var l=new THREE.PointLight(0xffe0c0,4.5,30);l.position.set( 0,2.5, 5);return l;})());
+IN.add((function(){var l=new THREE.PointLight(0xffd0a0,4.0,30);l.position.set(-6,2.5,-6);return l;})());
+IN.add((function(){var l=new THREE.PointLight(0xffd0a0,4.0,30);l.position.set( 6,2.5,-6);return l;})());
 
 // lampGlow: declared here so buildCozyInterior() can assign it
 var lampGlow=null;
@@ -1054,18 +865,13 @@ var lampGlow=null;
 var interiorWarmLight=null;
 
 // 5. Dedicated CHARACTER fill light — follows Felicity every frame
-//    so she never looks dark regardless of room position
-var glbCharLight=new THREE.PointLight(0xffddb0,1.1,7);
+var glbCharLight=new THREE.PointLight(0xffddb0,4.0,12);
 glbCharLight.position.set(0,3.6,3.5);
 IN.add(glbCharLight);
 
-// 6. Soft directional from above for shadow detail
-var inShadow=new THREE.DirectionalLight(0xffddaa,0.35);
-inShadow.position.set(3,10,5);inShadow.castShadow=true;
-inShadow.shadow.mapSize.set(512,512);
-inShadow.shadow.camera.left=-12;inShadow.shadow.camera.right=12;
-inShadow.shadow.camera.top=12;inShadow.shadow.camera.bottom=-12;
-inShadow.shadow.camera.far=28;inShadow.shadow.bias=-0.002;
+// 6. Soft directional from above
+var inShadow=new THREE.DirectionalLight(0xffddaa,1.2);
+inShadow.position.set(3,10,5);inShadow.castShadow=false;
 IN.add(inShadow);
 
 // ── Fire meshes (animated in game loop)
@@ -1095,405 +901,414 @@ var FLOOR_Y=0.14;                                    // top surface of floor mes
 var IN_SPAWN=new THREE.Vector3(0,FLOOR_Y,2.5);       // characters stand ON the floor
 
 function buildCozyInterior(){
-  // ═══════════════════════════════════════════════════════════════
-  //  STARDEW VALLEY INSPIRED INTERIOR
-  //  Top-down RPG camera. Pure canvas sprites — NO real images.
-  //  Z-fighting eliminated: every mesh has a unique Y and renderOrder.
-  //  renderOrder is the ONLY reliable way to avoid depth-sort flicker.
-  // ═══════════════════════════════════════════════════════════════
+  // ── 3D cozy interior — boxes for walls/furniture, canvas for floors/rugs ──
 
-  var FLOOR_Y = 0.14;
-  var _ro = 0; // global renderOrder counter
-
-  // ── Canvas texture helper ─────────────────────────────────────
   function ctex(w,h,fn){
     var cv=document.createElement('canvas'); cv.width=w; cv.height=h;
-    var cx=cv.getContext('2d'); cx.imageSmoothingEnabled=false; fn(cx,w,h);
+    var cx=cv.getContext('2d'); fn(cx,w,h);
     var t=new THREE.CanvasTexture(cv);
-    t.magFilter=THREE.NearestFilter; t.minFilter=THREE.NearestFilter;
-    return t;
+    t.magFilter=THREE.NearestFilter; t.minFilter=THREE.NearestFilter; return t;
   }
-
-  // ── Flat horizontal plane — z-fight safe ─────────────────────
-  // Each call gets a unique renderOrder AND unique Y nudge
-  var _yStep = 0;
-  function flat(tex,x,z,w,d,col){
-    _yStep += 0.0005;
-    var mat = col
-      ? new THREE.MeshLambertMaterial({color:col})
-      : new THREE.MeshBasicMaterial({map:tex,transparent:true,alphaTest:0.08,depthWrite:false});
-    var m = new THREE.Mesh(new THREE.PlaneGeometry(w,d),mat);
-    m.rotation.x = -Math.PI/2;
-    m.position.set(x, FLOOR_Y+_yStep, z);
-    m.renderOrder = ++_ro;
+  function box(w,h,d,col,x,y,z,opts){
+    var mat=new THREE.MeshLambertMaterial({color:col});
+    var m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);
+    m.position.set(x,y,z);
+    if(opts&&opts.tex) mat.map=opts.tex, mat.needsUpdate=true;
+    m.castShadow=true; m.receiveShadow=true;
     IN.add(m); return m;
   }
-
-  // ── Box helper for walls/furniture with height ────────────────
-  function box(w,h,d,col,x,y,z){
-    var m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),
-      new THREE.MeshLambertMaterial({color:col}));
-    m.position.set(x,y,z); m.castShadow=true; m.receiveShadow=true;
-    IN.add(m); return m;
+  function flatTex(tex,x,z,w,d,yOff){
+    var m=new THREE.Mesh(new THREE.PlaneGeometry(w,d),
+      new THREE.MeshLambertMaterial({map:tex,transparent:true,alphaTest:0.08}));
+    m.rotation.x=-Math.PI/2; m.position.set(x,(yOff||0.01),z);
+    m.receiveShadow=true; IN.add(m); return m;
   }
 
-  // ══════════════════════════════════════════════════════════════
-  //  FLOOR — warm honey planks
-  // ══════════════════════════════════════════════════════════════
-  (function(){
-    var m=new THREE.Mesh(new THREE.PlaneGeometry(18,16),
-      new THREE.MeshLambertMaterial({map:ctex(256,256,function(cx,W,H){
-        cx.fillStyle='#c8955a'; cx.fillRect(0,0,W,H);
-        // Plank rows
-        for(var y2=0;y2<H;y2+=20){
-          cx.fillStyle='rgba(0,0,0,0.13)'; cx.fillRect(0,y2,W,1.5);
-        }
-        // Plank seams with offset
-        var off=0;
-        for(var y3=0;y3<H;y3+=20){
-          cx.fillStyle='rgba(0,0,0,0.08)';
-          for(var x2=off%80;x2<W;x2+=80){cx.fillRect(x2,y3,1.5,20);}
-          off+=40;
-        }
-        // Warm sheen
-        cx.fillStyle='rgba(255,230,180,0.07)';
-        for(var y4=0;y4<H;y4+=20){cx.fillRect(0,y4,W,5);}
-      })}));
-    m.rotation.x=-Math.PI/2; m.position.set(0,FLOOR_Y,0);
-    m.renderOrder=0; m.receiveShadow=true; IN.add(m);
-  })();
-
-  // ══════════════════════════════════════════════════════════════
-  //  WALLS
-  // ══════════════════════════════════════════════════════════════
-  var wallCol  = 0xdcb895; // warm linen
-  var wallDark = 0xc8a070; // blush accent
-  var wainCol  = 0xa07848; // wainscoting
-
-  // Solid wall meshes
-  box(18.4,3.2,0.22,wallCol,   0, 1.6,-8.0);   // back
-  box(0.22,3.2,16.4,wallDark,-9.1,1.6,  0);   // left
-  box(0.22,3.2,16.4,wallCol,  9.1,1.6,  0);   // right
-  box(6.5, 3.2,0.22,wallCol,-5.75,1.6, 7.9);  // front-left
-  box(6.5, 3.2,0.22,wallCol, 5.75,1.6, 7.9);  // front-right
-  box(5.0, 1.0,0.22,wallCol,    0,3.1, 7.9);  // door lintel
-  // Wainscoting strip
-  box(18.4,0.38,0.1,wainCol,   0,0.33,-8.0);
-  box(0.1, 0.38,16.4,wainCol,-9.05,0.33,0);
-  box(0.1, 0.38,16.4,wainCol, 9.05,0.33,0);
-  // Room dividers
-  box(0.2,3.0,8.0,0xc8a070,-3.0,1.5,-4.0);
-  box(0.2,3.0,6.0,0xb89060, 3.0,1.5,-5.0);
-
-  // Skirting boards
-  var sk=0xa07848;
-  box(18.2,0.22,0.14,sk, 0,0.25,  0);
-  box(18.2,0.22,0.14,sk, 0,0.25,-8.0);
-  box(0.14,0.22,16.2,sk,-9.08,0.25,0);
-  box(0.14,0.22,16.2,sk, 9.08,0.25,0);
-
-  // Back wall painting + window (canvas painted onto wall face)
-  (function(){
-    var t=ctex(512,128,function(cx,W,H){
-      // Wall base
-      cx.fillStyle='#dcb895'; cx.fillRect(0,0,W,H);
-      // Wainscoting band at bottom
-      cx.fillStyle='#a07848'; cx.fillRect(0,H-28,W,28);
-      cx.fillStyle='#b88858'; cx.fillRect(0,H-28,W,3);
-      // Window (center)
-      cx.fillStyle='#c0dcf0'; cx.fillRect(205,8,102,88);
-      cx.strokeStyle='#7a5030'; cx.lineWidth=5;
-      cx.strokeRect(205,8,102,88);
-      cx.beginPath(); cx.moveTo(256,8);  cx.lineTo(256,96); cx.stroke();
-      cx.beginPath(); cx.moveTo(205,52); cx.lineTo(307,52); cx.stroke();
-      // Curtains
-      cx.fillStyle='rgba(230,200,160,0.7)'; cx.fillRect(185,4,24,96);
-      cx.fillStyle='rgba(230,200,160,0.7)'; cx.fillRect(307,4,24,96);
-      // Left art frame
-      cx.fillStyle='#7a5030'; cx.fillRect(56,10,68,58);
-      cx.fillStyle='#9ab0a8'; cx.fillRect(61,15,58,48);
-      cx.fillStyle='#4a7a40'; cx.fillRect(64,32,16,30); cx.fillStyle='#3a9030'; cx.fillRect(64,18,28,20);
-      cx.fillStyle='#a8c878'; cx.beginPath(); cx.arc(78,28,10,0,Math.PI*2); cx.fill();
-      // Right art frame
-      cx.fillStyle='#7a5030'; cx.fillRect(388,10,68,58);
-      cx.fillStyle='#f0c8a0'; cx.fillRect(393,15,58,48);
-      cx.fillStyle='#e87858'; cx.beginPath(); cx.arc(422,39,13,0,Math.PI*2); cx.fill();
-      cx.fillStyle='#c04838'; cx.beginPath(); cx.arc(422,39,7,0,Math.PI*2); cx.fill();
-      // Clock
-      cx.fillStyle='#5a3820'; cx.beginPath(); cx.arc(350,30,22,0,Math.PI*2); cx.fill();
-      cx.fillStyle='#f8f0e0'; cx.beginPath(); cx.arc(350,30,17,0,Math.PI*2); cx.fill();
-      cx.strokeStyle='#2a1808'; cx.lineWidth=2.5;
-      cx.beginPath(); cx.moveTo(350,30); cx.lineTo(350,16); cx.stroke();
-      cx.beginPath(); cx.moveTo(350,30); cx.lineTo(361,30); cx.stroke();
-    });
-    var m=new THREE.Mesh(new THREE.PlaneGeometry(18,2.8),
-      new THREE.MeshLambertMaterial({map:t}));
-    m.position.set(0,1.4,-7.88); IN.add(m);
-  })();
-
-  // Left wall decoration
-  (function(){
-    var t=ctex(256,128,function(cx,W,H){
-      cx.fillStyle='#dfc09a'; cx.fillRect(0,0,W,H);
-      cx.fillStyle='#a07848'; cx.fillRect(0,H-28,W,28);
-      cx.fillStyle='#b88858'; cx.fillRect(0,H-28,W,3);
-      // Window
-      cx.fillStyle='#c0dcf0'; cx.fillRect(70,8,100,78);
-      cx.strokeStyle='#7a5030'; cx.lineWidth=4;
-      cx.strokeRect(70,8,100,78);
-      cx.beginPath(); cx.moveTo(120,8); cx.lineTo(120,86); cx.stroke();
-      cx.beginPath(); cx.moveTo(70,47); cx.lineTo(170,47); cx.stroke();
-      // Curtains
-      cx.fillStyle='rgba(230,200,160,0.7)'; cx.fillRect(52,4,22,82); cx.fillRect(168,4,22,82);
-      // Bookshelf painted on wall
-      cx.fillStyle='#7a5230'; cx.fillRect(188,4,62,92);
-      cx.fillStyle='#8a6240'; cx.fillRect(192,8,54,84);
-      var bc=['#c03030','#2a8040','#2050a0','#d08020','#7030a0','#c8a020','#c05040'];
-      for(var r2=0;r2<3;r2++){
-        var bx2=194;
-        for(var b2=0;b2<5;b2++){
-          cx.fillStyle=bc[(r2*5+b2)%7]; cx.fillRect(bx2,10+r2*26,10,22);
-          cx.fillStyle='rgba(255,255,255,0.15)'; cx.fillRect(bx2,10+r2*26,2,22);
-          bx2+=11;
-        }
-      }
-    });
-    var m=new THREE.Mesh(new THREE.PlaneGeometry(2.8,16),
-      new THREE.MeshLambertMaterial({map:t}));
-    m.rotation.y=Math.PI/2; m.position.set(-8.88,1.4,0); IN.add(m);
-  })();
-
-  // Right wall (kitchen)
-  (function(){
-    var t=ctex(256,128,function(cx,W,H){
-      cx.fillStyle='#d8b888'; cx.fillRect(0,0,W,H);
-      cx.fillStyle='#a07848'; cx.fillRect(0,H-28,W,28);
-      // Counter/cabinet
-      cx.fillStyle='#607860'; cx.fillRect(20,30,210,90); // sage cabinets
-      cx.fillStyle='#e0d8cc'; cx.fillRect(18,24,214,8);  // counter top
-      cx.strokeStyle='#506050'; cx.lineWidth=1.5;
-      [90,150,210].forEach(function(x3){cx.beginPath();cx.moveTo(x3,32);cx.lineTo(x3,118);cx.stroke();});
-      cx.fillStyle='#c8a040';
-      [55,120,180,235].forEach(function(x3){cx.fillRect(x3,72,12,5);});
-      // Overhead cabinets
-      cx.fillStyle='#506050'; cx.fillRect(20,0,210,22);
-      cx.strokeStyle='#405040'; cx.lineWidth=1;
-      [90,150,210].forEach(function(x3){cx.beginPath();cx.moveTo(x3,0);cx.lineTo(x3,22);cx.stroke();});
-      // Fridge (right side)
-      cx.fillStyle='#888a90'; cx.fillRect(218,0,36,120);
-      cx.fillStyle='#9a9ca8'; cx.fillRect(221,4,30,55); cx.fillRect(221,62,30,52);
-      cx.strokeStyle='#666'; cx.lineWidth=1.5;
-      cx.strokeRect(221,4,30,55); cx.strokeRect(221,62,30,52);
-      cx.fillStyle='#c8a030'; cx.fillRect(246,30,4,8); cx.fillRect(246,84,4,8);
-    });
-    var m=new THREE.Mesh(new THREE.PlaneGeometry(2.8,16),
-      new THREE.MeshLambertMaterial({map:t}));
-    m.rotation.y=-Math.PI/2; m.position.set(8.88,1.4,0); IN.add(m);
-  })();
-
-  // ══════════════════════════════════════════════════════════════
-  //  FLOOR RUGS
-  // ══════════════════════════════════════════════════════════════
-  flat(ctex(128,96,function(cx,W,H){
-    cx.fillStyle='#8c2e2e'; cx.fillRect(0,0,W,H);
-    cx.fillStyle='#f0dfc8'; cx.fillRect(7,5,W-14,H-10);
-    cx.fillStyle='#7a1e1e'; cx.fillRect(14,10,W-28,H-20);
-    cx.fillStyle='#c84040'; cx.fillRect(20,14,W-40,H-28);
-    cx.strokeStyle='#c09070'; cx.lineWidth=1.5; cx.strokeRect(25,18,W-50,H-36);
-    var mx=W/2,my=H/2;
-    cx.strokeStyle='#d4a870'; cx.lineWidth=1;
-    cx.beginPath();cx.moveTo(mx,18);cx.lineTo(W-25,my);cx.lineTo(mx,H-18);cx.lineTo(25,my);cx.closePath();cx.stroke();
-  }), 0,1.5, 7.0,5.0);
-
-  flat(ctex(80,128,function(cx,W,H){
-    cx.fillStyle='#6858a0'; cx.fillRect(0,0,W,H);
-    cx.fillStyle='#c0b4e0'; cx.fillRect(6,6,W-12,H-12);
-    cx.fillStyle='#5848a0'; cx.fillRect(12,12,W-24,H-24);
-    cx.fillStyle='#9088c8'; cx.fillRect(17,17,W-34,H-34);
-    cx.strokeStyle='#d8d0f0'; cx.lineWidth=1; cx.strokeRect(21,21,W-42,H-42);
-  }), -6,-3.0, 4.0,5.5);
-
-  flat(ctex(96,96,function(cx,W,H){
-    for(var ty=0;ty<H;ty+=12) for(var tx=0;tx<W;tx+=12){
-      cx.fillStyle=((tx+ty)/12%2===0)?'#e2d8c8':'#cfc4b4';
-      cx.fillRect(tx,ty,12,12);
+  // ── FLOOR ─────────────────────────────────────────────────────────────
+  var floorTex=ctex(256,256,function(cx,W,H){
+    cx.fillStyle='#c8955a'; cx.fillRect(0,0,W,H);
+    cx.strokeStyle='rgba(0,0,0,0.18)'; cx.lineWidth=2;
+    for(var y=0;y<H;y+=20){cx.beginPath();cx.moveTo(0,y);cx.lineTo(W,y);cx.stroke();}
+    cx.strokeStyle='rgba(0,0,0,0.08)'; cx.lineWidth=1;
+    var off=0; for(var y2=0;y2<H;y2+=20){
+      for(var x2=off%80;x2<W;x2+=80){cx.beginPath();cx.moveTo(x2,y2);cx.lineTo(x2,y2+20);cx.stroke();}
+      off+=40;
     }
-    cx.strokeStyle='rgba(0,0,0,0.08)'; cx.lineWidth=0.5;
-    for(var tg=0;tg<H;tg+=12){cx.beginPath();cx.moveTo(0,tg);cx.lineTo(W,tg);cx.stroke();}
-    for(var tg2=0;tg2<W;tg2+=12){cx.beginPath();cx.moveTo(tg2,0);cx.lineTo(tg2,H);cx.stroke();}
-  }), 5.5,-5.0, 5.5,5.5);
+  });
+  floorTex.wrapS=floorTex.wrapT=THREE.RepeatWrapping;
+  floorTex.repeat.set(4,3);
+  flatTex(floorTex,0,0,18,16,0.01);
 
-  // ══════════════════════════════════════════════════════════════
-  //  FURNITURE — each gets a unique _yStep via flat()
-  // ══════════════════════════════════════════════════════════════
+  // ── CEILING (subtle — helps frame the space) ──────────────────────────
+  var ceilMat=new THREE.MeshLambertMaterial({color:0xd4b890,side:THREE.BackSide});
+  var ceil=new THREE.Mesh(new THREE.PlaneGeometry(18,16),ceilMat);
+  ceil.rotation.x=Math.PI/2; ceil.position.set(0,3.4,0); IN.add(ceil);
 
-  // SOFA
-  flat(ctex(160,64,function(cx,W,H){
-    cx.fillStyle='#8a5030'; cx.fillRect(0,0,W,H);       // frame
-    cx.fillStyle='#b87050'; cx.fillRect(10,0,W-20,H*0.3); // back
-    cx.fillStyle='#d09060'; cx.fillRect(12,2,W-24,H*0.25);
-    cx.fillStyle='#c07848'; cx.fillRect(6,H*0.3,W-12,H*0.7); // seat
-    cx.fillStyle='#d8906a'; cx.fillRect(10,H*0.34,W-20,H*0.58);
-    cx.strokeStyle='#985028'; cx.lineWidth=2.5;
-    [W/3,W*2/3].forEach(function(x){cx.beginPath();cx.moveTo(x,H*0.3);cx.lineTo(x,H);cx.stroke();});
-    cx.fillStyle='#f0d0b0'; cx.fillRect(W-52,H*0.35,26,24); // throw pillow
-    cx.strokeStyle='#d8b890'; cx.lineWidth=1; cx.strokeRect(W-52,H*0.35,26,24);
-    cx.fillStyle='rgba(255,220,190,0.5)'; cx.beginPath(); cx.arc(W-38,H*0.35+8,6,0,Math.PI*2); cx.fill();
-  }), 0,3.5, 6.5,2.5);
+  // ── WALLS ─────────────────────────────────────────────────────────────
+  var wallH=3.4, wallTex=ctex(128,64,function(cx,W,H){
+    cx.fillStyle='#d4a878'; cx.fillRect(0,0,W,H);
+    // horizontal boards
+    for(var y=0;y<H;y+=16){
+      cx.fillStyle=y%32===0?'#c89860':'#d4a878'; cx.fillRect(0,y,W,16);
+      cx.strokeStyle='rgba(0,0,0,0.12)'; cx.lineWidth=1;
+      cx.beginPath();cx.moveTo(0,y);cx.lineTo(W,y);cx.stroke();
+    }
+    cx.fillStyle='#a07848'; cx.fillRect(0,H-10,W,10); // baseboard
+  });
+  wallTex.wrapS=wallTex.wrapT=THREE.RepeatWrapping;
+  wallTex.repeat.set(3,1);
+  // Back wall
+  var bwMat=new THREE.MeshLambertMaterial({map:wallTex});
+  var bwall=new THREE.Mesh(new THREE.PlaneGeometry(18,wallH),bwMat);
+  bwall.position.set(0,wallH/2,-8); IN.add(bwall);
+  // Side walls
+  var lwMat=new THREE.MeshLambertMaterial({map:wallTex.clone()});
+  lwMat.map.repeat.set(2,1);
+  var lwall=new THREE.Mesh(new THREE.PlaneGeometry(16,wallH),lwMat);
+  lwall.rotation.y=Math.PI/2; lwall.position.set(-9,wallH/2,0); IN.add(lwall);
+  var rwall=new THREE.Mesh(new THREE.PlaneGeometry(16,wallH),lwMat.clone());
+  rwall.rotation.y=-Math.PI/2; rwall.position.set(9,wallH/2,0); IN.add(rwall);
+  // Front wall panels (with doorway gap)
+  var fw1=new THREE.Mesh(new THREE.PlaneGeometry(5.5,wallH),bwMat.clone());
+  fw1.rotation.y=Math.PI; fw1.position.set(-6.25,wallH/2,8); IN.add(fw1);
+  var fw2=new THREE.Mesh(new THREE.PlaneGeometry(5.5,wallH),bwMat.clone());
+  fw2.rotation.y=Math.PI; fw2.position.set(6.25,wallH/2,8); IN.add(fw2);
+  // Door frame header
+  var dh=new THREE.Mesh(new THREE.PlaneGeometry(5,1.0),bwMat.clone());
+  dh.rotation.y=Math.PI; dh.position.set(0,2.9,8); IN.add(dh);
 
-  // COFFEE TABLE
-  flat(ctex(112,80,function(cx,W,H){
-    cx.fillStyle='#3c2210'; cx.fillRect(0,0,W,H);
-    cx.fillStyle='#5a3418'; cx.fillRect(5,5,W-10,H-10);
-    cx.fillStyle='#c8a020'; [[4,4],[W-12,4],[4,H-12],[W-12,H-12]].forEach(function(c){cx.fillRect(c[0],c[1],8,8);});
-    cx.fillStyle='#284878'; cx.fillRect(12,10,30,22); cx.fillStyle='#183060'; cx.fillRect(12,10,5,22); // book
-    cx.fillStyle='rgba(255,210,80,0.6)'; cx.beginPath();cx.arc(W-22,14,10,0,Math.PI*2);cx.fill(); // candle glow
-    cx.fillStyle='#f0e8d0'; cx.fillRect(W-25,12,7,16);
-    cx.fillStyle='#ffcc44'; cx.fillRect(W-23,7,5,6);
-    cx.fillStyle='#8a5030'; cx.beginPath();cx.arc(W/2+8,H-14,7,0,Math.PI*2);cx.fill(); // vase
-    cx.fillStyle='#2a7830'; cx.beginPath();cx.arc(W/2+8,H-22,6,Math.PI,0);cx.fill();
-  }), 0,1.2, 3.8,2.2);
+  // Door (wood brown)
+  box(2.8,2.8,0.15, 0x7a4a1a, 0,1.4,8);
+  box(2.4,2.4,0.05, 0x8a5a28, 0,1.5,8.08);
+  // Door handle
+  box(0.15,0.15,0.18, 0xc8a830, 1.1,1.4,8.12);
 
-  // ARMCHAIR
-  flat(ctex(72,72,function(cx,W,H){
-    cx.fillStyle='#7a4020'; cx.fillRect(0,0,W,H);
-    cx.fillStyle='#a86040'; cx.fillRect(8,8,W-16,H-16);
-    cx.fillStyle='#c87850'; cx.fillRect(13,15,W-26,H-24);
-    cx.fillStyle='#5a2c10'; cx.fillRect(0,0,W,H*0.28);
-    cx.fillStyle='#7a4028'; cx.fillRect(3,3,W-6,H*0.23);
-  }), -2.5,0.5, 2.4,2.4);
+  // Wall trim / crown molding
+  box(18.4,0.18,0.18, 0xa07848, 0,3.35,-8);
+  box(0.18,0.18,16.4, 0xa07848,-9,3.35, 0);
+  box(0.18,0.18,16.4, 0xa07848, 9,3.35, 0);
 
-  // DINING TABLE
-  flat(ctex(128,96,function(cx,W,H){
-    cx.fillStyle='#6c4820'; cx.fillRect(0,0,W,H);
-    cx.fillStyle='#8a6030'; cx.fillRect(5,5,W-10,H-10);
-    cx.fillStyle='rgba(255,248,236,0.5)'; cx.fillRect(9,9,W-18,H-18); // cloth
-    [[W/4,H/3],[W*3/4,H/3],[W/4,H*2/3],[W*3/4,H*2/3]].forEach(function(p){
-      cx.fillStyle='#ece0d0'; cx.beginPath();cx.arc(p[0],p[1],11,0,Math.PI*2);cx.fill();
-      cx.fillStyle='#d0c4b4'; cx.beginPath();cx.arc(p[0],p[1],6,0,Math.PI*2);cx.fill();
+  // Room divider walls
+  box(0.18,3.4,7.5, 0xc8a070,-3,1.7,-4.25);
+  box(0.18,3.4,5.5, 0xb89060, 3,1.7,-5.25);
+
+  // Baseboard skirting
+  box(18.2,0.22,0.12,0xa07848, 0,0.11,-8);
+  box(0.12,0.22,16,  0xa07848,-9,0.11,  0);
+  box(0.12,0.22,16,  0xa07848, 9,0.11,  0);
+
+  // ── WINDOWS (back wall) ───────────────────────────────────────────────
+  function makeWindow(x,z,rotY){
+    // Frame
+    box(2.4,1.8,0.12, 0x7a5030, x, 2.0, z);
+    box(2.0,1.4,0.06, 0xc8e8ff, x, 2.0, z+0.06*(rotY?-1:1));// glass
+    // Dividers
+    box(0.08,1.8,0.14, 0x7a5030, x, 2.0, z);
+    box(2.4,0.08,0.14, 0x7a5030, x, 2.0, z);
+    // Curtain rods
+    box(3.0,0.08,0.08, 0xc8a830, x, 3.0, z);
+    // Curtains (left & right panels)
+    box(0.4,1.8,0.04, 0xddc8a0, x-1.1, 2.0, z+0.04);
+    box(0.4,1.8,0.04, 0xddc8a0, x+1.1, 2.0, z+0.04);
+  }
+  makeWindow(0, -7.9, 0);  // back center window
+  makeWindow(-7.9, 0, 1);  // left wall window (approx)
+
+  // ── BACK WALL ART ─────────────────────────────────────────────────────
+  // Left painting frame
+  box(1.6,1.2,0.1, 0x5a3018,-5.5, 2.2,-7.84);
+  var art1=new THREE.Mesh(new THREE.PlaneGeometry(1.3,0.9),
+    new THREE.MeshBasicMaterial({map:ctex(64,48,function(cx,W,H){
+      cx.fillStyle='#8fb0a8'; cx.fillRect(0,0,W,H);
+      cx.fillStyle='#4a7a40'; cx.fillRect(4,20,12,26);
+      cx.fillStyle='#3a9030'; cx.fillRect(4,8,20,16);
+      cx.fillStyle='#a8c878'; cx.beginPath();cx.arc(18,14,8,0,Math.PI*2);cx.fill();
+      cx.fillStyle='#2a5820'; cx.fillRect(14,26,6,22);
+    })}));
+  art1.position.set(-5.5,2.2,-7.79); IN.add(art1);
+  // Right painting
+  box(1.6,1.2,0.1, 0x5a3018, 4.5, 2.2,-7.84);
+  var art2=new THREE.Mesh(new THREE.PlaneGeometry(1.3,0.9),
+    new THREE.MeshBasicMaterial({map:ctex(64,48,function(cx,W,H){
+      cx.fillStyle='#f0c8a0'; cx.fillRect(0,0,W,H);
+      cx.fillStyle='#e87858'; cx.beginPath();cx.arc(32,24,14,0,Math.PI*2);cx.fill();
+      cx.fillStyle='#c04838'; cx.beginPath();cx.arc(32,24,8,0,Math.PI*2);cx.fill();
+      cx.fillStyle='#e8d080'; cx.fillRect(0,40,W,8);
+    })}));
+  art2.position.set(4.5,2.2,-7.79); IN.add(art2);
+
+  // Wall clock
+  box(0.7,0.7,0.1, 0x5a3018, 1.5, 2.4,-7.84);
+  var clockFace=new THREE.Mesh(new THREE.CircleGeometry(0.28,16),
+    new THREE.MeshBasicMaterial({map:ctex(32,32,function(cx,W,H){
+      cx.fillStyle='#f8f0e0'; cx.beginPath();cx.arc(16,16,15,0,Math.PI*2);cx.fill();
+      cx.strokeStyle='#333'; cx.lineWidth=2;
+      cx.beginPath();cx.moveTo(16,16);cx.lineTo(16,5);cx.stroke();
+      cx.beginPath();cx.moveTo(16,16);cx.lineTo(24,16);cx.stroke();
+    })}));
+  clockFace.position.set(1.5,2.4,-7.78); IN.add(clockFace);
+
+  // ── RUGS ─────────────────────────────────────────────────────────────
+  flatTex(ctex(128,96,function(cx,W,H){
+    cx.fillStyle='#8c2e2e';cx.fillRect(0,0,W,H);
+    cx.fillStyle='#f0dfc8';cx.fillRect(7,5,W-14,H-10);
+    cx.fillStyle='#7a1e1e';cx.fillRect(14,10,W-28,H-20);
+    cx.fillStyle='#c84040';cx.fillRect(20,14,W-40,H-28);
+    cx.strokeStyle='#c09070';cx.lineWidth=1.5;cx.strokeRect(25,18,W-50,H-36);
+    var mx=W/2,my=H/2;
+    cx.strokeStyle='#d4a870';cx.lineWidth=1;
+    cx.beginPath();cx.moveTo(mx,18);cx.lineTo(W-25,my);cx.lineTo(mx,H-18);cx.lineTo(25,my);cx.closePath();cx.stroke();
+  }),  0, 1.5, 7.0,5.0, 0.02);
+
+  flatTex(ctex(80,128,function(cx,W,H){
+    cx.fillStyle='#6858a0';cx.fillRect(0,0,W,H);
+    cx.fillStyle='#c0b4e0';cx.fillRect(6,6,W-12,H-12);
+    cx.fillStyle='#5848a0';cx.fillRect(12,12,W-24,H-24);
+    cx.fillStyle='#9088c8';cx.fillRect(17,17,W-34,H-34);
+  }), -6, -3.0, 4.0,5.5, 0.02);
+
+  flatTex(ctex(96,96,function(cx,W,H){
+    for(var ty=0;ty<H;ty+=16) for(var tx=0;tx<W;tx+=16){
+      cx.fillStyle=((tx+ty)/16%2===0)?'#e2d8c8':'#d0c4b4';cx.fillRect(tx,ty,16,16);
+    }
+  }), 5.5,-5.0, 5.5,5.5, 0.02);
+
+  // ── 3D FURNITURE — Living Room ────────────────────────────────────────
+  // Sofa (3 cushion sections + back + arms)
+  (function(){
+    var fc=0xd09060, back=0xa86040, frame=0x7a4828;
+    box(6.5,0.5,2.5, frame, 0,0.25,3.5);   // base
+    box(6.5,0.9,0.6, back,  0,0.95,4.6);   // back
+    box(0.5,0.9,2.5, frame,-3.2,0.7,3.5); // left arm
+    box(0.5,0.9,2.5, frame, 3.2,0.7,3.5); // right arm
+    // 3 seat cushions
+    for(var ci=-1;ci<=1;ci++){
+      box(1.8,0.32,2.0, fc, ci*2.0, 0.66,3.5);
+    }
+    // Back cushions
+    for(var bi=-1;bi<=1;bi++){
+      box(1.8,0.65,0.28, fc, bi*2.0, 1.0,4.35);
+    }
+    // Throw pillow
+    box(0.6,0.6,0.15, 0xf5d5b5, 2.2,1.0,4.2);
+  })();
+
+  // Coffee table (low, dark wood)
+  (function(){
+    box(3.8,0.12,2.2, 0x4a2810, 0,0.55,1.2);  // top
+    box(0.15,0.55,0.15,0x3a2008,-1.7,0.28, 0.5); // leg FL
+    box(0.15,0.55,0.15,0x3a2008, 1.7,0.28, 0.5);
+    box(0.15,0.55,0.15,0x3a2008,-1.7,0.28, 1.9);
+    box(0.15,0.55,0.15,0x3a2008, 1.7,0.28, 1.9);
+    // Book on table
+    box(0.6,0.1,0.45,0x284878,-0.8,0.64,1.1);
+    box(0.05,0.1,0.45,0x183060,-0.5,0.64,1.1);
+    // Candle
+    box(0.12,0.3,0.12,0xf0e8d0, 1.2,0.72,0.9);
+    box(0.08,0.1,0.08,0xffcc44, 1.2,0.87,0.9);
+  })();
+
+  // Armchair
+  (function(){
+    box(2.4,0.45,2.4,0x7a4020,-2.5,0.23,0.5);  // base
+    box(2.4,0.7,0.5, 0x7a4020,-2.5,0.77,1.5);  // back
+    box(0.4,0.7,2.4, 0x7a4020,-3.6,0.56,0.5);  // left arm
+    box(0.4,0.7,2.4, 0x7a4020,-1.4,0.56,0.5);  // right arm
+    box(1.8,0.32,1.8,0xc87850,-2.5,0.57,0.4);  // cushion
+    box(1.8,0.55,0.26,0xc87850,-2.5,0.84,1.3); // back cushion
+  })();
+
+  // ── 3D FURNITURE — Dining Area ────────────────────────────────────────
+  // Dining table
+  (function(){
+    box(4.5,0.14,3.2, 0x8a6030, 5.5,0.84,-2.5); // top
+    box(0.14,0.84,0.14,0x6a4820, 3.5,0.42,-1.1); // legs x4
+    box(0.14,0.84,0.14,0x6a4820, 7.5,0.42,-1.1);
+    box(0.14,0.84,0.14,0x6a4820, 3.5,0.42,-3.9);
+    box(0.14,0.84,0.14,0x6a4820, 7.5,0.42,-3.9);
+    // Centrepiece
+    box(0.2,0.5,0.2,0x8a5030,5.5,1.06,-2.5);
+    box(0.6,0.1,0.6,0x3a8820,5.5,1.3,-2.5);
+    // Place settings (4)
+    [[-0.8,-1.1],[0.8,-1.1],[-0.8,-3.9],[0.8,-3.9]].forEach(function(p){
+      var px=5.5+p[0], pz=p[1];
+      box(0.7,0.02,0.5, 0xece0d0, px,0.94,pz);
+      box(0.28,0.02,0.28,0xd0c4b4,px,0.95,pz);
     });
-    cx.fillStyle='#6a5020'; cx.beginPath();cx.arc(W/2,H/2,6,0,Math.PI*2);cx.fill();
-    cx.fillStyle='#2a7830'; cx.beginPath();cx.arc(W/2,H/2-5,5,Math.PI,0);cx.fill();
-    cx.fillStyle='#c8a020'; [[5,5],[W-13,5],[5,H-13],[W-13,H-13]].forEach(function(c){cx.fillRect(c[0],c[1],8,8);});
-  }), 5.5,-2.5, 4.5,3.2);
+  })();
 
-  // DINING CHAIRS (4)
-  [[-0.8,-4.4],[7.8,-4.4],[5.5,-1.0],[5.5,-4.0]].forEach(function(pos){
-    flat(ctex(40,40,function(cx,W,H){
-      cx.fillStyle='#5a3010'; cx.fillRect(0,0,W,H);
-      cx.fillStyle='#7a5028'; cx.fillRect(3,3,W-6,H-6);
-      cx.fillStyle='#a87840'; cx.fillRect(6,8,W-12,H-14); // cushion
-    }), pos[0],pos[1], 1.3,1.3);
+  // Dining chairs x4
+  [[-0.8,-4.5],[7.8,-4.5],[5.0,-0.9],[6.0,-4.1]].forEach(function(pos,i){
+    var cx2=pos[0],cz=pos[1];
+    box(1.2,0.1,1.2, 0xa87840,cx2,0.55,cz); // seat
+    box(1.2,0.9,0.15,0x7a5028,cx2,0.95,cz+(i<2?0.5:-0.5)); // back
+    box(0.1,0.55,0.1,0x6a4020,cx2-0.5,0.28,cz-0.45);
+    box(0.1,0.55,0.1,0x6a4020,cx2+0.5,0.28,cz-0.45);
+    box(0.1,0.55,0.1,0x6a4020,cx2-0.5,0.28,cz+0.45);
+    box(0.1,0.55,0.1,0x6a4020,cx2+0.5,0.28,cz+0.45);
   });
 
-  // BED
-  flat(ctex(128,160,function(cx,W,H){
-    cx.fillStyle='#5c3018'; cx.fillRect(0,0,W,H);
-    cx.fillStyle='#eee8e0'; cx.fillRect(6,8,W-12,H-14); // mattress
-    cx.fillStyle='#f4b8b0'; cx.fillRect(8,22,W-16,H-30); // duvet
-    cx.fillStyle='#f8ccc4'; cx.fillRect(11,26,W-22,H-40);
-    cx.strokeStyle='#e0a89a'; cx.lineWidth=1.5;
-    for(var fi=0;fi<4;fi++){var fy2=38+fi*18;cx.beginPath();cx.moveTo(11,fy2);cx.bezierCurveTo(W/3,fy2-4,W*2/3,fy2+4,W-11,fy2);cx.stroke();}
-    cx.fillStyle='#fffaf6'; cx.fillRect(13,9,W/2-19,14); cx.fillRect(W/2+6,9,W/2-19,14);
-    cx.strokeStyle='#e0d8d0'; cx.lineWidth=1; cx.strokeRect(13,9,W/2-19,14); cx.strokeRect(W/2+6,9,W/2-19,14);
-    cx.fillStyle='#ffaac8'; cx.font='bold 11px serif'; cx.fillText('♡',W/2-6,20);
-    cx.fillStyle='#3c1c08'; cx.fillRect(0,0,W,8); cx.fillRect(0,H-7,W,7);
-  }), -6,-3.0, 4.2,5.5);
+  // ── 3D FURNITURE — Bedroom ────────────────────────────────────────────
+  // Bed (headboard + footboard + mattress + duvet)
+  (function(){
+    // Frame
+    box(4.2,0.35,5.5, 0x5c3018,-6,0.17,-3.0); // base
+    box(4.2,1.4,0.25, 0x5c3018,-6,0.9,-0.28); // headboard  
+    box(4.2,0.7,0.2,  0x5c3018,-6,0.53,-5.72);// footboard
+    // Mattress
+    box(3.8,0.4,4.9,  0xeee8e0,-6,0.57,-3.0);
+    // Duvet
+    box(3.7,0.28,4.2, 0xf4b8b0,-6,0.82,-3.1);
+    // Pillows x2
+    box(1.5,0.25,0.9, 0xfffaf6,-7.0,0.97,-0.7);
+    box(1.5,0.25,0.9, 0xfffaf6,-5.0,0.97,-0.7);
+    // Decorative headboard detail
+    box(3.6,0.06,0.08,0x7a4028,-6,1.6,-0.3);
+    box(3.6,0.06,0.08,0x7a4028,-6,1.2,-0.3);
+  })();
 
-  // NIGHTSTAND
-  flat(ctex(48,48,function(cx,W,H){
-    cx.fillStyle='#5c3818'; cx.fillRect(0,0,W,H);
-    cx.fillStyle='#7a5030'; cx.fillRect(3,3,W-6,H-6);
-    cx.fillStyle='rgba(255,228,120,0.7)'; cx.beginPath();cx.arc(W/2,H/2,W/2-4,0,Math.PI*2);cx.fill();
-    cx.fillStyle='rgba(255,210,70,0.9)'; cx.beginPath();cx.arc(W/2,H/2,W/3,0,Math.PI*2);cx.fill();
-    cx.fillStyle='#fff8d0'; cx.beginPath();cx.arc(W/2,H/2,W/7,0,Math.PI*2);cx.fill();
-  }), -4.2,-4.8, 1.8,1.8);
+  // Nightstand
+  (function(){
+    box(1.6,0.7,1.4, 0x5c3818,-4.2,0.35,-4.8); // body
+    box(1.6,0.08,1.4,0x7a5030,-4.2,0.72,-4.8); // top
+    box(0.06,0.3,0.06,0xc8a020,-4.2,0.0,-4.8); // handle (decorative)
+    // Lamp on nightstand
+    box(0.2,0.55,0.2, 0xc89840,-4.2,0.92,-4.8); // lamp base
+    box(0.55,0.01,0.55,0xffe8a0,-4.2,1.46,-4.8); // lampshade top
+  })();
+  var nsLight=new THREE.PointLight(0xffdd88,1.4,5); nsLight.position.set(-4.2,1.7,-4.5); IN.add(nsLight);
 
-  // WARDROBE top
-  flat(ctex(96,40,function(cx,W,H){
-    cx.fillStyle='#3e2408'; cx.fillRect(0,0,W,H);
-    cx.fillStyle='#5a3418'; cx.fillRect(2,2,W/2-3,H-4); cx.fillRect(W/2+1,2,W/2-3,H-4);
-    cx.fillStyle='#6a4228'; cx.fillRect(4,4,W/2-7,H-8); cx.fillRect(W/2+3,4,W/2-7,H-8);
-    cx.fillStyle='#c8a020'; cx.fillRect(W/4-4,H/2-3,8,6); cx.fillRect(W*3/4-4,H/2-3,8,6);
-  }), -7.5,-6.4, 3.5,1.7);
+  // Wardrobe
+  (function(){
+    box(3.5,2.8,1.0, 0x3e2408,-7.5,1.4,-6.5); // body
+    box(3.5,0.1,1.0, 0x5a3418,-7.5,2.82,-6.5);// top
+    // Door panels
+    box(1.5,2.5,0.08,0x5a3418,-8.2,1.4,-6.02);
+    box(1.5,2.5,0.08,0x5a3418,-6.8,1.4,-6.02);
+    // Handles
+    box(0.08,0.4,0.12,0xc8a020,-7.5,1.4,-5.95);
+    // Foot detail
+    box(3.5,0.14,1.0, 0x2e1808,-7.5,0.07,-6.5);
+  })();
 
-  // BOOKSHELF strip
-  flat(ctex(64,32,function(cx,W,H){
-    cx.fillStyle='#3e2408'; cx.fillRect(0,0,W,H);
-    var bc2=['#c03030','#2a8040','#2050a0','#d08020','#7030a0','#c8a020','#c05040'];
-    var bx3=3;
-    for(var bi=0;bi<6;bi++){cx.fillStyle=bc2[bi%7];cx.fillRect(bx3,3,9,H-6);cx.fillStyle='rgba(255,255,255,0.12)';cx.fillRect(bx3,3,2,H-6);bx3+=10;}
-  }), -7.5,-2.0, 2.1,0.9);
+  // Bookshelf
+  (function(){
+    box(2.1,2.2,0.7, 0x3e2408,-7.5,1.1,-2.0); // body
+    // Shelves
+    for(var si=0;si<3;si++){
+      box(2.0,0.07,0.65,0x5a3418,-7.5,0.3+si*0.65,-2.0);
+    }
+    // Books (coloured blocks)
+    var bcs=[0xc03030,0x2a8040,0x2050a0,0xd08020,0x7030a0];
+    for(var bi=0;bi<5;bi++){
+      box(0.22,0.45,0.55,bcs[bi],-8.2+bi*0.35,0.55,-1.92);
+      box(0.22,0.38,0.55,bcs[(bi+2)%5],-8.2+bi*0.35,1.19,-1.92);
+    }
+  })();
 
-  // FIREPLACE top-down
-  flat(ctex(80,48,function(cx,W,H){
-    cx.fillStyle='#7a6050'; cx.fillRect(0,0,W,H);
-    cx.fillStyle='#5a4838'; cx.fillRect(3,3,W-6,H-6);
-    cx.fillStyle='#0e0a08'; cx.fillRect(W*0.2,H*0.1,W*0.6,H*0.8);
-    cx.fillStyle='rgba(255,80,0,0.88)'; cx.fillRect(W*0.22,H*0.12,W*0.56,H*0.76);
-    cx.fillStyle='rgba(255,170,20,0.82)'; cx.fillRect(W*0.3,H*0.2,W*0.4,H*0.62);
-    cx.fillStyle='rgba(255,240,60,0.92)'; cx.beginPath();cx.arc(W/2,H/2,H*0.22,0,Math.PI*2);cx.fill();
-    cx.fillStyle='#4e2e10'; cx.fillRect(0,0,W,H*0.1);
-    cx.fillStyle='#5a3818'; cx.fillRect(2,H*0.02,W-4,H*0.06);
-  }), -5.5,-7.3, 3.2,2.0);
+  // ── 3D FURNITURE — Kitchen ────────────────────────────────────────────
+  // Kitchen counter
+  (function(){
+    box(5.5,1.0,1.5, 0x607060, 5.5,0.5,-6.3); // base cabinets
+    box(5.7,0.1,1.6, 0xddd6c4, 5.5,1.05,-6.3);// countertop
+    // Overhead cabinets
+    box(5.5,1.0,0.55,0x506050, 5.5,2.5,-6.85);
+    // Cabinet doors (3)
+    for(var di=-1;di<=1;di++){
+      box(1.6,0.9,0.06,0x607060, 5.5+di*1.8,0.55,-5.54);// lower door
+      box(1.6,0.85,0.06,0x3e4e3e, 5.5+di*1.8,2.5,-6.6);  // upper door
+      box(0.06,0.25,0.08,0xc8a040,5.5+di*1.8,0.55,-5.5); // handle lower
+      box(0.06,0.25,0.08,0xc8a040,5.5+di*1.8,2.5,-6.57); // handle upper
+    }
+    // Sink
+    box(0.9,0.08,0.7, 0x9ab0b8, 5.5,1.07,-6.55);
+    box(0.06,0.4,0.06,0xa8b0b8, 5.5,1.3,-6.35); // faucet
+    // Stovetop burners
+    [4.5,6.5].forEach(function(bx2){
+      box(0.45,0.04,0.45,0x1a1a1a,bx2,1.09,-5.85);
+      box(0.28,0.04,0.28,0x2a2a2a,bx2,1.1,-5.85);
+    });
+  })();
 
-  // KITCHEN COUNTER top
-  flat(ctex(160,48,function(cx,W,H){
-    cx.fillStyle='#607060'; cx.fillRect(0,0,W,H);
-    cx.fillStyle='#708070'; cx.fillRect(2,2,W-4,H-4);
-    cx.fillStyle='#ddd6c4'; cx.fillRect(0,0,W,H*0.28);
-    cx.strokeStyle='#505f50'; cx.lineWidth=1.5;
-    [W*0.25,W*0.5,W*0.75].forEach(function(x){cx.beginPath();cx.moveTo(x,H*0.3);cx.lineTo(x,H);cx.stroke();});
-    cx.fillStyle='#c8a040'; [W*0.125,W*0.375,W*0.625,W*0.875].forEach(function(x){cx.fillRect(x-5,H*0.62,10,4);});
-    cx.fillStyle='#a8b8bc'; cx.fillRect(W*0.55,H*0.04,W*0.24,H*0.2);
-    cx.fillStyle='#98a8ac'; cx.fillRect(W*0.57,H*0.06,W*0.2,H*0.14);
-    cx.fillStyle='#111'; [[W*0.12,H*0.1],[W*0.26,H*0.1]].forEach(function(b){cx.beginPath();cx.arc(b[0],b[1],6,0,Math.PI*2);cx.fill();});
-  }), 5.5,-6.3, 5.5,2.0);
+  // ── 3D FURNITURE — Misc ───────────────────────────────────────────────
+  // Floor lamp (living room corner)
+  (function(){
+    box(0.1,2.8,0.1, 0x4a3020,-7.5,1.4, 3.0); // pole
+    box(0.8,0.06,0.8,0x3a2010,-7.5,0.04,3.0);  // base
+    box(0.75,0.5,0.75,0xe8c880,-7.5,2.9,3.0);  // shade (inverted cone approx)
+    box(0.08,0.1,0.08,0xffee88,-7.5,2.85,3.0); // bulb glow
+  })();
 
-  // FLOOR LAMP glow
-  flat(ctex(32,32,function(cx,W,H){
-    cx.fillStyle='rgba(255,220,90,0.6)'; cx.beginPath();cx.arc(W/2,H/2,W/2-1,0,Math.PI*2);cx.fill();
-    cx.fillStyle='rgba(255,200,50,0.8)'; cx.beginPath();cx.arc(W/2,H/2,W/3,0,Math.PI*2);cx.fill();
-    cx.fillStyle='#fff8d0'; cx.beginPath();cx.arc(W/2,H/2,W/6,0,Math.PI*2);cx.fill();
-  }), -7.5,3.0, 1.1,1.1);
+  // Plants
+  (function(){
+    // Large plant living room
+    box(0.5,0.45,0.5, 0x8a5030, 2.8,0.22,4.3);  // pot
+    box(0.42,0.08,0.42,0x6a3818,2.8,0.47,4.3);  // rim
+    // Stem and leaves (cones for leaves)
+    box(0.1,0.8,0.1, 0x2a5820, 2.8,0.9,4.3);
+    box(1.0,0.08,1.0,0x3a8830, 2.8,1.4,4.3);
+    box(0.7,0.08,0.7,0x4a9840, 2.8,1.7,4.3);
+    box(0.4,0.08,0.4,0x5aaa50, 2.8,2.0,4.3);
 
-  // LIVING PLANT
-  flat(ctex(32,32,function(cx,W,H){
-    cx.fillStyle='#8a5030'; cx.beginPath();cx.arc(W/2,H*0.65,W/3,0,Math.PI*2);cx.fill();
-    cx.fillStyle='#1a6828'; [[W/2,H*0.22],[W/2-7,H*0.4],[W/2+8,H*0.38],[W/2-4,H*0.12],[W/2+5,H*0.15]].forEach(function(l){cx.beginPath();cx.ellipse(l[0],l[1],9,6,0,0,Math.PI*2);cx.fill();});
-    cx.fillStyle='#2a8838'; cx.beginPath();cx.ellipse(W/2,H*0.18,5,9,0,0,Math.PI*2);cx.fill();
-  }), 2.8,4.3, 1.4,1.4);
+    // Small cactus bedroom
+    box(0.3,0.3,0.3, 0x7a4828,-4.0,0.15,-6.5);
+    box(0.18,0.9,0.18,0x3a7830,-4.0,0.6,-6.5);
+    box(0.1,0.35,0.1,0x3a7830,-3.78,0.75,-6.5);
+    box(0.1,0.35,0.1,0x3a7830,-4.22,0.75,-6.5);
+  })();
 
-  // BEDROOM PLANT
-  flat(ctex(28,28,function(cx,W,H){
-    cx.fillStyle='#7a4828'; cx.beginPath();cx.arc(W/2,H*0.68,W/3,0,Math.PI*2);cx.fill();
-    cx.fillStyle='#1a7848'; cx.beginPath();cx.ellipse(W/2,H*0.35,7,10,0,0,Math.PI*2);cx.fill();
-    cx.fillStyle='#2a9858'; cx.beginPath();cx.ellipse(W/2-5,H*0.5,5,7,-0.4,0,Math.PI*2);cx.fill();
-    cx.beginPath();cx.ellipse(W/2+5,H*0.5,5,7,0.4,0,Math.PI*2);cx.fill();
-  }), -4.0,-6.5, 1.1,1.1);
+  // Fireplace
+  (function(){
+    // Stone surround
+    box(3.2,2.4,0.5, 0x7a6050,-5.5,1.2,-7.75);
+    // Opening
+    box(2.2,1.6,0.2, 0x1a1210,-5.5,1.0,-7.6);
+    // Mantel shelf
+    box(3.8,0.2,0.7, 0x5c4030,-5.5,2.5,-7.65);
+    // Fire glow planes
+    var fmA=new THREE.Mesh(new THREE.PlaneGeometry(1.2,1.4),
+      new THREE.MeshBasicMaterial({color:0xff4400,transparent:true,opacity:0.9,depthWrite:false,side:THREE.DoubleSide}));
+    fmA.position.set(-5.5,0.9,-7.55); IN.add(fmA); fireMeshes.push(fmA);
+    var fmB=new THREE.Mesh(new THREE.PlaneGeometry(0.7,0.9),
+      new THREE.MeshBasicMaterial({color:0xffaa00,transparent:true,opacity:0.85,depthWrite:false,side:THREE.DoubleSide}));
+    fmB.position.set(-5.5,1.1,-7.54); IN.add(fmB); fireMeshes.push(fmB);
+    // Mantel decorations
+    box(0.35,0.6,0.35, 0xa07848,-7.0,2.7,-7.4); // candle
+    box(0.6,0.55,0.6,  0x5a7050,-4.0,2.7,-7.4); // plant on mantel
+  })();
 
-  // ══════════════════════════════════════════════════════════════
-  //  LIGHTS
-  // ══════════════════════════════════════════════════════════════
-  var bulbM=new THREE.MeshStandardMaterial({color:0xffee88,emissive:new THREE.Color(0xffcc44),emissiveIntensity:2.5});
-  var bulb=new THREE.Mesh(new THREE.SphereGeometry(0.18,8,6),bulbM);
-  bulb.position.set(0,5.4,0); IN.add(bulb);
-  var shadeM=new THREE.MeshLambertMaterial({color:0xe8c880,transparent:true,opacity:0.9,side:THREE.BackSide});
-  var shade=new THREE.Mesh(new THREE.ConeGeometry(0.55,0.45,10,1,true),shadeM);
-  shade.position.set(0,5.2,0); IN.add(shade);
+  // Indoor pond / water feature (small decorative)
+  (function(){
+    // Stone rim
+    box(2.0,0.25,1.6, 0x7a8880, 3.5,0.13,5.5);
+    box(1.6,0.2,1.2,  0x8899a0, 3.5,0.22,5.5); // water surface
+    // Lily pads
+    var lilyMat=new THREE.MeshBasicMaterial({color:0x5a9a40,transparent:true,opacity:0.9});
+    var lily=new THREE.Mesh(new THREE.CircleGeometry(0.18,8),lilyMat);
+    lily.rotation.x=-Math.PI/2; lily.position.set(3.5,0.32,5.5); IN.add(lily);
+    var lily2=lily.clone(); lily2.position.set(3.2,0.32,5.8); IN.add(lily2);
+    // Tiny fish (glow dot)
+    var fishMat=new THREE.MeshBasicMaterial({color:0xff6600});
+    var fish=new THREE.Mesh(new THREE.SphereGeometry(0.06,6,4),fishMat);
+    fish.position.set(3.6,0.26,5.4); IN.add(fish);
+    // Ripple light
+    var pondLight=new THREE.PointLight(0x44aaff,0.8,3); pondLight.position.set(3.5,0.6,5.5); IN.add(pondLight);
+  })();
 
-  // Fire animation planes
-  var fmA=new THREE.Mesh(new THREE.PlaneGeometry(0.7,1.0),new THREE.MeshStandardMaterial({color:0xff4400,emissive:new THREE.Color(0xff2200),emissiveIntensity:2.0,transparent:true,opacity:0.88,depthWrite:false}));
-  fmA.position.set(-5.5,0.8,-7.4); fmA.rotation.x=-Math.PI/2+0.5; IN.add(fmA); fireMeshes.push(fmA);
-  var fmB=new THREE.Mesh(new THREE.PlaneGeometry(0.4,0.7),new THREE.MeshStandardMaterial({color:0xffaa00,emissive:new THREE.Color(0xff8800),emissiveIntensity:2.5,transparent:true,opacity:0.82,depthWrite:false}));
-  fmB.position.set(-5.5,1.05,-7.4); fmB.rotation.x=-Math.PI/2+0.5; IN.add(fmB); fireMeshes.push(fmB);
+  // ── LIGHTS ────────────────────────────────────────────────────────────
+  // Chandelier mesh
+  box(0.6,0.08,0.6, 0xc8a830, 0,3.2, 0);
+  box(0.04,0.5,0.04,0xc8a830, 0,3.4, 0);
+  var bulbMat=new THREE.MeshStandardMaterial({color:0xffee88,emissive:new THREE.Color(0xffcc44),emissiveIntensity:3.0});
+  var bulb=new THREE.Mesh(new THREE.SphereGeometry(0.12,8,6),bulbMat);
+  bulb.position.set(0,3.14,0); IN.add(bulb);
 
-  // Update light positions to match layout
-  fireL.position.set(-5.5,1.8,-6.8);
-  lampGlow=new THREE.PointLight(0xffeeaa,1.1,7);
-  lampGlow.position.set(-7.5,1.5,3.0); IN.add(lampGlow);
-  kitchenL.position.set(5.5,3.5,-5.0);
-  ceilLight.position.set(0,5.2,0);
+  // Fire light update
+  fireL.position.set(-5.5,1.5,-7.5);
+  lampGlow=new THREE.PointLight(0xffeeaa,1.2,6); lampGlow.position.set(-7.5,2.2,3.0); IN.add(lampGlow);
+  kitchenL.position.set(5.5,2.8,-5.5);
+  ceilLight.position.set(0,3.1,0);
+  // Nightstand lamp light (added above as nsLight)
 }
 
 buildCozyInterior();
@@ -1877,6 +1692,92 @@ outDino.position.set(-2,0,8.5);
 outDino.scale.setScalar(0.85);
 
 var inDino=buildDino(IN);
+
+// ─────────────────────────────────────────────────────────────
+//  DOG COMPANION — golden retriever style, follows group
+// ─────────────────────────────────────────────────────────────
+function buildDog(scene, scale){
+  scale = scale||1;
+  var G = new THREE.Group();
+
+  function addBox(w,h,d,col,x,y,z){
+    var m=new THREE.Mesh(
+      new THREE.BoxGeometry(w*scale,h*scale,d*scale),
+      new THREE.MeshStandardMaterial({color:col,roughness:0.85})
+    );
+    m.position.set(x*scale,y*scale,z*scale);
+    m.castShadow=true;
+    G.add(m); return m;
+  }
+
+  var bodyCol  = 0xc8902a;  // golden fur
+  var darkCol  = 0x9a6810;  // dark fur (paws, ears)
+  var noseCol  = 0x2a1a0a;
+  var eyeCol   = 0x1a0e06;
+  var tongueCol= 0xff6080;
+
+  // Body
+  addBox(0.9, 0.6, 1.4, bodyCol,   0, 0.6, 0);
+  // Head
+  var head = addBox(0.7, 0.58, 0.65, bodyCol, 0, 1.1, -0.7);
+  // Snout
+  addBox(0.38,0.28,0.38, 0xd4a040, 0, 0.95, -1.0);
+  // Nose
+  addBox(0.16,0.10,0.1, noseCol, 0, 1.07, -1.18);
+  // Eyes
+  addBox(0.1,0.1,0.06,eyeCol,-0.22,1.2,-0.98);
+  addBox(0.1,0.1,0.06,eyeCol, 0.22,1.2,-0.98);
+  // Eye whites
+  addBox(0.07,0.07,0.04,0xfff8f0,-0.24,1.21,-1.00);
+  addBox(0.07,0.07,0.04,0xfff8f0, 0.24,1.21,-1.00);
+  // Ears (floppy — darker fur)
+  var earL = addBox(0.18,0.35,0.32,darkCol,-0.36,1.12,-0.72);
+  var earR = addBox(0.18,0.35,0.32,darkCol, 0.36,1.12,-0.72);
+  earL.rotation.z= 0.25;
+  earR.rotation.z=-0.25;
+  G._earL=earL; G._earR=earR;
+  // Tongue (sometimes visible)
+  addBox(0.14,0.08,0.18,tongueCol, 0, 0.84,-1.1);
+
+  // Legs (4)
+  var legFL=addBox(0.22,0.5,0.22,bodyCol,-0.32,0.25,-0.45); G._legFL=legFL;
+  var legFR=addBox(0.22,0.5,0.22,bodyCol, 0.32,0.25,-0.45); G._legFR=legFR;
+  var legBL=addBox(0.22,0.5,0.22,darkCol,-0.32,0.25, 0.45); G._legBL=legBL;
+  var legBR=addBox(0.22,0.5,0.22,darkCol, 0.32,0.25, 0.45); G._legBR=legBR;
+  // Paws
+  addBox(0.24,0.1,0.28,darkCol,-0.32,0.02,-0.5);
+  addBox(0.24,0.1,0.28,darkCol, 0.32,0.02,-0.5);
+  addBox(0.24,0.1,0.28,darkCol,-0.32,0.02, 0.5);
+  addBox(0.24,0.1,0.28,darkCol, 0.32,0.02, 0.5);
+
+  // Tail
+  var tail=addBox(0.14,0.5,0.14,bodyCol, 0, 1.0, 0.75);
+  tail.rotation.x=-0.6;
+  G._tail=tail;
+
+  // Collar (red)
+  var collar=new THREE.Mesh(
+    new THREE.TorusGeometry(0.28*scale,0.06*scale,6,12),
+    new THREE.MeshStandardMaterial({color:0xcc2020,roughness:0.7})
+  );
+  collar.position.set(0,0.88*scale,-0.45*scale);
+  collar.rotation.x=Math.PI/2;
+  G.add(collar);
+  // Collar tag
+  addBox(0.12,0.12,0.04,0xc8a820,0,0.76,-0.48);
+
+  G.position.y=0;
+  scene.add(G);
+  return G;
+}
+
+var outDog=buildDog(OUT, 1.2);
+outDog.position.set(2, 0, 8);
+var inDog=buildDog(IN, 1.0);
+inDog.position.set(IN_SPAWN.x+1.5, FLOOR_Y, IN_SPAWN.z+2.5);
+var dogWt=0, dogWtIn=0;
+var DOG_FOLLOW_DIST=2.2;
+var DOG_SPEED=3.5;
 inDino.position.set(IN_SPAWN.x+0.5,IN_SPAWN.y,IN_SPAWN.z+2.5);
 inDino.scale.setScalar(0.70);
 
@@ -1935,7 +1836,7 @@ function blockedOut(nx,nz){
 // Room: x: -9→+9, z: -8→+8. Spawn (0, FLOOR_Y, 2.5) clear.
 function blockedIn(nx,nz){
   // Outer walls
-  if(nx<-8.7||nx>8.7||nz>7.5||nz<-7.7) return true;
+  if(nx<-8.8||nx>8.8||nz>7.8||nz<-7.8) return true;
   // Front door gap (always passable): x -2.5→2.5, z 7.5→8
   // Sofa — back of living room
   if(nx>-3.5&&nx<3.5&&nz>2.4&&nz<4.8) return true;
@@ -1961,6 +1862,8 @@ function blockedIn(nx,nz){
   if(nx>3.3&&nx<7.8&&nz>-4.2&&nz<-1.6) return true;
   // Floor lamp (just a small bump)
   if(nx<-7.0&&nx>-8.2&&nz>2.4&&nz<3.6) return true;
+  // Pond
+  if(nx>-1.4&&nx<1.4&&nz>-1.4&&nz<1.4) return true;
   return false;
 }
 function tryMove(pos,mx,mz,speed,dt,blockFn){
@@ -2117,6 +2020,9 @@ document.getElementById('play-btn').addEventListener('click',function(){
   if(gameStarted)return;
   gameStarted=true;
   playScreen.classList.add('fade-out');
+  // Show loading screen as play screen fades
+  var ld=document.getElementById('ld');
+  if(ld){ setTimeout(function(){ ld.classList.add('show'); }, 300); }
   // Remove from DOM after transition so it doesn't block touches
   setTimeout(function(){
     if(playScreen.parentNode)playScreen.parentNode.removeChild(playScreen);
@@ -2158,12 +2064,14 @@ function enterHouse(){
     inBunny.rotation.y=Math.PI;
     inDino.position.set(IN_SPAWN.x+0.8,IN_SPAWN.y,IN_SPAWN.z+2.4);
     inDino.rotation.y=Math.PI;
+    inDog.position.set(IN_SPAWN.x+1.5,FLOOR_Y,IN_SPAWN.z+2.5);
+    inDog.rotation.y=Math.PI;
     // Reset walk timers so characters don't inherit stale phase
-    iwt=0;icwt=0;catWtIn=0;
+    iwt=0;icwt=0;catWtIn=0;dogWtIn=0;
 
     // Snap indoor camera directly above characters — no lerp stutter on entry
     inCam.position.set(inFel.position.x, IN_CAM_Y, inFel.position.z + IN_CAM_DZ);
-    inCam.lookAt(inFel.position.x, 0, inFel.position.z);
+    inCam.lookAt(inFel.position.x, IN_CAM_AIM_Y, inFel.position.z);
 
     // Character fill light — snap to spawn
     glbCharLight.position.set(inFel.position.x,3.5,inFel.position.z);
@@ -2179,10 +2087,12 @@ function exitHouse(){
   fadeToScene(function(){
     insideHouse=false;
     hugActive=false;holdHandActive=false;
-    hugBtn.classList.remove('active');holdBtn.classList.remove('active');
+    hugBtn.classList.remove('active','sv-active');holdBtn.classList.remove('active','sv-active');
     exitBtn.style.display='none';
     lblF.style.display='block';
     lblC.style.display='block';
+    // Reset camYaw to match character so no jarring spin on exit
+    camYaw = outFel.rotation.y;
     // Snap outdoor camera back instantly
     camP.copy(outFel.position).add(CAM_OFF);
     outCam.position.copy(camP);
@@ -2327,320 +2237,144 @@ function buildSpriteChar(scene,isFel){
 //  Frames: 0=idle, 1=walk_a, 2=walk_b, 3=hug, 4=hold_hand
 // ─────────────────────────────────────────────────────────────
 function drawPixelSprite(isFel, frameIdx){
-  var S=4; // scale factor — 4px per logical pixel
-  var W=32, H=48;
+  var S=4, W=32, H=48;
   var canvas=document.createElement('canvas');
   canvas.width=W*S; canvas.height=H*S;
   var ctx=canvas.getContext('2d');
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  function px(x,y,w,h,col){
-    ctx.fillStyle=col;
-    ctx.fillRect(x*S,y*S,(w||1)*S,(h||1)*S);
-  }
-  function circle(cx,cy,r,col){
-    ctx.fillStyle=col;
-    ctx.beginPath();
-    ctx.arc(cx*S+S/2,cy*S+S/2,r*S,0,Math.PI*2);
-    ctx.fill();
-  }
+  function px(x,y,w,h,col){ ctx.fillStyle=col; ctx.fillRect(x*S,y*S,(w||1)*S,(h||1)*S); }
 
   if(isFel){
-    // ═══════════════════ FELICITY ═══════════════════
-    // Reference: long black hair, black dress, white collar, knee-high boots
-
-    // ── Leg positions by frame ──
-    var ll=[12,33], rl=[18,33]; // idle
-    if(frameIdx===1){ ll=[11,32]; rl=[19,34]; }
-    else if(frameIdx===2){ ll=[13,34]; rl=[17,32]; }
-    else if(frameIdx===3){ ll=[13,33]; rl=[17,33]; } // hug — legs together
-    else if(frameIdx===4){ ll=[12,33]; rl=[19,33]; } // hold hand
-
-    // Knee-high black boots
-    px(ll[0]-1,ll[1]+3,5,6,'#151010'); // left boot
-    px(rl[0]-1,rl[1]+3,5,6,'#151010'); // right boot
-    // Boot highlight
-    px(ll[0],ll[1]+4,2,1,'#2a1818');
-    px(rl[0],rl[1]+4,2,1,'#2a1818');
-
-    // Socks / lower leg (white)
-    px(ll[0],ll[1],4,4,'#f8f8f8');
-    px(rl[0],rl[1],4,4,'#f8f8f8');
-
-    // Skirt — black, slightly flared
-    px(9,26,14,8,'#1a1a1a');
-    px(8,29,16,5,'#222222'); // wider at bottom
-    px(7,31,18,3,'#1a1a1a'); // hem
-
-    // Dress body — black
-    px(11,18,10,10,'#1a1a1a');
-    // White collar / bow
-    px(13,18,6,3,'#f5f5f5');
-    px(14,20,4,2,'#e8e8e8');
-    px(15,22,2,2,'#f5f5f5'); // bow knot
-
-    // Arms — frame dependent
+    // ─ FELICITY: black dress, white collar/bow, long black hair, knee boots ─
+    var ll=[12,33], rl=[18,33];
+    if(frameIdx===1){ll=[11,32];rl=[19,34];}
+    else if(frameIdx===2){ll=[13,34];rl=[17,32];}
+    else if(frameIdx===3){ll=[13,33];rl=[17,33];}
+    else if(frameIdx===4){ll=[12,33];rl=[19,33];}
+    // boots
+    px(ll[0]-1,ll[1]+3,5,6,'#151010'); px(rl[0]-1,rl[1]+3,5,6,'#151010');
+    px(ll[0],ll[1]+4,2,1,'#2a1818'); px(rl[0],rl[1]+4,2,1,'#2a1818');
+    // stockings / legs
+    px(ll[0],ll[1],4,4,'#2a1830'); px(rl[0],rl[1],4,4,'#2a1830');
+    // skirt
+    px(9,26,14,8,'#1a1020'); px(8,29,16,5,'#201228'); px(7,31,18,3,'#1a1020');
+    // bodice
+    px(11,18,10,10,'#1a1020');
+    // collar / bow
+    px(13,18,6,2,'#f5f5f8'); px(14,20,4,2,'#e8e0f0'); px(15,22,2,2,'#f5f5f8');
+    px(15,20,2,3,'#ddd0ea');
+    // arms (hug / hold special)
     var laY=frameIdx===1?19:frameIdx===2?21:frameIdx===3?17:20;
     var raY=frameIdx===1?21:frameIdx===2?19:frameIdx===3?17:20;
-    if(frameIdx===4){ laY=19; raY=18; } // hold hand — one arm reaches out
-    // Left arm (skin)
-    px(7,laY,5,9,'#ffd6b0');
-    px(6,laY+7,5,3,'#ffc9a0'); // hand
-    // Right arm (skin)
-    px(20,raY,5,9,'#ffd6b0');
-    px(20,raY+7,5,3,'#ffc9a0'); // hand
-
-    // Hold hand override — right arm reaches right
-    if(frameIdx===4){
-      px(20,17,5,6,'#ffd6b0');
-      px(24,18,4,3,'#ffc9a0'); // extended hand
-    }
-    // Hug override — arms wrap forward
+    if(frameIdx===4){laY=19;raY=18;}
+    px(7,laY,5,9,'#ffd6b0'); px(6,laY+7,5,3,'#ffc9a0');
+    px(20,raY,5,9,'#ffd6b0'); px(20,raY+7,5,3,'#ffc9a0');
+    if(frameIdx===4){px(20,17,5,6,'#ffd6b0');px(24,18,4,3,'#ffc9a0');}
     if(frameIdx===3){
-      px(6,18,6,8,'#ffd6b0');
-      px(20,18,6,8,'#ffd6b0');
-      px(5,23,7,3,'#ffc9a0');
-      px(20,23,7,3,'#ffc9a0');
+      px(6,18,6,8,'#ffd6b0');px(20,18,6,8,'#ffd6b0');
+      px(5,23,7,3,'#ffc9a0');px(20,23,7,3,'#ffc9a0');
     }
-
-    // Neck
+    // neck
     px(14,14,4,5,'#ffd6b0');
-
-    // ── HEAD ──
-    // Base skin
-    px(10,5,12,12,'#ffd6b0');
-    px(9,7,14,9,'#ffd6b0');
-    px(10,6,12,11,'#ffd6b0');
-
-    // Long black hair — Felicity's signature look
-    // Top / crown
-    px(10,2,12,5,'#0e0c0a');
-    px(9,3,14,4,'#0e0c0a');
-    // Side bangs (straight across forehead)
-    px(10,5,12,3,'#0e0c0a');
-    px(10,6,3,4,'#0e0c0a'); // left fringe
-    px(19,6,3,4,'#0e0c0a'); // right fringe
-    // Long side hair (falls past shoulders)
-    px(8,5,3,18,'#0e0c0a'); // left side
-    px(21,5,3,18,'#0e0c0a'); // right side
-    // Hair ends
-    px(8,22,3,2,'#0e0c0a');
-    px(21,22,3,2,'#0e0c0a');
-    // Hair outline / depth
-    px(9,4,2,3,'#161210');
-    px(21,4,2,3,'#161210');
-
-    // ── FACE ──
-    // Eyes — large, warm brown (chibi style)
-    px(12,9,5,4,'#fff8f0'); // left white
-    px(19,9,5,4,'#fff8f0'); // right white — adjusted for chibi
-    // Wait — let me recalculate for 32px width
-    // Head is at x:9-23, eyes centered
-    px(12,9,4,4,'#fff8f0'); // left white
-    px(18,9,4,4,'#fff8f0'); // right white
-    px(12,9,4,4,'#5a3a20'); // left iris
-    px(18,9,4,4,'#5a3a20'); // right iris
-    px(13,10,3,3,'#0a0a0a'); // left pupil
-    px(19,10,3,3,'#0a0a0a'); // right pupil
-    px(13,9,1,1,'#ffffff'); // left shine
-    px(19,9,1,1,'#ffffff'); // right shine
-    // Top eyelashes
-    px(11,8,5,1,'#0a0a0a'); // left lash
-    px(17,8,5,1,'#0a0a0a'); // right lash
-    px(11,8,1,2,'#0a0a0a'); // left outer lash
-    px(22,8,1,2,'#0a0a0a'); // right outer lash
-
-    // Blush circles
+    // head
+    px(10,5,12,12,'#ffd6b0'); px(9,7,14,9,'#ffd6b0'); px(10,6,12,11,'#ffd6b0');
+    // hair (long black)
+    px(10,2,12,5,'#0e0c0a'); px(9,3,14,4,'#0e0c0a');
+    px(10,5,12,3,'#0e0c0a'); px(10,6,3,4,'#0e0c0a'); px(19,6,3,4,'#0e0c0a');
+    px(8,5,3,18,'#0e0c0a'); px(21,5,3,18,'#0e0c0a');
+    px(8,22,3,2,'#0e0c0a'); px(21,22,3,2,'#0e0c0a');
+    px(9,4,2,3,'#161210'); px(21,4,2,3,'#161210');
+    // eyes
+    px(12,9,4,4,'#fff8f0'); px(18,9,4,4,'#fff8f0');
+    px(12,9,4,4,'#5a3a20'); px(18,9,4,4,'#5a3a20');
+    px(13,10,3,3,'#0a0a0a'); px(19,10,3,3,'#0a0a0a');
+    px(13,9,1,1,'#ffffff'); px(19,9,1,1,'#ffffff');
+    px(11,8,5,1,'#0a0a0a'); px(17,8,5,1,'#0a0a0a');
+    // blush
     ctx.fillStyle='rgba(255,140,140,0.50)';
-    ctx.beginPath(); ctx.ellipse(11.5*S,13.5*S,2.2*S,1.5*S,0,0,Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(20.5*S,13.5*S,2.2*S,1.5*S,0,0,Math.PI*2); ctx.fill();
-
-    // Mouth — small cute
-    px(14,14,4,1,'#c07878');
-    px(15,15,2,1,'#b06060');
-
-    // Hug expression — closed happy eyes (draw ON TOP, no clearRect)
+    ctx.beginPath();ctx.ellipse(11.5*S,13.5*S,2.2*S,1.5*S,0,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.ellipse(20.5*S,13.5*S,2.2*S,1.5*S,0,0,Math.PI*2);ctx.fill();
+    // mouth
+    px(14,14,4,1,'#c07878'); px(15,15,2,1,'#b06060');
     if(frameIdx===3){
-      // Cover open eyes with skin tone first
-      px(11,8,12,7,'#ffd6b0'); // skin over-paint eye area
-      // Re-draw hair fringe that overlaps this zone
-      px(10,6,3,4,'#0e0c0a'); // left fringe
-      px(19,6,3,4,'#0e0c0a'); // right fringe
-      px(8,5,3,6,'#0e0c0a');  // left side hair
-      px(21,5,3,6,'#0e0c0a'); // right side hair
-      // Closed eye curves (~~ style)
-      px(11,10,6,2,'#0a0a0a'); // left closed eye
-      px(17,10,6,2,'#0a0a0a'); // right closed eye
-      // Rosy blush bigger for happy hug
+      // hug happy face
+      px(11,8,12,7,'#ffd6b0');
+      px(11,10,6,2,'#0a0a0a'); px(17,10,6,2,'#0a0a0a');
       ctx.fillStyle='rgba(255,120,120,0.55)';
-      ctx.beginPath(); ctx.ellipse(11.5*S,13*S,3*S,2*S,0,0,Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(20.5*S,13*S,3*S,2*S,0,0,Math.PI*2); ctx.fill();
-      // Big happy smile
-      px(12,14,8,1,'#c07878');
-      px(11,13,1,2,'#c07878');
-      px(20,13,1,2,'#c07878');
+      ctx.beginPath();ctx.ellipse(11.5*S,13*S,3*S,2*S,0,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.ellipse(20.5*S,13*S,3*S,2*S,0,0,Math.PI*2);ctx.fill();
+      px(12,14,8,1,'#c07878'); px(11,13,1,2,'#c07878'); px(20,13,1,2,'#c07878');
     }
-
+    // hair accessories
+    px(18,3,2,3,'#ff2277'); px(15,3,2,2,'#ff4499');
   } else {
-    // ═══════════════════ CHRIS ═══════════════════
-    // Outfit: cream/white tee with cute black cat graphic,
-    // grey-blue jeans, white sneakers — based on cat t-shirt reference
-
-    // ── Leg positions by frame ──
+    // ─ CHRIS: cream t-shirt + cat, grey-blue jeans, white sneakers, messy hair ─
     var cll=[12,33], crl=[18,33];
-    if(frameIdx===1){ cll=[11,32]; crl=[19,34]; }
-    else if(frameIdx===2){ cll=[13,34]; crl=[17,32]; }
-    else if(frameIdx===3){ cll=[13,33]; crl=[17,33]; }
-    else if(frameIdx===4){ cll=[11,33]; crl=[19,33]; }
-
-    // Sneakers — white with grey sole
-    px(cll[0]-1,cll[1]+4,6,3,'#e8e8e8'); // left shoe white
-    px(crl[0]-1,crl[1]+4,6,3,'#e8e8e8'); // right shoe white
-    px(cll[0]-1,cll[1]+6,6,1,'#b0b0b0'); // grey sole
-    px(crl[0]-1,crl[1]+6,6,1,'#b0b0b0');
-    px(cll[0],cll[1]+4,2,1,'#cccccc');   // toe highlight
-    px(crl[0],crl[1]+4,2,1,'#cccccc');
-
-    // Jeans — blue-grey (nice mid-tone)
-    px(cll[0],cll[1],4,6,'#6a7ea0');
-    px(crl[0],crl[1],4,6,'#6a7ea0');
-    px(cll[0]+1,cll[1]+1,2,4,'#5a6e90'); // darker seam
-    px(crl[0]+1,crl[1]+1,2,4,'#5a6e90');
-
-    // T-shirt body — cream/warm white
-    px(9,17,14,12,'#f2ede6');
-    px(8,19,16,10,'#ede8e0');
-    // T-shirt collar (crew neck)
-    px(13,17,6,2,'#d8d2c8');
-    px(14,16,4,2,'#e0dbd3');
-
-    // ── CAT GRAPHIC on shirt ──────────────────────────────
-    // Big round head (grey cat)
-    px(12,20,8,6,'#9a9a9a');
-    px(11,22,10,4,'#a8a8a8');
-    // Cat ears (pointy)
-    px(11,19,3,3,'#888888');
-    px(18,19,3,3,'#888888');
-    px(12,20,2,2,'#cc7788'); // inner ear pink
-    px(18,20,2,2,'#cc7788');
-    // Big round white eyes
-    px(12,21,3,3,'#ffffff');
-    px(17,21,3,3,'#ffffff');
-    px(13,22,2,2,'#0a0a0a'); // pupils
-    px(18,22,2,2,'#0a0a0a');
-    px(13,21,1,1,'#ffffff'); // eye shine
-    px(18,21,1,1,'#ffffff');
-    // Tiny pink nose
+    if(frameIdx===1){cll=[11,32];crl=[19,34];}
+    else if(frameIdx===2){cll=[13,34];crl=[17,32];}
+    else if(frameIdx===3){cll=[13,33];crl=[17,33];}
+    else if(frameIdx===4){cll=[11,33];crl=[19,33];}
+    // sneakers
+    px(cll[0]-1,cll[1]+4,6,3,'#e8e8e8'); px(crl[0]-1,crl[1]+4,6,3,'#e8e8e8');
+    px(cll[0]-1,cll[1]+6,6,1,'#b0b0b0'); px(crl[0]-1,crl[1]+6,6,1,'#b0b0b0');
+    // jeans
+    px(cll[0],cll[1],4,6,'#6a7ea0'); px(crl[0],crl[1],4,6,'#6a7ea0');
+    // t-shirt
+    px(9,17,14,12,'#f2ede6'); px(8,19,16,10,'#ede8e0');
+    px(13,17,6,2,'#d8d2c8'); px(14,16,4,2,'#e0dbd3');
+    // cat graphic on shirt
+    px(12,20,8,6,'#9a9a9a'); px(11,22,10,4,'#a8a8a8');
+    px(11,19,3,3,'#888888'); px(18,19,3,3,'#888888');
+    px(12,20,2,2,'#cc7788'); px(18,20,2,2,'#cc7788');
+    px(12,21,3,3,'#ffffff'); px(17,21,3,3,'#ffffff');
+    px(13,22,2,2,'#0a0a0a'); px(18,22,2,2,'#0a0a0a');
     px(15,23,2,1,'#ff9999');
-    // Whisker dots (tiny)
-    px(12,23,1,1,'#555555');
-    px(19,23,1,1,'#555555');
-    // Little sequin dress on cat (sparkly white rectangles)
-    px(12,25,8,3,'#d8d8d8');
-    px(13,25,6,3,'#eeeeee');
-    px(12,26,1,2,'#cccccc'); // sequin shimmer
-    px(14,26,1,2,'#ffffff');
-    px(16,26,1,2,'#cccccc');
-    px(18,26,1,2,'#ffffff');
-    // Cat tail curling to side
-    px(20,25,1,3,'#9a9a9a');
-    px(20,27,2,1,'#9a9a9a');
-    px(21,26,1,2,'#a8a8a8');
-    // Flower brooch on cat dress
-    px(14,25,2,2,'#222222');
-    px(15,24,1,1,'#cccccc');
-
-    // T-shirt arms (short sleeves showing skin)
+    // arms
     var claY=frameIdx===1?18:frameIdx===2?20:frameIdx===3?16:19;
     var craY=frameIdx===1?20:frameIdx===2?18:frameIdx===3?16:19;
-    if(frameIdx===4){ claY=18; craY=17; }
-    px(5,claY,5,7,'#f2ede6');  // left sleeve
-    px(5,claY+5,5,4,'#ffd6b0'); // left forearm/hand skin
-    px(22,craY,5,7,'#f2ede6'); // right sleeve
-    px(22,craY+5,4,4,'#ffd6b0'); // right forearm/hand skin
-    px(6,claY+9,3,2,'#ffd6b0'); // left hand
-    px(22,craY+9,3,2,'#ffd6b0'); // right hand
-
-    // Hold hand — right arm extends
-    if(frameIdx===4){
-      px(22,16,4,8,'#f2ede6');
-      px(26,17,3,3,'#ffd6b0');
-    }
-    // Hug — arms wrap
+    if(frameIdx===4){claY=18;craY=17;}
+    px(5,claY,5,7,'#f2ede6'); px(5,claY+5,5,4,'#ffd6b0');
+    px(22,craY,5,7,'#f2ede6'); px(22,craY+5,4,4,'#ffd6b0');
+    if(frameIdx===4){px(22,16,4,8,'#f2ede6');px(26,17,3,3,'#ffd6b0');}
     if(frameIdx===3){
-      px(4,18,6,9,'#f2ede6');
-      px(22,18,6,9,'#f2ede6');
-      px(3,23,7,4,'#ffd6b0');
-      px(22,23,7,4,'#ffd6b0');
+      px(4,18,6,9,'#f2ede6');px(22,18,6,9,'#f2ede6');
+      px(3,23,7,4,'#ffd6b0');px(22,23,7,4,'#ffd6b0');
     }
-
-    // Neck
+    // neck
     px(14,14,4,5,'#ffd6b0');
-
-    // ── HEAD ──
-    px(10,5,12,12,'#ffd6b0');
-    px(9,7,14,9,'#ffd6b0');
-    px(10,6,12,11,'#ffd6b0');
-
-    // BLACK messy hair
-    px(9,2,14,5,'#0a0a0a');
-    px(8,3,16,4,'#0a0a0a');
-    px(9,1,3,4,'#0a0a0a');
-    px(13,0,4,5,'#111111');
-    px(18,1,3,4,'#0a0a0a');
-    px(11,2,2,3,'#141414');
-    px(16,1,3,4,'#0a0a0a');
-    px(8,5,3,10,'#0a0a0a');  // side hair
-    px(21,5,3,10,'#0a0a0a');
-    px(10,5,4,3,'#0a0a0a');  // fringe
-    px(17,5,4,3,'#0a0a0a');
-    px(13,4,3,4,'#0a0a0a');
-    px(12,3,4,2,'#1a1a1a');
-
-    // ── FACE ──
-    px(12,9,4,4,'#fff8f0'); // eye whites
-    px(18,9,4,4,'#fff8f0');
-    px(12,9,4,4,'#4a2a10'); // brown iris
-    px(18,9,4,4,'#4a2a10');
-    px(13,10,3,3,'#0a0a0a'); // pupils
-    px(19,10,3,3,'#0a0a0a');
-    px(13,9,1,1,'#ffffff');  // shine
-    px(19,9,1,1,'#ffffff');
-    px(11,7,5,2,'#0a0a0a');  // eyebrows
-    px(17,7,5,2,'#0a0a0a');
-    // Blush
+    // head
+    px(10,5,12,12,'#ffd6b0'); px(9,7,14,9,'#ffd6b0'); px(10,6,12,11,'#ffd6b0');
+    // messy black hair
+    px(9,2,14,5,'#0a0a0a'); px(8,3,16,4,'#0a0a0a');
+    px(9,1,3,4,'#0a0a0a'); px(13,0,4,5,'#111111'); px(18,1,3,4,'#0a0a0a');
+    px(8,5,3,10,'#0a0a0a'); px(21,5,3,10,'#0a0a0a');
+    px(10,5,4,3,'#0a0a0a'); px(17,5,4,3,'#0a0a0a'); px(13,4,3,4,'#0a0a0a');
+    // eyes
+    px(12,9,4,4,'#fff8f0'); px(18,9,4,4,'#fff8f0');
+    px(12,9,4,4,'#4a2a10'); px(18,9,4,4,'#4a2a10');
+    px(13,10,3,3,'#0a0a0a'); px(19,10,3,3,'#0a0a0a');
+    px(13,9,1,1,'#ffffff'); px(19,9,1,1,'#ffffff');
+    px(11,7,5,2,'#0a0a0a'); px(17,7,5,2,'#0a0a0a');
+    // blush
     ctx.fillStyle='rgba(255,130,110,0.35)';
-    ctx.beginPath(); ctx.ellipse(11*S,13.5*S,2*S,1.4*S,0,0,Math.PI*2); ctx.fill();
-    ctx.beginPath(); ctx.ellipse(21*S,13.5*S,2*S,1.4*S,0,0,Math.PI*2); ctx.fill();
-    // Mouth
-    px(14,14,4,1,'#c08070');
-    px(15,15,2,1,'#b07060');
-
-    // Hug expression — paint over, no clearRect
+    ctx.beginPath();ctx.ellipse(11*S,13.5*S,2*S,1.4*S,0,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.ellipse(21*S,13.5*S,2*S,1.4*S,0,0,Math.PI*2);ctx.fill();
+    // mouth
+    px(14,14,4,1,'#c08070'); px(15,15,2,1,'#b07060');
     if(frameIdx===3){
-      px(9,7,14,7,'#ffd6b0'); // skin over-paint
-      px(9,2,14,5,'#0a0a0a'); // crown
-      px(9,1,3,4,'#0a0a0a');
-      px(16,2,3,4,'#0a0a0a');
-      px(8,5,3,5,'#0a0a0a');
-      px(21,5,3,5,'#0a0a0a');
-      px(9,10,5,2,'#0a0a0a');  // closed eyes
-      px(16,10,5,2,'#0a0a0a');
+      px(9,7,14,7,'#ffd6b0');
+      px(9,10,5,2,'#0a0a0a'); px(16,10,5,2,'#0a0a0a');
       ctx.fillStyle='rgba(255,140,120,0.45)';
-      ctx.beginPath(); ctx.ellipse(10*S,13*S,2.5*S,1.8*S,0,0,Math.PI*2); ctx.fill();
-      ctx.beginPath(); ctx.ellipse(20*S,13*S,2.5*S,1.8*S,0,0,Math.PI*2); ctx.fill();
-      px(11,14,8,1,'#c08070');
-      px(10,13,1,2,'#c08070');
-      px(20,13,1,2,'#c08070');
+      ctx.beginPath();ctx.ellipse(10*S,13*S,2.5*S,1.8*S,0,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.ellipse(20*S,13*S,2.5*S,1.8*S,0,0,Math.PI*2);ctx.fill();
+      px(11,14,8,1,'#c08070'); px(10,13,1,2,'#c08070'); px(20,13,1,2,'#c08070');
     }
   }
-
   var tex=new THREE.CanvasTexture(canvas);
-  tex.magFilter=THREE.NearestFilter;
-  tex.minFilter=THREE.NearestFilter;
+  tex.magFilter=THREE.NearestFilter; tex.minFilter=THREE.NearestFilter;
   return tex;
 }
 
-// Build animated sprite with 5 frames: idle, walkA, walkB, hug, holdHand
 function buildSpriteChar(scene,isFel){
   var G=new THREE.Group();
 
@@ -2660,7 +2394,7 @@ function buildSpriteChar(scene,isFel){
     depthWrite:false
   });
 
-  // 2.5D — taller plane, chibi proportions
+  // Larger plane for the 48x72 Octopath-style sprites (aspect 2:3)
   var mesh=new THREE.Mesh(new THREE.PlaneGeometry(1.6,2.4), mat);
   mesh.position.y=1.2; // feet sit on floor
   G.add(mesh);
@@ -2859,6 +2593,7 @@ var fireflyNightFrac = 0; // updated each frame
 //  CAMERA VIEW TOGGLE — 3 modes: top-down, follow, sky view
 // ─────────────────────────────────────────────────────────────
 var camMode=0; // 0=top-down, 1=follow behind, 2=sky looking down
+var camYaw=0;  // smooth camera yaw angle for follow mode (mode 1)
 var camBtn=document.getElementById('cam-btn');
 camBtn.classList.add('show');
 
@@ -2879,12 +2614,12 @@ camBtn.addEventListener('click',function(){
 var skyStates=[
   // [startHour, endHour, skyHex, sunHex, sunIntensity, hemiSkyHex, hemiGroundHex, hemiIntensity, ambientHex, ambientIntensity, label, emoji]
   [0,  5,  0x05060f, 0x334488, 0.10, 0x0a0a20, 0x050508, 0.20, 0x101020, 0.15, 'Night',    '🌙'],
-  [5,  6,  0x1a0f22, 0xff7744, 0.40, 0x331a44, 0x1a0a10, 0.35, 0x221218, 0.25, 'Dawn',     '🌄'],
-  [6,  8,  0xff8c42, 0xffb347, 0.90, 0xffcc88, 0x7a5aa8, 0.60, 0xff9966, 0.30, 'Sunrise',  '🌅'],
-  [8,  11, 0x87ceeb, 0xfff5e0, 1.10, 0xaaddff, 0x44aa22, 0.70, 0xffffee, 0.45, 'Morning',  '☀️'],
-  [11, 14, 0x5eb8e8, 0xffffff, 1.30, 0x88ccff, 0x55bb22, 0.80, 0xffffff, 0.55, 'Noon',     '🌞'],
-  [14, 17, 0x6ac4ee, 0xfff0cc, 1.10, 0xaaddff, 0x44aa22, 0.70, 0xffffee, 0.45, 'Afternoon','⛅'],
-  [17, 19, 0xff6b35, 0xffb347, 0.80, 0xffcc88, 0x7a5aa8, 0.55, 0xff9966, 0.28, 'Sunset',   '🌇'],
+  [5,  6,  0x2a1430, 0xff8844, 0.50, 0x441a44, 0x1a0a10, 0.40, 0x221018, 0.28, 'Dawn',     '🌄'],
+  [6,  8,  0xf5a050, 0xffb347, 1.00, 0xffcc88, 0x8a6030, 0.70, 0xff9966, 0.40, 'Sunrise',  '🌅'],
+  [8,  11, 0xf5c87a, 0xffa040, 1.40, 0xffd080, 0x8a6a30, 0.90, 0xffcc88, 0.55, 'Morning',  '☀️'],
+  [11, 14, 0xf0b860, 0xff9a30, 1.50, 0xffcc70, 0x9a7030, 0.95, 0xffbb77, 0.60, 'Noon',     '🌞'],
+  [14, 17, 0xf5c87a, 0xffa040, 1.40, 0xffd080, 0x8a6a30, 0.90, 0xffcc88, 0.55, 'Afternoon','⛅'],
+  [17, 19, 0xff7a35, 0xffb347, 0.85, 0xffcc88, 0x7a5aa8, 0.60, 0xff9966, 0.30, 'Sunset',   '🌇'],
   [19, 21, 0x1a0a28, 0xff4422, 0.30, 0x220a30, 0x080410, 0.28, 0x180810, 0.20, 'Dusk',     '🌆'],
   [21, 24, 0x05060f, 0x334488, 0.10, 0x0a0a20, 0x050508, 0.20, 0x101020, 0.15, 'Night',    '🌙'],
 ];
@@ -2935,7 +2670,7 @@ function snapSkyNow(){
   };
 }
 function skyTargetForTOD(tod){
-  if(tod==='day') return {bg:0x87ceeb,sunC:0xfff5e0,sunI:1.1,hSky:0xaaddff,hGrd:0x44aa22,hInt:0.70,ambC:0xffffee,ambI:0.45,nf:0,sa:0};
+  if(tod==='day') return {bg:0xf5c87a,sunC:0xffa040,sunI:1.5,hSky:0xffd080,hGrd:0x8a6a30,hInt:0.90,ambC:0xffcc88,ambI:0.55,nf:0,sa:0};
   return {bg:0x05060f,sunC:0x334488,sunI:0.10,hSky:0x0a0a20,hGrd:0x050508,hInt:0.20,ambC:0x101020,ambI:0.18,nf:1,sa:1};
 }
 function applySkyState(from,to,t){
@@ -3036,7 +2771,7 @@ todBtn.addEventListener('click',function(){
 
   var lbl=manualTOD==='day'?'☀️ Day':manualTOD==='night'?'🌙 Night':'⏱ Auto';
   todBtn.textContent=lbl;
-  todBtn.className='show '+(manualTOD==='day'?'is-day':manualTOD==='night'?'is-night':'');
+  todBtn.className='sv-btn sv-btn-sm show '+(manualTOD==='day'?'is-day':manualTOD==='night'?'is-night':'');
 });
 
 
@@ -3138,6 +2873,40 @@ placeBtn.style.cssText='background:rgba(255,200,100,.22);backdrop-filter:blur(12
 placeBtn.addEventListener('click',placeItem);
 document.getElementById('inv-bar').appendChild(placeBtn);
 
+// ── Inventory minimize / show toggle ─────────────────────────
+var invBar    = document.getElementById('inv-bar');
+var invToggle = document.getElementById('inv-toggle');
+var invOpen   = true;
+
+function updateInvToggle(){
+  if(invOpen){
+    // Measure inv-bar height and expose it to CSS variable for toggle button position
+    var h = invBar.offsetHeight;
+    document.documentElement.style.setProperty('--inv-h', h+'px');
+    invToggle.classList.add('inv-open');
+    invToggle.textContent = '▼ Bag';
+  } else {
+    document.documentElement.style.setProperty('--inv-h', '0px');
+    invToggle.classList.remove('inv-open');
+    invToggle.textContent = '▲ Bag';
+  }
+}
+
+invToggle.addEventListener('click', function(){
+  invOpen = !invOpen;
+  if(invOpen){
+    invBar.classList.remove('hidden');
+    // Slight delay so bar is visible before measuring height
+    setTimeout(updateInvToggle, 20);
+  } else {
+    invBar.classList.add('hidden');
+    updateInvToggle();
+  }
+});
+
+// Set initial height after page loads
+setTimeout(updateInvToggle, 100);
+
 // ─────────────────────────────────────────────────────────────
 //  HUG LERP TARGETS
 // ─────────────────────────────────────────────────────────────
@@ -3215,17 +2984,10 @@ function animate(){
   if(interiorWarmLight) interiorWarmLight.intensity=2.0+Math.sin(elapsed*1.3)*.28;
   if(lampGlow) lampGlow.intensity=1.0+Math.sin(elapsed*2.1)*.15;
 
-  // Input
+  // Input — world-space for all modes (camera is fixed world-space in follow mode too)
   var kb=kbIn();
-  var rawX=jIn.on?jIn.x:kb.x, rawZ=jIn.on?-jIn.y:kb.y;  // joystick up (+) => move forward (-Z)
-
-  // Camera-relative movement so joystick "up" always moves away from camera
-  // In top-down (mode 0) and sky (mode 2): world-space Z- is forward = rawZ as-is
-  // In follow (mode 1): rotate input by camera's Y angle so up = forward on screen
+  var rawX=jIn.on?jIn.x:kb.x, rawZ=jIn.on?-jIn.y:kb.y;
   var mx=rawX, mz=rawZ;
-  // Follow mode now uses fixed world-space offset — no input remapping needed.
-  // rawX = strafe left/right, rawZ = forward/back (same as top-down).
-  // No camera-relative rotation so holding right never spins 360.
   var moving=Math.abs(mx)>.015||Math.abs(mz)>.015;
 
   if(insideHouse){
@@ -3482,12 +3244,54 @@ function animate(){
         inDino._tail.rotation.z=Math.sin(elapsed*1.2)*0.18;
       }
     })();
+    // ── INDOOR DOG FOLLOW ────────────────────────────────────
+    (function(){
+      var gcx=(inFel.position.x+inChris.position.x)*0.5;
+      var gcz=(inFel.position.z+inChris.position.z)*0.5;
+      var avgRY=(inFel.rotation.y+inChris.rotation.y)*0.5;
+      // Dog stays right behind the group
+      var dTX=gcx+Math.sin(avgRY)*DOG_FOLLOW_DIST;
+      var dTZ=gcz+Math.cos(avgRY)*DOG_FOLLOW_DIST;
+      var ddx=dTX-inDog.position.x, ddz=dTZ-inDog.position.z;
+      var ddist=Math.sqrt(ddx*ddx+ddz*ddz);
+      if(ddist>0.25){
+        dogWtIn+=dt;
+        var dspd=Math.min(DOG_SPEED*dt,ddist);
+        var dnx=inDog.position.x+ddx/ddist*dspd;
+        var dnz=inDog.position.z+ddz/ddist*dspd;
+        if(!blockedIn(dnx,dnz)){inDog.position.x=dnx;inDog.position.z=dnz;}
+        else if(!blockedIn(dnx,inDog.position.z)){inDog.position.x=dnx;}
+        else if(!blockedIn(inDog.position.x,dnz)){inDog.position.z=dnz;}
+        var dA=Math.atan2(ddx,ddz)+Math.PI,dDA=dA-inDog.rotation.y;
+        while(dDA>Math.PI)dDA-=Math.PI*2; while(dDA<-Math.PI)dDA+=Math.PI*2;
+        inDog.rotation.y+=dDA*Math.min(1,dt*8);
+        inDog.position.y=FLOOR_Y+Math.abs(Math.sin(dogWtIn*8))*0.05;
+        // Walk leg swing
+        inDog._legFL.rotation.x= Math.sin(dogWtIn*8)*0.5;
+        inDog._legFR.rotation.x=-Math.sin(dogWtIn*8)*0.5;
+        inDog._legBL.rotation.x=-Math.sin(dogWtIn*8)*0.5;
+        inDog._legBR.rotation.x= Math.sin(dogWtIn*8)*0.5;
+        inDog._tail.rotation.x=-0.4+Math.sin(dogWtIn*12)*0.4;
+        // Ear flop while running
+        inDog._earL.rotation.x= Math.sin(dogWtIn*8)*0.18;
+        inDog._earR.rotation.x=-Math.sin(dogWtIn*8)*0.18;
+      } else {
+        dogWtIn=0;
+        inDog.position.y=FLOOR_Y+Math.abs(Math.sin(elapsed*1.3+1.5))*0.02;
+        inDog._tail.rotation.x=-0.6+Math.sin(elapsed*4)*0.5; // happy tail wag
+        inDog._legFL.rotation.x=0; inDog._legFR.rotation.x=0;
+        inDog._legBL.rotation.x=0; inDog._legBR.rotation.x=0;
+        inDog._earL.rotation.x=Math.sin(elapsed*0.7)*0.1;
+        inDog._earR.rotation.x=-Math.sin(elapsed*0.7)*0.1;
+      }
+    })();
 
 
-    // ── RPG-maker ortho camera follows Felicity smoothly ──────
+
+    // ── Isometric camera follows Felicity ────────────────────
     inCamP.set(inFel.position.x, IN_CAM_Y, inFel.position.z + IN_CAM_DZ);
-    inCam.position.lerp(inCamP, Math.min(1, dt * 6));
-    inCamL.set(inFel.position.x, 0, inFel.position.z);
+    inCam.position.lerp(inCamP, Math.min(1, dt * 4));
+    inCamL.set(inFel.position.x, IN_CAM_AIM_Y, inFel.position.z);
     inCam.lookAt(inCamL);
     // Move character fill light with Felicity so she's always well-lit
     if(glbCharLight){
@@ -3725,10 +3529,17 @@ function animate(){
       camL.copy(outFel.position); camL.y+=1.0;
       outCam.lookAt(camL);
     } else if(camMode===1){
-      // Fixed-offset follow — stays at a constant world-space position
-      // relative to Felicity. Does NOT use outFel.rotation.y so holding
-      // joystick left/right never spins the camera 360 degrees.
-      camP.set(outFel.position.x, outFel.position.y+9, outFel.position.z+11);
+      // Follow camera: stays at a fixed world-space angle behind character.
+      // camYaw is NOT driven by character rotation — that causes feedback loops.
+      // Instead keep camYaw=0 (camera always behind from world +Z side).
+      // Only remap input so joystick up = forward on screen.
+      var camDist = 12;
+      var camHeight = 8;
+      camP.set(
+        outFel.position.x,
+        outFel.position.y + camHeight,
+        outFel.position.z + camDist
+      );
       outCam.position.lerp(camP, dt*6);
       camL.copy(outFel.position); camL.y+=1.2;
       outCam.lookAt(camL);
@@ -3751,6 +3562,46 @@ function animate(){
     updateSpriteAnim(outChris, moving, dt);
     updateSpriteFacing(outFel,outCam);
     updateSpriteFacing(outChris,outCam);
+
+    // ── OUTDOOR DOG FOLLOW ───────────────────────────────────
+    (function(){
+      var gcx=(outFel.position.x+outChris.position.x)*0.5;
+      var gcz=(outFel.position.z+outChris.position.z)*0.5;
+      var avgRY=(outFel.rotation.y+outChris.rotation.y)*0.5;
+      var dTX=gcx+Math.sin(avgRY)*DOG_FOLLOW_DIST;
+      var dTZ=gcz+Math.cos(avgRY)*DOG_FOLLOW_DIST;
+      var ddx=dTX-outDog.position.x, ddz=dTZ-outDog.position.z;
+      var ddist=Math.sqrt(ddx*ddx+ddz*ddz);
+      if(ddist>0.3){
+        dogWt+=dt;
+        var dspd=Math.min(DOG_SPEED*dt,ddist);
+        var dnx=outDog.position.x+ddx/ddist*dspd;
+        var dnz=outDog.position.z+ddz/ddist*dspd;
+        if(!blockedOut(dnx,dnz)){outDog.position.x=dnx;outDog.position.z=dnz;}
+        else if(!blockedOut(dnx,outDog.position.z)){outDog.position.x=dnx;}
+        else if(!blockedOut(outDog.position.x,dnz)){outDog.position.z=dnz;}
+        var dA=Math.atan2(ddx,ddz)+Math.PI,dDA=dA-outDog.rotation.y;
+        while(dDA>Math.PI)dDA-=Math.PI*2; while(dDA<-Math.PI)dDA+=Math.PI*2;
+        outDog.rotation.y+=dDA*Math.min(1,dt*8);
+        outDog.position.y=Math.abs(Math.sin(dogWt*8))*0.05;
+        // Walk leg swing
+        outDog._legFL.rotation.x= Math.sin(dogWt*9)*0.5;
+        outDog._legFR.rotation.x=-Math.sin(dogWt*9)*0.5;
+        outDog._legBL.rotation.x=-Math.sin(dogWt*9)*0.5;
+        outDog._legBR.rotation.x= Math.sin(dogWt*9)*0.5;
+        outDog._tail.rotation.z=Math.sin(dogWt*12)*0.6;
+        outDog._earL.rotation.z=0.25+Math.sin(dogWt*8)*0.08;
+        outDog._earR.rotation.z=-0.25+Math.sin(dogWt*8)*0.08;
+      } else {
+        dogWt=0;
+        outDog.position.y=Math.abs(Math.sin(elapsed*1.0))*0.02;
+        // Tail wag while idle
+        outDog._tail.rotation.z=Math.sin(elapsed*5)*0.5;
+        outDog._legFL.rotation.x=0; outDog._legFR.rotation.x=0;
+        outDog._legBL.rotation.x=0; outDog._legBR.rotation.x=0;
+        outDog._earL.rotation.z=0.25; outDog._earR.rotation.z=-0.25;
+      }
+    })();
     // Pop-in animation for placed items
     for(var pi2=placedItems.length-1;pi2>=0;pi2--){
       var pm=placedItems[pi2];
@@ -3806,8 +3657,7 @@ function animate(){
 window.addEventListener('resize',function(){
   W=window.innerWidth;H=window.innerHeight;
   outCam.aspect=W/H;outCam.updateProjectionMatrix();
-  inCam.left=-IN_ORTHO_H*(W/H); inCam.right=IN_ORTHO_H*(W/H);
-  inCam.top=IN_ORTHO_H; inCam.bottom=-IN_ORTHO_H;
+  inCam.aspect=W/H;
   inCam.updateProjectionMatrix();
   renderer.setSize(W,H);
 });
@@ -3822,7 +3672,7 @@ function startGame(){
   setTimeout(function(){
     clearInterval(lint);
     var ld=document.getElementById('ld');
-    if(ld){ld.classList.add('go');setTimeout(function(){if(ld.parentNode)ld.parentNode.removeChild(ld);},800);}
+    if(ld){ld.classList.add('fade');setTimeout(function(){if(ld.parentNode)ld.parentNode.removeChild(ld);},600);}
     animate();
   },400);
 }
